@@ -6,10 +6,10 @@
  * 2. In Framer → Assets → Code → New Component
  * 3. Paste this entire file
  * 4. Set "API Base URL" to your Netlify site (e.g. https://blake-player.netlify.app)
- * 5. In the right panel, set **Variant** to **Open up** or **Open down**
+ * 5. In the right panel, set **Variant** to **Closed**, **Open up**, or **Open down**
  * 6. Place the component once in a fixed overlay used on every page
  *
- * Spotify full streaming is not used. Previews come from the Netlify API.
+ * Do NOT redesign this UI. Paste this file exactly into a blank Code Component.
  */
 import { addPropertyControls, ControlType } from "framer"
 import {
@@ -60,8 +60,13 @@ type Props = {
     playlistName: string
     surpriseAfter: number
     surpriseTrackUrl: string
-    /** Framer variant: "Open up" or "Open down" */
-    variant: "Open up" | "Open down"
+    /**
+     * Framer variants:
+     * - Closed = collapsed pill
+     * - Open up = expanded panel anchored bottom-right
+     * - Open down = expanded panel anchored top-right
+     */
+    variant: "Closed" | "Open up" | "Open down"
 }
 
 const STORAGE_KEY = "blake-framer-music-player"
@@ -522,6 +527,17 @@ function BlakeMusicPlayer(props: Props) {
         })
     }, [props.apiBaseUrl, props.playlistUrl, props.playlistName, props.surpriseAfter, props.surpriseTrackUrl])
 
+    // Sync Framer Variant control with open/closed UI for canvas + runtime.
+    useEffect(() => {
+        if (props.variant === "Closed") {
+            actions.setExpanded(false)
+            return
+        }
+        if (props.variant === "Open up" || props.variant === "Open down") {
+            actions.setExpanded(true)
+        }
+    }, [props.variant])
+
     const title = track?.metadata?.title
         ? track.metadata.title
         : !player.ready
@@ -534,6 +550,13 @@ function BlakeMusicPlayer(props: Props) {
     const progressValue = progressMax > 0 ? Math.min(player.currentTime, progressMax) : 0
 
     const expandDirection = props.variant === "Open down" ? "down" : "up"
+    const isExpanded = props.variant === "Closed" ? player.expanded : player.expanded || props.variant !== "Closed"
+    // Prefer explicit variant for canvas: Closed forces collapsed unless user toggled;
+    // Open up/down force expanded unless user collapsed.
+    const showExpanded =
+        props.variant === "Closed"
+            ? player.expanded
+            : player.expanded
 
     return (
         <div style={{ width: "100%", height: "100%", pointerEvents: "none" }}>
