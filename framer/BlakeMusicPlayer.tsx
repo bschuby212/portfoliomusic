@@ -6,8 +6,8 @@
  * 2. In Framer → Assets → Code → New Component
  * 3. Paste this entire file
  * 4. Set "API Base URL" to your Netlify site (e.g. https://blake-player.netlify.app)
- * 5. In the right panel, set **Expand** to **Open up** or **Open down**
-6. Place the component once in a fixed overlay used on every page
+ * 5. In the right panel, set **Variant** to **Open up** or **Open down**
+ * 6. Place the component once in a fixed overlay used on every page
  *
  * Spotify full streaming is not used. Previews come from the Netlify API.
  */
@@ -60,8 +60,8 @@ type Props = {
     playlistName: string
     surpriseAfter: number
     surpriseTrackUrl: string
-    /** "up" grows the panel above the pill; "down" grows it below */
-    expandDirection: "up" | "down"
+    /** Framer variant: "Open up" or "Open down" */
+    variant: "Open up" | "Open down"
 }
 
 const STORAGE_KEY = "blake-framer-music-player"
@@ -533,7 +533,7 @@ function BlakeMusicPlayer(props: Props) {
     const progressMax = player.duration > 0 ? player.duration : 0
     const progressValue = progressMax > 0 ? Math.min(player.currentTime, progressMax) : 0
 
-    const expandDirection = props.expandDirection === "down" ? "down" : "up"
+    const expandDirection = props.variant === "Open down" ? "down" : "up"
 
     return (
         <div style={{ width: "100%", height: "100%", pointerEvents: "none" }}>
@@ -683,16 +683,16 @@ BlakeMusicPlayer.defaultProps = {
     playlistName: "Blake's Playlist",
     surpriseAfter: 4,
     surpriseTrackUrl: "https://open.spotify.com/track/4cOdK2wGLETKBW3PvgPWqT",
-    expandDirection: "up",
+    variant: "Open up",
 }
 
 addPropertyControls(BlakeMusicPlayer, {
-    expandDirection: {
+    variant: {
         type: ControlType.Enum,
-        title: "Expand",
-        options: ["up", "down"],
+        title: "Variant",
+        options: ["Open up", "Open down"],
         optionTitles: ["Open up", "Open down"],
-        defaultValue: "up",
+        defaultValue: "Open up",
         displaySegmentedControl: true,
     },
     apiBaseUrl: {
