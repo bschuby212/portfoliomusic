@@ -510,7 +510,7 @@ function rangeFill(percent: number): CSSProperties {
  * @framerIntrinsicWidth 100
  * @framerIntrinsicHeight 40
  */
-export default function BlakeMusicPlayer(props: Props) {
+function BlakeMusicPlayer(props: Props) {
     const player = usePlayer()
     const trackIndex = player.queue[player.queueIndex] ?? 0
     const track = player.tracks[trackIndex]
@@ -725,6 +725,8 @@ addPropertyControls(BlakeMusicPlayer, {
         defaultValue: "https://open.spotify.com/track/4cOdK2wGLETKBW3PvgPWqT",
     },
 })
+
+export default BlakeMusicPlayer
 
 const css = `
 .bmp {
