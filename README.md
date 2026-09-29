@@ -10,18 +10,21 @@ Glass pill nav for Framer (desktop) with About / Work / home avatar / music play
 
 ## Pill nav
 
-Order: **About · Work · avatar (home) · music player · LinkedIn · Email · Resume**
+Two floating glass pills:
+
+1. **Left** — About · Work · avatar (home) · LinkedIn · Email · Resume  
+2. **Right** — music player pill that morphs/resizes into the full player
 
 | Control | Behavior |
 | --- | --- |
 | About / Work | Navigate |
 | Avatar initials | Home (swap for your photo later) |
-| Music player | Same expand/collapse player as before; opens downward from the nav |
+| Music pill | Same player UI; compact on the right, expands in place |
 | LinkedIn | Opens profile in a new tab |
 | Email | Copies address + toast |
 | Resume | Downloads `/resume.pdf` |
 
-Design notes: floating glass capsule (Linear / Apple-adjacent), morphing radius when the player opens, solid fallback when `backdrop-filter` or reduced transparency is unavailable.
+Design notes: Apple / Linear / Stripe-style glass capsules, music pill morphs width + radius when opened, solid fallback when `backdrop-filter` or reduced transparency is unavailable.
 
 ## Filler playlist (temporary)
 
