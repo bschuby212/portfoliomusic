@@ -2,6 +2,7 @@
 
 import {
   ChevronDown,
+  ChevronUp,
   Music2,
   Pause,
   Play,
@@ -50,6 +51,7 @@ export function MusicPlayer() {
     <aside
       className="mp"
       data-expanded={state.expanded}
+      data-expand={state.expandDirection}
       data-playing={state.isPlaying}
       data-volume-open={state.volumeOpen}
       aria-label="Music player"
@@ -127,7 +129,11 @@ export function MusicPlayer() {
               aria-label="Collapse music player"
               onClick={() => playerActions.setExpanded(false)}
             >
-              <ChevronDown size={16} strokeWidth={2} />
+              {state.expandDirection === "down" ? (
+                <ChevronUp size={16} strokeWidth={2} />
+              ) : (
+                <ChevronDown size={16} strokeWidth={2} />
+              )}
             </button>
           </div>
 

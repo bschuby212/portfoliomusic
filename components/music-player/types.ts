@@ -1,3 +1,5 @@
+export type ExpandDirection = "up" | "down";
+
 export type PlaylistEntry = {
   spotifyUrl: string;
   audioSrc?: string;
@@ -67,6 +69,7 @@ export type PlayerState = {
   shuffle: boolean;
   repeat: boolean;
   expanded: boolean;
+  expandDirection: ExpandDirection;
   volumeOpen: boolean;
   hasAudio: boolean;
   playbackError: boolean;

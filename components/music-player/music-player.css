@@ -1,7 +1,6 @@
 .mp {
   position: fixed;
   right: 1.25rem;
-  bottom: calc(1.25rem + env(safe-area-inset-bottom, 0px));
   z-index: 80;
   width: 7.75rem;
   color: #111;
@@ -9,7 +8,6 @@
   border: 1px solid rgba(0, 0, 0, 0.08);
   border-radius: 999px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
-  transform-origin: bottom right;
   overflow: hidden;
   user-select: none;
   transition:
@@ -17,6 +15,18 @@
     border-radius 0.38s cubic-bezier(0.32, 0.72, 0, 1),
     box-shadow 0.38s ease,
     transform 0.38s cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+.mp[data-expand="up"] {
+  bottom: calc(1.25rem + env(safe-area-inset-bottom, 0px));
+  top: auto;
+  transform-origin: bottom right;
+}
+
+.mp[data-expand="down"] {
+  top: calc(1.25rem + env(safe-area-inset-top, 0px));
+  bottom: auto;
+  transform-origin: top right;
 }
 
 .mp[data-expanded="true"] {
@@ -482,7 +492,14 @@
 @media (max-width: 640px) {
   .mp {
     right: 1rem;
+  }
+
+  .mp[data-expand="up"] {
     bottom: calc(1rem + env(safe-area-inset-bottom, 0px));
+  }
+
+  .mp[data-expand="down"] {
+    top: calc(1rem + env(safe-area-inset-top, 0px));
   }
 
   .mp-ctrl {

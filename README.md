@@ -30,10 +30,17 @@ Optional env vars in Netlify:
 SPOTIFY_CLIENT_ID=
 SPOTIFY_CLIENT_SECRET=
 ALLOWED_ORIGINS=https://blakeschubert.com,https://www.blakeschubert.com
+PLAYER_EXPAND_DIRECTION=up
 ```
 
-After deploy, confirm:
+`PLAYER_EXPAND_DIRECTION` is the backend toggle for placement:
 
+- `up` — bottom-right, panel opens upward (default)
+- `down` — top-right, panel opens downward (nav placement)
+
+Confirm:
+
+- `https://YOUR-SITE.netlify.app/api/player/config`
 - `https://YOUR-SITE.netlify.app/api/spotify/playlist?url=https://open.spotify.com/playlist/5zXp8gIyEeJteiSZj1RTqJ`
 - `https://YOUR-SITE.netlify.app/audio/never-gonna-give-you-up.mp3`
 
@@ -43,26 +50,30 @@ After deploy, confirm:
 2. **Assets → Code → New Component**
 3. Paste the contents of [`framer/BlakeMusicPlayer.tsx`](framer/BlakeMusicPlayer.tsx)
 4. On the component, set:
-   - **API Base URL** → `https://blake-music-player.netlify.app`
-   - **Playlist URL** → your Spotify playlist (already set)
+   - **API Base URL** → your Netlify site
+   - **Playlist URL** → your Spotify playlist
    - **Playlist Name** → `Blake's Playlist`
-5. In the right panel, set **Expand** → **Open up** or **Open down**
-6. Place the component **once** in a site-wide fixed overlay / template so every page has it
-7. Publish
+   - **Variant** → Closed or Open
+   - **Expand** → Up, Down, or **From backend**
+5. Place the component **once** in a site-wide fixed overlay / template (or in the nav) so every page has it
+6. Publish
 
-## Expand variants
+## Expand direction
 
-- **Open up** — pill sits bottom-right; panel grows upward (default)
-- **Open down** — pill sits top-right; panel grows downward
+| Mode | Pill position | Opens | Good for |
+| --- | --- | --- | --- |
+| **Up** | Bottom-right | Upward | Corner player |
+| **Down** | Top-right | Downward | Nav / header |
+| **From backend** | From `PLAYER_EXPAND_DIRECTION` | Same | Flip without re-pasting Framer |
 
-Duplicate the component in Framer if you want both placements on different pages, and set Expand per instance.
+Local demo overrides: `http://localhost:3000/?expand=down`
 
 ## Behavior
 
-- Loads your Spotify playlist, shuffles it
+- Loads your Spotify playlist (or filler tracks), shuffles it
 - Shows artwork / title / artist as **Blake's Playlist**
 - After the 4th song → Never Gonna Give You Up
-- Collapsed pill bottom-right; expands in place
+- Collapsed pill expands in place; direction is configurable
 
 ## Local dev
 

@@ -4,6 +4,7 @@ import { useSyncExternalStore } from "react";
 import { getPlaybackAdapter } from "./audio-engine";
 import { parseSpotifyTrackId } from "./parse-spotify-url";
 import {
+  EXPAND_DIRECTION,
   FILLER_TRACKS,
   PLAYLIST_NAME,
   SPOTIFY_PLAYLIST_URL,
@@ -18,6 +19,7 @@ import {
   shuffleUpcoming,
 } from "./queue";
 import type {
+  ExpandDirection,
   PlaybackAdapter,
   PlayerPrefs,
   PlayerState,
@@ -49,11 +51,32 @@ function emptyState(): PlayerState {
     shuffle: DEFAULT_PREFS.shuffle,
     repeat: DEFAULT_PREFS.repeat,
     expanded: DEFAULT_PREFS.expanded,
+    expandDirection: EXPAND_DIRECTION,
     volumeOpen: false,
     hasAudio: false,
     playbackError: false,
     ready: false,
   };
+}
+
+function parseExpandDirection(value: string | null | undefined): ExpandDirection | null {
+  if (value === "up" || value === "down") return value;
+  return null;
+}
+
+function resolveExpandDirection(): ExpandDirection {
+  if (typeof window !== "undefined") {
+    const fromQuery = parseExpandDirection(
+      new URLSearchParams(window.location.search).get("expand"),
+    );
+    if (fromQuery) return fromQuery;
+
+    const fromEnv = parseExpandDirection(
+      process.env.NEXT_PUBLIC_PLAYER_EXPAND_DIRECTION,
+    );
+    if (fromEnv) return fromEnv;
+  }
+  return EXPAND_DIRECTION;
 }
 
 const DEFAULT_STATE = emptyState();
@@ -238,12 +261,38 @@ export const playerActions = {
       shuffle: true,
       repeat: prefs.repeat,
       expanded: prefs.expanded,
+      expandDirection: resolveExpandDirection(),
       ready: false,
     });
 
     void playerActions.loadPlaylist().finally(() => {
       playlistLoading = false;
     });
+    void playerActions.syncExpandDirectionFromBackend();
+  },
+
+  async syncExpandDirectionFromBackend() {
+    try {
+      const response = await fetch("/api/player/config");
+      if (!response.ok) return;
+      const data = (await response.json()) as { expandDirection?: string };
+      const direction = parseExpandDirection(data.expandDirection);
+      if (!direction) return;
+      // Query param wins for local demos; otherwise backend/env wins.
+      if (typeof window !== "undefined") {
+        const fromQuery = parseExpandDirection(
+          new URLSearchParams(window.location.search).get("expand"),
+        );
+        if (fromQuery) return;
+      }
+      setState({ expandDirection: direction });
+    } catch {
+      // Keep resolved local/default direction.
+    }
+  },
+
+  setExpandDirection(expandDirection: ExpandDirection) {
+    setState({ expandDirection });
   },
 
   async loadPlaylist() {

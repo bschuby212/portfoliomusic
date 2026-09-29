@@ -6,8 +6,9 @@
  * 2. In Framer → Assets → Code → New Component
  * 3. Paste this entire file
  * 4. Set "API Base URL" to your Netlify site (e.g. https://blake-player.netlify.app)
- * 5. In the right panel, set **Variant** to **Closed**, **Open up**, or **Open down**
- * 6. Place the component once in a fixed overlay used on every page
+ * 5. Set **Variant** to Closed or Open
+ * 6. Set **Expand** to Up, Down, or From backend (Netlify PLAYER_EXPAND_DIRECTION)
+ * 7. Place the component once in a fixed overlay / nav template used on every page
  *
  * Do NOT redesign this UI. Paste this file exactly into a blank Code Component.
  */
@@ -36,6 +37,8 @@ type ResolvedTrack = {
     metadataStatus: "idle" | "loading" | "ready" | "error"
 }
 
+type ExpandDirection = "up" | "down"
+
 type PlayerState = {
     tracks: ResolvedTrack[]
     queue: number[]
@@ -48,6 +51,7 @@ type PlayerState = {
     shuffle: boolean
     repeat: boolean
     expanded: boolean
+    expandDirection: ExpandDirection
     volumeOpen: boolean
     hasAudio: boolean
     ready: boolean
@@ -60,13 +64,14 @@ type Props = {
     playlistName: string
     surpriseAfter: number
     surpriseTrackUrl: string
+    /** Closed = collapsed pill, Open = expanded panel */
+    variant: "Closed" | "Open"
     /**
-     * Framer variants:
-     * - Closed = collapsed pill
-     * - Open up = expanded panel anchored bottom-right
-     * - Open down = expanded panel anchored top-right
+     * Up = bottom-right (opens upward)
+     * Down = top-right / nav (opens downward)
+     * From backend = use GET /api/player/config expandDirection
      */
-    variant: "Closed" | "Open up" | "Open down"
+    expandDirection: "Up" | "Down" | "From backend"
 }
 
 const STORAGE_KEY = "blake-framer-music-player"
@@ -139,11 +144,18 @@ const emptyState = (): PlayerState => ({
     shuffle: true,
     repeat: false,
     expanded: false,
+    expandDirection: "up",
     volumeOpen: false,
     hasAudio: false,
     ready: false,
     playlistName: "Blake's Playlist",
 })
+
+function resolvePropExpandDirection(value: Props["expandDirection"]): ExpandDirection | "backend" {
+    if (value === "Down") return "down"
+    if (value === "From backend") return "backend"
+    return "up"
+}
 
 let state = emptyState()
 const listeners = new Set<() => void>()
@@ -535,6 +547,24 @@ const actions = {
         persist()
     },
 
+    setExpandDirection(expandDirection: ExpandDirection) {
+        setState({ expandDirection })
+    },
+
+    async syncExpandDirectionFromBackend(apiBaseUrl: string) {
+        try {
+            const base = apiBaseUrl.replace(/\/$/, "")
+            const response = await fetch(`${base}/api/player/config`)
+            if (!response.ok) return
+            const data = (await response.json()) as { expandDirection?: string }
+            if (data.expandDirection === "up" || data.expandDirection === "down") {
+                setState({ expandDirection: data.expandDirection })
+            }
+        } catch {
+            // Keep current direction.
+        }
+    },
+
     toggleVolumeOpen() {
         setState({ volumeOpen: !state.volumeOpen })
     },
@@ -586,14 +616,19 @@ function BlakeMusicPlayer(props: Props) {
 
     // Sync Framer Variant control with open/closed UI for canvas + runtime.
     useEffect(() => {
-        if (props.variant === "Closed") {
-            actions.setExpanded(false)
+        actions.setExpanded(props.variant === "Open")
+    }, [props.variant])
+
+    // Expand direction: Up / Down immediately, or pull from backend config.
+    useEffect(() => {
+        const resolved = resolvePropExpandDirection(props.expandDirection)
+        if (resolved === "backend") {
+            if (!props.apiBaseUrl) return
+            void actions.syncExpandDirectionFromBackend(props.apiBaseUrl)
             return
         }
-        if (props.variant === "Open up" || props.variant === "Open down") {
-            actions.setExpanded(true)
-        }
-    }, [props.variant])
+        actions.setExpandDirection(resolved)
+    }, [props.expandDirection, props.apiBaseUrl])
 
     const title = track?.metadata?.title
         ? track.metadata.title
@@ -605,15 +640,7 @@ function BlakeMusicPlayer(props: Props) {
     const artist = track?.metadata?.artist || ""
     const progressMax = player.duration > 0 ? player.duration : 0
     const progressValue = progressMax > 0 ? Math.min(player.currentTime, progressMax) : 0
-
-    const expandDirection = props.variant === "Open down" ? "down" : "up"
-    const isExpanded = props.variant === "Closed" ? player.expanded : player.expanded || props.variant !== "Closed"
-    // Prefer explicit variant for canvas: Closed forces collapsed unless user toggled;
-    // Open up/down force expanded unless user collapsed.
-    const showExpanded =
-        props.variant === "Closed"
-            ? player.expanded
-            : player.expanded
+    const expandDirection = player.expandDirection
 
     return (
         <div style={{ width: "100%", height: "100%", pointerEvents: "none" }}>
@@ -765,16 +792,25 @@ BlakeMusicPlayer.defaultProps = {
     playlistName: "Blake's Playlist",
     surpriseAfter: 4,
     surpriseTrackUrl: "https://open.spotify.com/track/4cOdK2wGLETKBW3PvgPWqT",
-    variant: "Open up",
+    variant: "Closed",
+    expandDirection: "Up",
 }
 
 addPropertyControls(BlakeMusicPlayer, {
     variant: {
         type: ControlType.Enum,
         title: "Variant",
-        options: ["Open up", "Open down"],
-        optionTitles: ["Open up", "Open down"],
-        defaultValue: "Open up",
+        options: ["Closed", "Open"],
+        optionTitles: ["Closed", "Open"],
+        defaultValue: "Closed",
+        displaySegmentedControl: true,
+    },
+    expandDirection: {
+        type: ControlType.Enum,
+        title: "Expand",
+        options: ["Up", "Down", "From backend"],
+        optionTitles: ["Up", "Down", "From backend"],
+        defaultValue: "Up",
         displaySegmentedControl: true,
     },
     apiBaseUrl: {
