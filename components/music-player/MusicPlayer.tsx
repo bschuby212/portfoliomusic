@@ -71,14 +71,19 @@ export function MusicPlayer() {
         <span className="mp-icon-btn" aria-hidden="true">
           <Music2 size={15} strokeWidth={2} />
         </span>
-        <span className="mp-bars" aria-hidden="true">
-          <span />
-          <span />
-          <span />
+        <span className="mp-disc" aria-hidden="true">
+          {track?.metadata?.artworkUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={track.metadata.artworkUrl} alt="" />
+          ) : (
+            <span className="mp-disc-fallback">
+              <Music2 size={11} strokeWidth={2} />
+            </span>
+          )}
         </span>
         <button
           type="button"
-          className="mp-icon-btn"
+          className="mp-icon-btn mp-collapsed-play"
           aria-label={state.isPlaying ? "Pause" : "Play"}
           disabled={!state.ready}
           onClick={(event) => {

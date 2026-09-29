@@ -580,14 +580,16 @@ function BlakeMusicPlayer(props: Props) {
                     <span className="bmp-icon" aria-hidden="true">
                         ♪
                     </span>
-                    <span className="bmp-bars" aria-hidden="true">
-                        <span />
-                        <span />
-                        <span />
+                    <span className="bmp-disc" aria-hidden="true">
+                        {track?.metadata?.artworkUrl ? (
+                            <img src={track.metadata.artworkUrl} alt="" />
+                        ) : (
+                            <span className="bmp-disc-fallback">♪</span>
+                        )}
                     </span>
                     <button
                         type="button"
-                        className="bmp-icon-btn"
+                        className="bmp-icon-btn bmp-collapsed-play"
                         disabled={!player.ready}
                         aria-label={player.isPlaying ? "Pause" : "Play"}
                         onClick={(event) => {
@@ -756,7 +758,7 @@ const css = `
   position: fixed;
   right: 1.25rem;
   z-index: 9999;
-  width: 6.25rem;
+  width: 7.75rem;
   color: #111;
   background: #fff;
   border: 1px solid rgba(0,0,0,0.08);
@@ -802,12 +804,32 @@ const css = `
 .bmp-ctrl { width: 2.5rem; height: 2.5rem; font-size: 13px; }
 .bmp-play { background: #111 !important; color: #fff !important; }
 .bmp-ctrl[data-active="true"] { background: rgba(0,0,0,.06); }
-.bmp-bars { display: flex; align-items: flex-end; gap: 2px; width: .85rem; height: .75rem; opacity: 0; }
-.bmp[data-playing="true"] .bmp-bars { opacity: 1; }
-.bmp-bars span { width: 2px; height: 100%; background: #111; border-radius: 1px; animation: bmp-eq .9s ease-in-out infinite; }
-.bmp-bars span:nth-child(2) { animation-delay: .18s; }
-.bmp-bars span:nth-child(3) { animation-delay: .32s; }
-@keyframes bmp-eq { 0%,100% { transform: scaleY(.35);} 50% { transform: scaleY(1);} }
+.bmp-disc {
+  position: relative; width: 1.45rem; height: 1.45rem; flex-shrink: 0;
+  border-radius: 50%; overflow: hidden; background: #f0efec;
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,.06), 0 0 0 1px rgba(255,255,255,.5);
+}
+.bmp-disc::after {
+  content: ""; position: absolute; inset: 50%; width: .28rem; height: .28rem;
+  margin: -.14rem 0 0 -.14rem; border-radius: 50%; background: #fff;
+  box-shadow: 0 0 0 1px rgba(0,0,0,.08); z-index: 1;
+}
+.bmp-disc img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.bmp-disc-fallback {
+  width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;
+  color: #a1a1a1; font-size: 10px;
+}
+.bmp[data-playing="true"] .bmp-disc { animation: bmp-spin 8s linear infinite; }
+.bmp-collapsed-play { transition: transform .16s ease, box-shadow .3s ease; }
+.bmp[data-playing="true"] .bmp-collapsed-play { animation: bmp-play-pulse 1.8s ease-in-out infinite; }
+@keyframes bmp-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+@keyframes bmp-play-pulse {
+  0%,100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(17,17,17,0); }
+  50% { transform: scale(1.06); box-shadow: 0 0 0 3px rgba(17,17,17,.06); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .bmp-disc, .bmp-collapsed-play { animation: none !important; }
+}
 .bmp-expanded { display: none; }
 .bmp[data-expanded="true"] .bmp-expanded { display: block; }
 .bmp-inner { padding: .9rem; }

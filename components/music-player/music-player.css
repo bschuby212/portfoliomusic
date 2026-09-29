@@ -3,7 +3,7 @@
   right: 1.25rem;
   bottom: calc(1.25rem + env(safe-area-inset-bottom, 0px));
   z-index: 80;
-  width: 6.25rem;
+  width: 7.75rem;
   color: #111;
   background: #fff;
   border: 1px solid rgba(0, 0, 0, 0.08);
@@ -118,54 +118,82 @@
   color: rgba(0, 0, 0, 0.35);
 }
 
-.mp-bars {
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-  gap: 2px;
-  width: 0.85rem;
-  height: 0.75rem;
-  opacity: 0;
-  transition: opacity 0.2s ease;
+.mp-disc {
+  position: relative;
+  width: 1.45rem;
+  height: 1.45rem;
+  flex-shrink: 0;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #f0efec;
+  box-shadow:
+    inset 0 0 0 1px rgba(0, 0, 0, 0.06),
+    0 0 0 1px rgba(255, 255, 255, 0.5);
 }
 
-.mp[data-playing="true"] .mp-bars {
-  opacity: 1;
+.mp-disc::after {
+  content: "";
+  position: absolute;
+  inset: 50%;
+  width: 0.28rem;
+  height: 0.28rem;
+  margin: -0.14rem 0 0 -0.14rem;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.08);
+  z-index: 1;
 }
 
-.mp-bars span {
-  display: block;
-  width: 2px;
+.mp-disc img {
+  width: 100%;
   height: 100%;
-  border-radius: 1px;
-  background: #111;
-  transform-origin: bottom;
-  transform: scaleY(0.4);
+  object-fit: cover;
+  display: block;
 }
 
-.mp[data-playing="true"] .mp-bars span {
-  animation: mp-eq 0.9s ease-in-out infinite;
+.mp-disc-fallback {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #a1a1a1;
 }
 
-.mp-bars span:nth-child(1) {
-  animation-delay: 0s;
+.mp[data-playing="true"] .mp-disc {
+  animation: mp-spin 8s linear infinite;
 }
 
-.mp-bars span:nth-child(2) {
-  animation-delay: 0.18s;
+.mp-collapsed-play {
+  transition:
+    background 0.18s ease,
+    transform 0.16s ease,
+    opacity 0.18s ease,
+    box-shadow 0.3s ease;
 }
 
-.mp-bars span:nth-child(3) {
-  animation-delay: 0.32s;
+.mp[data-playing="true"] .mp-collapsed-play {
+  animation: mp-play-pulse 1.8s ease-in-out infinite;
 }
 
-@keyframes mp-eq {
+@keyframes mp-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes mp-play-pulse {
   0%,
   100% {
-    transform: scaleY(0.35);
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(17, 17, 17, 0);
   }
   50% {
-    transform: scaleY(1);
+    transform: scale(1.06);
+    box-shadow: 0 0 0 3px rgba(17, 17, 17, 0.06);
   }
 }
 
@@ -481,7 +509,8 @@
   .mp-expanded,
   .mp-icon-btn,
   .mp-ctrl,
-  .mp-bars span,
+  .mp-disc,
+  .mp-collapsed-play,
   .mp-art,
   .mp-meta,
   .mp-transport,
