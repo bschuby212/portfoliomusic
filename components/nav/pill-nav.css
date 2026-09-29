@@ -3,19 +3,24 @@
   top: 0;
   z-index: 90;
   display: flex;
-  justify-content: center;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
   padding: 0.9rem 1rem 0;
   pointer-events: none;
 }
 
-.pn {
+.pn,
+.pn-music {
   --pn-ink: #141414;
   --pn-muted: #5c5c5c;
   --pn-glass: rgba(255, 255, 255, 0.72);
   --pn-glass-border: rgba(255, 255, 255, 0.55);
   --pn-hairline: rgba(0, 0, 0, 0.08);
   --pn-ease: cubic-bezier(0.32, 0.72, 0, 1);
+}
 
+.pn {
   position: relative;
   pointer-events: auto;
   display: flex;
@@ -36,18 +41,19 @@
   transition:
     border-radius 0.4s var(--pn-ease),
     box-shadow 0.4s ease,
-    padding 0.4s var(--pn-ease),
-    min-height 0.4s var(--pn-ease),
-    max-width 0.4s var(--pn-ease);
-  max-width: min(52rem, calc(100vw - 2rem));
+    transform 0.4s var(--pn-ease);
+  max-width: min(36rem, calc(100vw - 10rem));
 }
 
-.pn[data-player-expanded="true"] {
-  border-radius: 1.35rem;
-  box-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.65) inset,
-    0 1px 2px rgba(0, 0, 0, 0.04),
-    0 18px 44px rgba(0, 0, 0, 0.1);
+.pn-music {
+  pointer-events: auto;
+  position: relative;
+  flex-shrink: 0;
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-start;
+  min-height: 3.25rem;
+  transition: transform 0.4s var(--pn-ease);
 }
 
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
@@ -156,18 +162,6 @@
   flex-shrink: 0;
 }
 
-.pn-player-slot {
-  position: static;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0 0.15rem;
-  width: 7.75rem;
-  min-width: 7.75rem;
-  min-height: 2.5rem;
-  flex-shrink: 0;
-}
-
 .pn-actions {
   display: flex;
   align-items: center;
@@ -202,6 +196,7 @@
 
 @media (prefers-reduced-motion: reduce) {
   .pn,
+  .pn-music,
   .pn-link,
   .pn-icon-btn,
   .pn-avatar,

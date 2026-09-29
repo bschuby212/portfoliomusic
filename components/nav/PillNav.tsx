@@ -62,11 +62,7 @@ export function PillNav({ current }: PillNavProps) {
 
   return (
     <div className="pn-root">
-      <nav
-        className="pn"
-        data-player-expanded={player.expanded}
-        aria-label={`${NAV_BRAND} primary`}
-      >
+      <nav className="pn" aria-label={`${NAV_BRAND} primary`}>
         {NAV_LINKS.map((link) => (
           <Link
             key={link.href}
@@ -86,12 +82,6 @@ export function PillNav({ current }: PillNavProps) {
         >
           BS
         </Link>
-
-        <span className="pn-divider" aria-hidden="true" />
-
-        <div className="pn-player-slot">
-          <MusicPlayer embedded />
-        </div>
 
         <span className="pn-divider" aria-hidden="true" />
 
@@ -129,6 +119,14 @@ export function PillNav({ current }: PillNavProps) {
           {toast}
         </div>
       </nav>
+
+      <div
+        className="pn-music"
+        data-expanded={player.expanded}
+        data-playing={player.isPlaying}
+      >
+        <MusicPlayer embedded />
+      </div>
     </div>
   );
 }

@@ -659,12 +659,8 @@ function BlakeNavBar(props: Props) {
     return (
         <div style={{ width: "100%", height: "100%", pointerEvents: "none" }}>
             <style>{css}</style>
-            <div className="bn-root" style={{ pointerEvents: "auto" }}>
-                <nav
-                    className="bn"
-                    data-player-expanded={player.expanded}
-                    aria-label="Blake Schubert primary"
-                >
+            <div className="bn-root">
+                <nav className="bn" aria-label="Blake Schubert primary">
                     <a className="bn-link" href={props.aboutUrl}>
                         About
                     </a>
@@ -680,7 +676,45 @@ function BlakeNavBar(props: Props) {
                         {props.brandInitials || "BS"}
                     </a>
                     <span className="bn-divider" aria-hidden="true" />
-                    <div className="bn-player-slot">
+                    <div className="bn-actions">
+                        <a
+                            className="bn-icon-btn"
+                            href={props.linkedinUrl}
+                            target="_blank"
+                            rel="noreferrer"
+                            aria-label="Open LinkedIn profile"
+                        >
+                            in
+                        </a>
+                        <button
+                            type="button"
+                            className="bn-icon-btn"
+                            aria-label={`Copy email ${props.email}`}
+                            onClick={() => {
+                                void copyEmail()
+                            }}
+                        >
+                            @
+                        </button>
+                        <a
+                            className="bn-icon-btn"
+                            href={props.resumeUrl}
+                            download
+                            aria-label="Download resume"
+                        >
+                            CV
+                        </a>
+                    </div>
+                    <div className="bn-toast" data-open={Boolean(toast)} role="status" aria-live="polite">
+                        {toast}
+                    </div>
+                </nav>
+
+                <div
+                    className="bn-music"
+                    data-expanded={player.expanded}
+                    data-playing={player.isPlaying}
+                >
             <aside
                 className="bmp"
                 data-embedded="true"
@@ -818,41 +852,7 @@ function BlakeNavBar(props: Props) {
                     </div>
                 </div>
             </aside>
-                    </div>
-                    <span className="bn-divider" aria-hidden="true" />
-                    <div className="bn-actions">
-                        <a
-                            className="bn-icon-btn"
-                            href={props.linkedinUrl}
-                            target="_blank"
-                            rel="noreferrer"
-                            aria-label="Open LinkedIn profile"
-                        >
-                            in
-                        </a>
-                        <button
-                            type="button"
-                            className="bn-icon-btn"
-                            aria-label={`Copy email ${props.email}`}
-                            onClick={() => {
-                                void copyEmail()
-                            }}
-                        >
-                            @
-                        </button>
-                        <a
-                            className="bn-icon-btn"
-                            href={props.resumeUrl}
-                            download
-                            aria-label="Download resume"
-                        >
-                            CV
-                        </a>
-                    </div>
-                    <div className="bn-toast" data-open={Boolean(toast)} role="status" aria-live="polite">
-                        {toast}
-                    </div>
-                </nav>
+                </div>
             </div>
         </div>
     )
@@ -941,12 +941,13 @@ export default BlakeNavBar
 
 const css = `
 .bn-root {
-  position: fixed; inset: 0.9rem 0 auto 0; z-index: 9999;
-  display: flex; justify-content: center; pointer-events: none;
+  position: fixed; inset: .9rem 1rem auto 1rem; z-index: 9999;
+  display: flex; align-items: flex-start; justify-content: space-between; gap: .75rem;
+  pointer-events: none;
   font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif;
 }
+.bn, .bn-music { --ink: #141414; --muted: #5c5c5c; --ease: cubic-bezier(.32,.72,0,1); }
 .bn {
-  --ink: #141414; --muted: #5c5c5c;
   pointer-events: auto; position: relative;
   display: flex; align-items: center; gap: .2rem;
   min-height: 3.25rem; padding: .35rem .4rem;
@@ -957,10 +958,9 @@ const css = `
   box-shadow: 0 1px 0 rgba(255,255,255,.65) inset, 0 1px 2px rgba(0,0,0,.04), 0 12px 32px rgba(0,0,0,.08);
   backdrop-filter: blur(22px) saturate(165%);
   -webkit-backdrop-filter: blur(22px) saturate(165%);
-  transition: border-radius .4s cubic-bezier(.32,.72,0,1), box-shadow .4s ease;
-  max-width: min(52rem, calc(100vw - 2rem));
+  max-width: min(36rem, calc(100vw - 10rem));
 }
-.bn[data-player-expanded="true"] { border-radius: 1.35rem; }
+.bn-music { pointer-events: auto; display: flex; justify-content: flex-end; flex-shrink: 0; }
 .bn-link, .bn-icon-btn {
   display: inline-flex; align-items: center; justify-content: center;
   min-height: 2.5rem; padding: 0 .9rem; border: 0; border-radius: 999px;
@@ -976,10 +976,6 @@ const css = `
   color: #fff; font-size: .7rem; font-weight: 650; text-decoration: none;
 }
 .bn-divider { width: 1px; height: 1.15rem; margin: 0 .25rem; background: rgba(0,0,0,.1); }
-.bn-player-slot {
-  position: static; display: flex; align-items: center; justify-content: center;
-  margin: 0 .15rem; width: 7.75rem; min-width: 7.75rem; min-height: 2.5rem; flex-shrink: 0;
-}
 .bn-actions { display: flex; align-items: center; gap: .1rem; }
 .bn-toast {
   position: absolute; top: calc(100% + .55rem); left: 50%; transform: translateX(-50%);
@@ -991,29 +987,31 @@ const css = `
   position: relative;
   z-index: 2;
   width: 7.75rem;
-  color: #111;
-  background: rgba(255,255,255,.55);
-  border: 1px solid rgba(0,0,0,.06);
+  min-height: 3.25rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  color: #141414;
+  background: rgba(255,255,255,.72);
+  border: 1px solid rgba(255,255,255,.55);
   border-radius: 999px;
   overflow: hidden;
+  box-shadow: 0 1px 0 rgba(255,255,255,.65) inset, 0 1px 2px rgba(0,0,0,.04), 0 12px 32px rgba(0,0,0,.08);
+  backdrop-filter: blur(22px) saturate(165%);
+  -webkit-backdrop-filter: blur(22px) saturate(165%);
+  transform-origin: top right;
   transition:
-    width .38s cubic-bezier(.32,.72,0,1),
-    border-radius .38s cubic-bezier(.32,.72,0,1),
-    box-shadow .38s ease;
+    width .42s var(--ease),
+    min-height .42s var(--ease),
+    border-radius .42s var(--ease),
+    box-shadow .42s ease,
+    background .3s ease;
 }
 .bmp[data-embedded="true"][data-expanded="true"] {
-  position: absolute;
-  top: calc(100% + .55rem);
-  left: 50%;
-  right: auto;
   width: min(21.25rem, calc(100vw - 2rem));
-  translate: -50% 0;
-  border-radius: 1.15rem;
-  background: rgba(255,255,255,.92);
-  border-color: rgba(0,0,0,.08);
-  box-shadow: 0 1px 2px rgba(0,0,0,.04), 0 18px 40px rgba(0,0,0,.12);
-  backdrop-filter: blur(22px) saturate(160%);
-  -webkit-backdrop-filter: blur(22px) saturate(160%);
+  border-radius: 1.25rem;
+  background: rgba(255,255,255,.86);
+  box-shadow: 0 1px 0 rgba(255,255,255,.65) inset, 0 1px 2px rgba(0,0,0,.04), 0 18px 44px rgba(0,0,0,.12);
 }
 .bmp-collapsed {
   display: flex;
