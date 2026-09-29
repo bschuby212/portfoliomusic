@@ -85,40 +85,43 @@ export function PillNav({ current }: PillNavProps) {
             </Link>
           ))}
         </div>
-      </nav>
 
-      <div className="pn-actions-pill" aria-label="Contact">
-        <a
-          className="pn-icon-btn"
-          href={NAV_LINKEDIN_URL}
-          target="_blank"
-          rel="noreferrer"
-          aria-label="Open LinkedIn profile"
-        >
-          <LinkedInIcon />
-        </a>
-        <button
-          type="button"
-          className="pn-icon-btn"
-          aria-label={`Copy email ${NAV_EMAIL}`}
-          onClick={() => {
-            void copyEmail();
-          }}
-        >
-          <Mail size={16} strokeWidth={2} />
-        </button>
-        <a
-          className="pn-icon-btn"
-          href={NAV_RESUME_HREF}
-          download
-          aria-label="Download resume"
-        >
-          <FileDown size={16} strokeWidth={2} />
-        </a>
+        <span className="pn-divider" aria-hidden="true" />
+
+        <div className="pn-actions">
+          <a
+            className="pn-icon-btn"
+            href={NAV_LINKEDIN_URL}
+            target="_blank"
+            rel="noreferrer"
+            aria-label="Open LinkedIn profile"
+          >
+            <LinkedInIcon />
+          </a>
+          <button
+            type="button"
+            className="pn-icon-btn"
+            aria-label={`Copy email ${NAV_EMAIL}`}
+            onClick={() => {
+              void copyEmail();
+            }}
+          >
+            <Mail size={16} strokeWidth={2} />
+          </button>
+          <a
+            className="pn-icon-btn"
+            href={NAV_RESUME_HREF}
+            download
+            aria-label="Download resume"
+          >
+            <FileDown size={16} strokeWidth={2} />
+          </a>
+        </div>
+
         <div className="pn-toast" data-open={Boolean(toast)} role="status" aria-live="polite">
           {toast}
         </div>
-      </div>
+      </nav>
 
       <div
         className="pn-music"

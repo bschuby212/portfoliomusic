@@ -1,14 +1,15 @@
 /**
  * Blake Nav Bar — Framer Code Component
  *
- * Three glass pills: [avatar · About · Work · Why I'm looking] · [LinkedIn · Email · Resume] · music (16px gaps, expands right/down)
+ * Two glass pills pinned top-left in the Framer frame (no scroll):
+ * [avatar · About · Work · Why I'm looking · LinkedIn · Email · Resume] · music (16px gap, expands right/down)
  *
  * Setup:
  * 1. Deploy this repo to Netlify
  * 2. In Framer → Assets → Code → New Component
  * 3. Paste this entire file
  * 4. Set API Base URL + link/contact props
- * 5. Place once in a site-wide overlay / template (desktop)
+ * 5. Place once in a site-wide overlay / template (desktop); pin frame top-left
  */
 import { addPropertyControls, ControlType } from "framer"
 import {
@@ -658,7 +659,7 @@ function BlakeNavBar(props: Props) {
     }
 
     return (
-        <div style={{ width: "100%", height: "100%", pointerEvents: "none" }}>
+        <div className="bn-shell">
             <style>{css}</style>
             <div className="bn-root">
                 <nav className="bn" aria-label="Blake Schubert primary">
@@ -681,40 +682,40 @@ function BlakeNavBar(props: Props) {
                             Why I&apos;m looking
                         </a>
                     </div>
-                </nav>
-
-                <div className="bn-actions-pill" aria-label="Contact">
-                    <a
-                        className="bn-icon-btn"
-                        href={props.linkedinUrl}
-                        target="_blank"
-                        rel="noreferrer"
-                        aria-label="Open LinkedIn profile"
-                    >
-                        in
-                    </a>
-                    <button
-                        type="button"
-                        className="bn-icon-btn"
-                        aria-label={`Copy email ${props.email}`}
-                        onClick={() => {
-                            void copyEmail()
-                        }}
-                    >
-                        @
-                    </button>
-                    <a
-                        className="bn-icon-btn"
-                        href={props.resumeUrl}
-                        download
-                        aria-label="Download resume"
-                    >
-                        CV
-                    </a>
+                    <span className="bn-divider" aria-hidden="true" />
+                    <div className="bn-actions">
+                        <a
+                            className="bn-icon-btn"
+                            href={props.linkedinUrl}
+                            target="_blank"
+                            rel="noreferrer"
+                            aria-label="Open LinkedIn profile"
+                        >
+                            in
+                        </a>
+                        <button
+                            type="button"
+                            className="bn-icon-btn"
+                            aria-label={`Copy email ${props.email}`}
+                            onClick={() => {
+                                void copyEmail()
+                            }}
+                        >
+                            @
+                        </button>
+                        <a
+                            className="bn-icon-btn"
+                            href={props.resumeUrl}
+                            download
+                            aria-label="Download resume"
+                        >
+                            CV
+                        </a>
+                    </div>
                     <div className="bn-toast" data-open={Boolean(toast)} role="status" aria-live="polite">
                         {toast}
                     </div>
-                </div>
+                </nav>
 
                 <div
                     className="bn-music"
@@ -952,14 +953,33 @@ addPropertyControls(BlakeNavBar, {
 export default BlakeNavBar
 
 const css = `
-.bn-root {
-  position: fixed; inset: .95rem 1.1rem auto 1.1rem; z-index: 9999;
-  display: flex; align-items: flex-start; justify-content: flex-start; gap: 16px;
+.bn-shell {
+  position: relative;
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  overscroll-behavior: none;
   pointer-events: none;
   font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif;
 }
-.bn, .bn-actions-pill, .bn-music { --ink: #0f0f0f; --muted: #6a6a6a; --ease: cubic-bezier(.32,.72,0,1); }
-.bn, .bn-actions-pill {
+.bn-root {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 16px;
+  max-width: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+.bn, .bn-music { --ink: #0f0f0f; --muted: #6a6a6a; --ease: cubic-bezier(.32,.72,0,1); }
+.bn {
   pointer-events: auto; position: relative;
   display: flex; align-items: center; gap: .35rem;
   min-height: 3.4rem; padding: .32rem .38rem .32rem .32rem;
@@ -970,18 +990,19 @@ const css = `
   box-shadow: 0 1px 0 rgba(255,255,255,.72) inset, 0 0 0 .5px rgba(0,0,0,.04), 0 10px 28px rgba(0,0,0,.07);
   backdrop-filter: blur(28px) saturate(180%);
   -webkit-backdrop-filter: blur(28px) saturate(180%);
-  flex-shrink: 0;
+  flex-shrink: 1;
+  min-width: 0;
+  max-width: min(44rem, calc(100% - 8.9rem));
 }
-.bn { max-width: min(40rem, calc(100vw - 14rem)); }
-.bn-actions-pill { gap: .05rem; padding: .32rem; }
-.bn-music { pointer-events: auto; display: flex; justify-content: flex-start; flex-shrink: 0; }
-.bn-links { display: flex; align-items: center; gap: .12rem; margin-left: .15rem; }
+.bn-music { pointer-events: auto; display: flex; justify-content: flex-start; flex-shrink: 0; max-width: 100%; }
+.bn-links { display: flex; align-items: center; gap: .12rem; margin-left: .15rem; min-width: 0; }
 .bn-link, .bn-icon-btn {
   display: inline-flex; align-items: center; justify-content: center;
   min-height: 2.45rem; padding: 0 .95rem; border: 0; border-radius: 999px;
   background: transparent; color: var(--muted); font: inherit; font-size: .875rem;
   font-weight: 560; letter-spacing: -.015em; text-decoration: none; cursor: pointer;
   transition: background .22s ease, color .22s ease, box-shadow .22s ease;
+  white-space: nowrap;
 }
 .bn-link:hover, .bn-icon-btn:hover { background: rgba(0,0,0,.045); color: var(--ink); }
 .bn-link[aria-current="page"], .bn-link[data-active="true"] {
@@ -1003,6 +1024,8 @@ const css = `
   transform: scale(1.06);
   box-shadow: 0 0 0 1px rgba(255,255,255,.28) inset, 0 0 0 1.5px rgba(255,255,255,.75), 0 0 0 3px rgba(0,0,0,.05), 0 8px 20px rgba(0,0,0,.16);
 }
+.bn-divider { width: 1px; height: 1.05rem; margin: 0 .35rem; background: rgba(0,0,0,.1); flex-shrink: 0; }
+.bn-actions { display: flex; align-items: center; gap: .05rem; margin-right: .05rem; flex-shrink: 0; }
 .bn-toast {
   position: absolute; top: calc(100% + .55rem); left: 50%; transform: translateX(-50%);
   padding: .45rem .75rem; border-radius: 999px; background: #141414; color: #fff;
@@ -1034,7 +1057,8 @@ const css = `
     background .3s ease;
 }
 .bmp[data-embedded="true"][data-expanded="true"] {
-  width: min(21.25rem, calc(100vw - 2rem));
+  width: min(21.25rem, 100%);
+  max-width: 100%;
   border-radius: 1.3rem;
   background: rgba(255,255,255,.78);
   box-shadow: 0 1px 0 rgba(255,255,255,.75) inset, 0 0 0 .5px rgba(0,0,0,.04), 0 18px 44px rgba(0,0,0,.11);
