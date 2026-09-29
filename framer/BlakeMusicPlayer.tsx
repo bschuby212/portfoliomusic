@@ -1,21 +1,20 @@
 /**
- * Blake Music Player — Framer Code Component
+ * Blake Nav Bar — Framer Code Component
+ *
+ * Glass pill nav: About · Work · avatar(home) · music player · LinkedIn · Email · Resume
  *
  * Setup:
  * 1. Deploy this repo to Netlify
  * 2. In Framer → Assets → Code → New Component
  * 3. Paste this entire file
- * 4. Set "API Base URL" to your Netlify site (e.g. https://blake-player.netlify.app)
- * 5. Set **Variant** to Closed or Open
- * 6. Set **Expand** to Up, Down, or From backend (Netlify PLAYER_EXPAND_DIRECTION)
- * 7. Place the component once in a fixed overlay / nav template used on every page
- *
- * Do NOT redesign this UI. Paste this file exactly into a blank Code Component.
+ * 4. Set API Base URL + link/contact props
+ * 5. Place once in a site-wide overlay / template (desktop)
  */
 import { addPropertyControls, ControlType } from "framer"
 import {
     startTransition,
     useEffect,
+    useState,
     useSyncExternalStore,
     type CSSProperties,
 } from "react"
@@ -64,14 +63,15 @@ type Props = {
     playlistName: string
     surpriseAfter: number
     surpriseTrackUrl: string
-    /** Closed = collapsed pill, Open = expanded panel */
+    /** Closed = collapsed player, Open = expanded panel (canvas preview) */
     variant: "Closed" | "Open"
-    /**
-     * Up = bottom-right (opens upward)
-     * Down = top-right / nav (opens downward)
-     * From backend = use GET /api/player/config expandDirection
-     */
-    expandDirection: "Up" | "Down" | "From backend"
+    homeUrl: string
+    aboutUrl: string
+    workUrl: string
+    linkedinUrl: string
+    email: string
+    resumeUrl: string
+    brandInitials: string
 }
 
 const STORAGE_KEY = "blake-framer-music-player"
@@ -151,11 +151,6 @@ const emptyState = (): PlayerState => ({
     playlistName: "Blake's Playlist",
 })
 
-function resolvePropExpandDirection(value: Props["expandDirection"]): ExpandDirection | "backend" {
-    if (value === "Down") return "down"
-    if (value === "From backend") return "backend"
-    return "up"
-}
 
 let state = emptyState()
 const listeners = new Set<() => void>()
@@ -602,10 +597,11 @@ function rangeFill(percent: number): CSSProperties {
  * @framerIntrinsicWidth 100
  * @framerIntrinsicHeight 40
  */
-function BlakeMusicPlayer(props: Props) {
+function BlakeNavBar(props: Props) {
     const player = usePlayer()
     const trackIndex = player.queue[player.queueIndex] ?? 0
     const track = player.tracks[trackIndex]
+    const [toast, setToast] = useState<string | null>(null)
 
     useEffect(() => {
         if (!props.apiBaseUrl) return
@@ -614,21 +610,19 @@ function BlakeMusicPlayer(props: Props) {
         })
     }, [props.apiBaseUrl, props.playlistUrl, props.playlistName, props.surpriseAfter, props.surpriseTrackUrl])
 
-    // Sync Framer Variant control with open/closed UI for canvas + runtime.
     useEffect(() => {
         actions.setExpanded(props.variant === "Open")
     }, [props.variant])
 
-    // Expand direction: Up / Down immediately, or pull from backend config.
     useEffect(() => {
-        const resolved = resolvePropExpandDirection(props.expandDirection)
-        if (resolved === "backend") {
-            if (!props.apiBaseUrl) return
-            void actions.syncExpandDirectionFromBackend(props.apiBaseUrl)
-            return
-        }
-        actions.setExpandDirection(resolved)
-    }, [props.expandDirection, props.apiBaseUrl])
+        actions.setExpandDirection("down")
+    }, [])
+
+    useEffect(() => {
+        if (!toast) return
+        const timer = window.setTimeout(() => setToast(null), 1800)
+        return () => window.clearTimeout(timer)
+    }, [toast])
 
     const title = track?.metadata?.title
         ? track.metadata.title
@@ -640,18 +634,60 @@ function BlakeMusicPlayer(props: Props) {
     const artist = track?.metadata?.artist || ""
     const progressMax = player.duration > 0 ? player.duration : 0
     const progressValue = progressMax > 0 ? Math.min(player.currentTime, progressMax) : 0
-    const expandDirection = player.expandDirection
+
+    async function copyEmail() {
+        try {
+            if (navigator.clipboard?.writeText) {
+                await navigator.clipboard.writeText(props.email)
+            } else {
+                const field = document.createElement("textarea")
+                field.value = props.email
+                field.setAttribute("readonly", "")
+                field.style.position = "fixed"
+                field.style.opacity = "0"
+                document.body.appendChild(field)
+                field.select()
+                document.execCommand("copy")
+                field.remove()
+            }
+            setToast("Email copied")
+        } catch {
+            setToast(props.email)
+        }
+    }
 
     return (
         <div style={{ width: "100%", height: "100%", pointerEvents: "none" }}>
             <style>{css}</style>
+            <div className="bn-root" style={{ pointerEvents: "auto" }}>
+                <nav
+                    className="bn"
+                    data-player-expanded={player.expanded}
+                    aria-label="Blake Schubert primary"
+                >
+                    <a className="bn-link" href={props.aboutUrl}>
+                        About
+                    </a>
+                    <a className="bn-link" href={props.workUrl}>
+                        Work
+                    </a>
+                    <a
+                        className="bn-avatar"
+                        href={props.homeUrl}
+                        aria-label="Home"
+                        title="Home"
+                    >
+                        {props.brandInitials || "BS"}
+                    </a>
+                    <span className="bn-divider" aria-hidden="true" />
+                    <div className="bn-player-slot">
             <aside
                 className="bmp"
+                data-embedded="true"
                 data-expanded={player.expanded}
                 data-playing={player.isPlaying}
                 data-volume-open={player.volumeOpen}
-                data-expand={expandDirection}
-                style={{ pointerEvents: "auto" }}
+                data-expand="down"
                 aria-label="Music player"
             >
                 <div
@@ -708,7 +744,7 @@ function BlakeMusicPlayer(props: Props) {
                                 aria-label="Collapse"
                                 onClick={() => actions.setExpanded(false)}
                             >
-                                {expandDirection === "down" ? "⌃" : "⌄"}
+                                ⌃
                             </button>
                         </div>
 
@@ -782,41 +818,98 @@ function BlakeMusicPlayer(props: Props) {
                     </div>
                 </div>
             </aside>
+                    </div>
+                    <span className="bn-divider" aria-hidden="true" />
+                    <div className="bn-actions">
+                        <a
+                            className="bn-icon-btn"
+                            href={props.linkedinUrl}
+                            target="_blank"
+                            rel="noreferrer"
+                            aria-label="Open LinkedIn profile"
+                        >
+                            in
+                        </a>
+                        <button
+                            type="button"
+                            className="bn-icon-btn"
+                            aria-label={`Copy email ${props.email}`}
+                            onClick={() => {
+                                void copyEmail()
+                            }}
+                        >
+                            @
+                        </button>
+                        <a
+                            className="bn-icon-btn"
+                            href={props.resumeUrl}
+                            download
+                            aria-label="Download resume"
+                        >
+                            CV
+                        </a>
+                    </div>
+                    <div className="bn-toast" data-open={Boolean(toast)} role="status" aria-live="polite">
+                        {toast}
+                    </div>
+                </nav>
+            </div>
         </div>
     )
 }
 
-BlakeMusicPlayer.defaultProps = {
+BlakeNavBar.defaultProps = {
     apiBaseUrl: "https://blake-music-player.netlify.app",
     playlistUrl: "https://open.spotify.com/playlist/5zXp8gIyEeJteiSZj1RTqJ",
     playlistName: "Blake's Playlist",
     surpriseAfter: 4,
     surpriseTrackUrl: "https://open.spotify.com/track/4cOdK2wGLETKBW3PvgPWqT",
     variant: "Closed",
-    expandDirection: "Up",
+    homeUrl: "/",
+    aboutUrl: "/about",
+    workUrl: "/work",
+    linkedinUrl: "https://www.linkedin.com/in/",
+    email: "hello@blakeschubert.com",
+    resumeUrl: "https://blake-music-player.netlify.app/resume.pdf",
+    brandInitials: "BS",
 }
 
-addPropertyControls(BlakeMusicPlayer, {
+addPropertyControls(BlakeNavBar, {
     variant: {
         type: ControlType.Enum,
-        title: "Variant",
+        title: "Player",
         options: ["Closed", "Open"],
         optionTitles: ["Closed", "Open"],
         defaultValue: "Closed",
-        displaySegmentedControl: true,
-    },
-    expandDirection: {
-        type: ControlType.Enum,
-        title: "Expand",
-        options: ["Up", "Down", "From backend"],
-        optionTitles: ["Up", "Down", "From backend"],
-        defaultValue: "Up",
         displaySegmentedControl: true,
     },
     apiBaseUrl: {
         type: ControlType.String,
         title: "API Base URL",
         defaultValue: "https://blake-music-player.netlify.app",
+    },
+    homeUrl: { type: ControlType.String, title: "Home URL", defaultValue: "/" },
+    aboutUrl: { type: ControlType.String, title: "About URL", defaultValue: "/about" },
+    workUrl: { type: ControlType.String, title: "Work URL", defaultValue: "/work" },
+    linkedinUrl: {
+        type: ControlType.String,
+        title: "LinkedIn URL",
+        defaultValue: "https://www.linkedin.com/in/",
+    },
+    email: {
+        type: ControlType.String,
+        title: "Email",
+        defaultValue: "hello@blakeschubert.com",
+    },
+    resumeUrl: {
+        type: ControlType.String,
+        title: "Resume URL",
+        defaultValue: "https://blake-music-player.netlify.app/resume.pdf",
+    },
+    brandInitials: {
+        type: ControlType.String,
+        title: "Avatar initials",
+        defaultValue: "BS",
     },
     playlistUrl: {
         type: ControlType.String,
@@ -844,40 +937,83 @@ addPropertyControls(BlakeMusicPlayer, {
     },
 })
 
-export default BlakeMusicPlayer
+export default BlakeNavBar
 
 const css = `
+.bn-root {
+  position: fixed; inset: 0.9rem 0 auto 0; z-index: 9999;
+  display: flex; justify-content: center; pointer-events: none;
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif;
+}
+.bn {
+  --ink: #141414; --muted: #5c5c5c;
+  pointer-events: auto; position: relative;
+  display: flex; align-items: center; gap: .2rem;
+  min-height: 3.25rem; padding: .35rem .4rem;
+  color: var(--ink);
+  background: rgba(255,255,255,.72);
+  border: 1px solid rgba(255,255,255,.55);
+  border-radius: 999px;
+  box-shadow: 0 1px 0 rgba(255,255,255,.65) inset, 0 1px 2px rgba(0,0,0,.04), 0 12px 32px rgba(0,0,0,.08);
+  backdrop-filter: blur(22px) saturate(165%);
+  -webkit-backdrop-filter: blur(22px) saturate(165%);
+  transition: border-radius .4s cubic-bezier(.32,.72,0,1), box-shadow .4s ease;
+  max-width: min(52rem, calc(100vw - 2rem));
+}
+.bn[data-player-expanded="true"] { border-radius: 1.35rem; }
+.bn-link, .bn-icon-btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-height: 2.5rem; padding: 0 .9rem; border: 0; border-radius: 999px;
+  background: transparent; color: var(--muted); font: inherit; font-size: .875rem;
+  font-weight: 550; letter-spacing: -.01em; text-decoration: none; cursor: pointer;
+}
+.bn-link:hover, .bn-icon-btn:hover { background: rgba(0,0,0,.05); color: var(--ink); }
+.bn-icon-btn { width: 2.5rem; padding: 0; color: var(--ink); font-size: .72rem; font-weight: 650; }
+.bn-avatar {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 2.35rem; height: 2.35rem; margin: 0 .2rem; border-radius: 50%;
+  background: linear-gradient(160deg, #2a2a2a 0%, #111 70%);
+  color: #fff; font-size: .7rem; font-weight: 650; text-decoration: none;
+}
+.bn-divider { width: 1px; height: 1.15rem; margin: 0 .25rem; background: rgba(0,0,0,.1); }
+.bn-player-slot {
+  position: static; display: flex; align-items: center; justify-content: center;
+  margin: 0 .15rem; width: 7.75rem; min-width: 7.75rem; min-height: 2.5rem; flex-shrink: 0;
+}
+.bn-actions { display: flex; align-items: center; gap: .1rem; }
+.bn-toast {
+  position: absolute; top: calc(100% + .55rem); left: 50%; transform: translateX(-50%);
+  padding: .45rem .75rem; border-radius: 999px; background: #141414; color: #fff;
+  font-size: .75rem; font-weight: 550; opacity: 0; pointer-events: none;
+}
+.bn-toast[data-open="true"] { opacity: 1; }
 .bmp {
-  position: fixed;
-  right: 1.25rem;
-  z-index: 9999;
+  position: relative;
+  z-index: 2;
   width: 7.75rem;
   color: #111;
-  background: #fff;
-  border: 1px solid rgba(0,0,0,0.08);
+  background: rgba(255,255,255,.55);
+  border: 1px solid rgba(0,0,0,.06);
   border-radius: 999px;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.06);
   overflow: hidden;
-  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif;
   transition:
     width .38s cubic-bezier(.32,.72,0,1),
     border-radius .38s cubic-bezier(.32,.72,0,1),
     box-shadow .38s ease;
 }
-.bmp[data-expand="up"] {
-  bottom: calc(1.25rem + env(safe-area-inset-bottom, 0px));
-  top: auto;
-  transform-origin: bottom right;
-}
-.bmp[data-expand="down"] {
-  top: calc(1.25rem + env(safe-area-inset-top, 0px));
-  bottom: auto;
-  transform-origin: top right;
-}
-.bmp[data-expanded="true"] {
+.bmp[data-embedded="true"][data-expanded="true"] {
+  position: absolute;
+  top: calc(100% + .55rem);
+  left: 50%;
+  right: auto;
   width: min(21.25rem, calc(100vw - 2rem));
-  border-radius: 1rem;
-  box-shadow: 0 12px 32px rgba(0,0,0,0.08);
+  translate: -50% 0;
+  border-radius: 1.15rem;
+  background: rgba(255,255,255,.92);
+  border-color: rgba(0,0,0,.08);
+  box-shadow: 0 1px 2px rgba(0,0,0,.04), 0 18px 40px rgba(0,0,0,.12);
+  backdrop-filter: blur(22px) saturate(160%);
+  -webkit-backdrop-filter: blur(22px) saturate(160%);
 }
 .bmp-collapsed {
   display: flex;
@@ -974,8 +1110,13 @@ const css = `
 .bmp-volume { display: flex; align-items: center; gap: .25rem; min-width: 0; }
 .bmp-vol { width: 4.5rem; }
 .bmp-note { font-size: .65rem; color: #a3a3a3; }
-@media (max-width: 640px) {
-  .bmp[data-expand="up"] { right: 1rem; bottom: calc(1rem + env(safe-area-inset-bottom, 0px)); }
-  .bmp[data-expand="down"] { right: 1rem; top: calc(1rem + env(safe-area-inset-top, 0px)); }
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .bn { background: #f7f6f3; border-color: rgba(0,0,0,.08); }
+}
+@media (prefers-reduced-transparency: reduce) {
+  .bn { background: #f4f3ef; backdrop-filter: none; -webkit-backdrop-filter: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .bn { transition: none !important; }
 }
 `

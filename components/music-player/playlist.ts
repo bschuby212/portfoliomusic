@@ -10,7 +10,8 @@ export const PLAYLIST_NAME = "Blake's Playlist";
  * Override at runtime with Netlify/env `PLAYER_EXPAND_DIRECTION=up|down`
  * (also exposed at GET /api/player/config for Framer "From backend").
  */
-export const EXPAND_DIRECTION: ExpandDirection = "up";
+/** Default for the pill-nav embed; corner mode can still override via env/query. */
+export const EXPAND_DIRECTION: ExpandDirection = "down";
 
 /**
  * Temporary: play local filler audio + Spotify metadata links.

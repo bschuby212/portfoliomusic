@@ -1,79 +1,57 @@
-# Persistent portfolio music player
+# Blake portfolio nav + music player
 
-Next.js API + player for Blake's playlist. Deploy the API to **Netlify**, then drop the Framer code component onto blakeschubert.com.
+Glass pill nav for Framer (desktop) with About / Work / home avatar / music player / LinkedIn / email / resume. Netlify hosts the Spotify preview API + audio assets.
 
 ## What this repo is
 
-- **Netlify app** — Spotify playlist/track metadata + audio preview API, plus the surprise MP3
-- **Framer component** — [`framer/BlakeMusicPlayer.tsx`](framer/BlakeMusicPlayer.tsx) paste into Framer
+- **Netlify app** — Spotify metadata/preview API, filler audio, resume file
+- **Next.js demo** — [`components/nav/PillNav.tsx`](components/nav/PillNav.tsx) with the existing player embedded
+- **Framer component** — paste [`framer/BlakeMusicPlayer.tsx`](framer/BlakeMusicPlayer.tsx) (exports `BlakeNavBar`)
 
-Spotify full-track streaming is not used (needs Web Playback SDK + Premium). The player uses 30s previews (or local filler MP3s while the real playlist is pending).
+## Pill nav
 
-### Filler playlist (temporary)
+Order: **About · Work · avatar (home) · music player · LinkedIn · Email · Resume**
 
-`USE_FILLER_PLAYLIST` is currently `true` in:
-- [`components/music-player/playlist.ts`](components/music-player/playlist.ts)
-- [`framer/BlakeMusicPlayer.tsx`](framer/BlakeMusicPlayer.tsx)
+| Control | Behavior |
+| --- | --- |
+| About / Work | Navigate |
+| Avatar initials | Home (swap for your photo later) |
+| Music player | Same expand/collapse player as before; opens downward from the nav |
+| LinkedIn | Opens profile in a new tab |
+| Email | Copies address + toast |
+| Resume | Downloads `/resume.pdf` |
 
-That mode plays local `/audio/*.mp3` files while still loading Spotify title/artist/artwork for filler track links. When you have the real playlist, set both flags to `false` and update `SPOTIFY_PLAYLIST_URL` / the Framer **Playlist URL** control.
+Design notes: floating glass capsule (Linear / Apple-adjacent), morphing radius when the player opens, solid fallback when `backdrop-filter` or reduced transparency is unavailable.
 
-## 1. Deploy to Netlify
+## Filler playlist (temporary)
 
-1. Push this repo to GitHub
-2. In Netlify: **Add new site → Import from Git**
-3. Build settings are in `netlify.toml` (Next.js plugin)
-4. Deploy
+`USE_FILLER_PLAYLIST` is `true` in `components/music-player/playlist.ts` and the Framer file. Flip both to `false` when the real Spotify playlist is ready.
 
-Optional env vars in Netlify:
+## Deploy (Netlify)
 
 ```
 SPOTIFY_CLIENT_ID=
 SPOTIFY_CLIENT_SECRET=
 ALLOWED_ORIGINS=https://blakeschubert.com,https://www.blakeschubert.com
-PLAYER_EXPAND_DIRECTION=up
+PLAYER_EXPAND_DIRECTION=down
 ```
-
-`PLAYER_EXPAND_DIRECTION` is the backend toggle for placement:
-
-- `up` — bottom-right, panel opens upward (default)
-- `down` — top-right, panel opens downward (nav placement)
 
 Confirm:
 
-- `https://YOUR-SITE.netlify.app/api/player/config`
-- `https://YOUR-SITE.netlify.app/api/spotify/playlist?url=https://open.spotify.com/playlist/5zXp8gIyEeJteiSZj1RTqJ`
-- `https://YOUR-SITE.netlify.app/audio/never-gonna-give-you-up.mp3`
+- `/api/player/config`
+- `/api/spotify/playlist?url=...`
+- `/audio/never-gonna-give-you-up.mp3`
+- `/resume.pdf`
 
-## 2. Add to Framer
+## Framer
 
-1. Open your Framer project
-2. **Assets → Code → New Component**
-3. Paste the contents of [`framer/BlakeMusicPlayer.tsx`](framer/BlakeMusicPlayer.tsx)
-4. On the component, set:
-   - **API Base URL** → your Netlify site
-   - **Playlist URL** → your Spotify playlist
-   - **Playlist Name** → `Blake's Playlist`
-   - **Variant** → Closed or Open
-   - **Expand** → Up, Down, or **From backend**
-5. Place the component **once** in a site-wide fixed overlay / template (or in the nav) so every page has it
-6. Publish
+1. **Assets → Code → New Component**
+2. Paste [`framer/BlakeMusicPlayer.tsx`](framer/BlakeMusicPlayer.tsx)
+3. Set API Base URL, About/Work/Home URLs, LinkedIn, email, resume URL
+4. Place once in a site-wide desktop overlay / template
+5. Publish
 
-## Expand direction
-
-| Mode | Pill position | Opens | Good for |
-| --- | --- | --- | --- |
-| **Up** | Bottom-right | Upward | Corner player |
-| **Down** | Top-right | Downward | Nav / header |
-| **From backend** | From `PLAYER_EXPAND_DIRECTION` | Same | Flip without re-pasting Framer |
-
-Local demo overrides: `http://localhost:3000/?expand=down`
-
-## Behavior
-
-- Loads your Spotify playlist (or filler tracks), shuffles it
-- Shows artwork / title / artist as **Blake's Playlist**
-- After the 4th song → Never Gonna Give You Up
-- Collapsed pill expands in place; direction is configurable
+Mobile can stay on your separate Framer setup for now.
 
 ## Local dev
 

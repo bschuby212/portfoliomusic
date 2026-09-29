@@ -21,7 +21,12 @@ import { PLAYLIST_NAME } from "./playlist";
 import { playerActions, usePlayerStore } from "./store";
 import type { ResolvedTrack } from "./types";
 
-export function MusicPlayer() {
+type MusicPlayerProps = {
+  /** Sit inside the pill nav instead of the fixed corner. */
+  embedded?: boolean;
+};
+
+export function MusicPlayer({ embedded = false }: MusicPlayerProps) {
   const state = usePlayerStore();
   const trackIndex = state.queue[state.queueIndex] ?? 0;
   const track = state.tracks[trackIndex];
@@ -31,6 +36,12 @@ export function MusicPlayer() {
   useEffect(() => {
     playerActions.init();
   }, []);
+
+  useEffect(() => {
+    if (embedded) {
+      playerActions.setExpandDirection("down");
+    }
+  }, [embedded]);
 
   useEffect(() => {
     if (state.ready && state.tracks.length > 0) return;
@@ -50,8 +61,9 @@ export function MusicPlayer() {
   return (
     <aside
       className="mp"
+      data-embedded={embedded ? "true" : "false"}
       data-expanded={state.expanded}
-      data-expand={state.expandDirection}
+      data-expand={embedded ? "down" : state.expandDirection}
       data-playing={state.isPlaying}
       data-volume-open={state.volumeOpen}
       aria-label="Music player"

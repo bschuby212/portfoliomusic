@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { SiteNav } from "@/components/SiteNav";
 
 const studies: Record<
   string,
@@ -40,20 +39,17 @@ export default async function CaseStudyPage({
   if (!study) notFound();
 
   return (
-    <>
-      <SiteNav current="/work" />
-      <main className="mx-auto max-w-3xl px-6 pb-32 pt-16">
-        <Link href="/work" className="text-sm text-neutral-500 hover:text-neutral-900">
-          Work
-        </Link>
-        <h1 className="mt-4 text-4xl font-semibold tracking-tight">{study.title}</h1>
-        <p className="mt-3 text-sm text-neutral-500">{study.meta}</p>
-        <div className="mt-10 space-y-5 text-base leading-7 text-neutral-600">
-          {study.body.map((paragraph) => (
-            <p key={paragraph}>{paragraph}</p>
-          ))}
-        </div>
-      </main>
-    </>
+    <main className="mx-auto max-w-3xl px-6 pb-32 pt-10">
+      <Link href="/work" className="text-sm text-neutral-500 hover:text-neutral-900">
+        Work
+      </Link>
+      <h1 className="mt-4 text-4xl font-semibold tracking-tight">{study.title}</h1>
+      <p className="mt-3 text-sm text-neutral-500">{study.meta}</p>
+      <div className="mt-10 space-y-5 text-base leading-7 text-neutral-600">
+        {study.body.map((paragraph) => (
+          <p key={paragraph}>{paragraph}</p>
+        ))}
+      </div>
+    </main>
   );
 }
