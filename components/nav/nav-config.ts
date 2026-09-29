@@ -3,6 +3,7 @@ export const NAV_BRAND = "Blake Schubert";
 export const NAV_LINKS = [
   { href: "/about", label: "About" },
   { href: "/work", label: "Work" },
+  { href: "/looking", label: "Why I'm looking" },
 ] as const;
 
 /** Placeholder contact actions — swap in Framer / later config. */

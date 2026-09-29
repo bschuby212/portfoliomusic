@@ -8,9 +8,9 @@ export default function HomePage() {
         A quiet player that stays with you while you look around.
       </h1>
       <p className="mt-5 max-w-xl text-base leading-7 text-neutral-600">
-        The glass pill nav holds About, Work, home, the music player, and contact
-        actions. Play a track, then move around — playback should not restart or
-        disappear.
+        The glass pill nav holds About, Work, Why I&apos;m looking, home, the
+        music player, and contact actions. Play a track, then move around —
+        playback should not restart or disappear.
       </p>
       <div className="mt-10 flex flex-wrap gap-3 text-sm">
         <Link
@@ -24,6 +24,12 @@ export default function HomePage() {
           className="rounded-full border border-black/10 px-4 py-2 text-neutral-800 transition-colors hover:bg-white"
         >
           About
+        </Link>
+        <Link
+          href="/looking"
+          className="rounded-full border border-black/10 px-4 py-2 text-neutral-800 transition-colors hover:bg-white"
+        >
+          Why I&apos;m looking
         </Link>
       </div>
       <section className="mt-16 max-w-xl border-t border-black/8 pt-8 text-sm leading-6 text-neutral-500">

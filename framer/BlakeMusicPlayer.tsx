@@ -1,7 +1,7 @@
 /**
  * Blake Nav Bar — Framer Code Component
  *
- * Glass pills: [avatar · About · Work · LinkedIn · Email · Resume] + music pill 16px beside (expands right/down)
+ * Glass pills: [avatar · About · Work · Why I'm looking · LinkedIn · Email · Resume] + music pill 16px beside (expands right/down)
  *
  * Setup:
  * 1. Deploy this repo to Netlify
@@ -68,6 +68,7 @@ type Props = {
     homeUrl: string
     aboutUrl: string
     workUrl: string
+    lookingUrl: string
     linkedinUrl: string
     email: string
     resumeUrl: string
@@ -676,6 +677,9 @@ function BlakeNavBar(props: Props) {
                         <a className="bn-link" href={props.workUrl}>
                             Work
                         </a>
+                        <a className="bn-link" href={props.lookingUrl}>
+                            Why I&apos;m looking
+                        </a>
                     </div>
                     <span className="bn-divider" aria-hidden="true" />
                     <div className="bn-actions">
@@ -870,6 +874,7 @@ BlakeNavBar.defaultProps = {
     homeUrl: "/",
     aboutUrl: "/about",
     workUrl: "/work",
+    lookingUrl: "/looking",
     linkedinUrl: "https://www.linkedin.com/in/",
     email: "hello@blakeschubert.com",
     resumeUrl: "https://blake-music-player.netlify.app/resume.pdf",
@@ -893,6 +898,11 @@ addPropertyControls(BlakeNavBar, {
     homeUrl: { type: ControlType.String, title: "Home URL", defaultValue: "/" },
     aboutUrl: { type: ControlType.String, title: "About URL", defaultValue: "/about" },
     workUrl: { type: ControlType.String, title: "Work URL", defaultValue: "/work" },
+    lookingUrl: {
+        type: ControlType.String,
+        title: "Looking URL",
+        defaultValue: "/looking",
+    },
     linkedinUrl: {
         type: ControlType.String,
         title: "LinkedIn URL",
