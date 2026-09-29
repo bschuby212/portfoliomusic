@@ -912,7 +912,8 @@ const css = `
   width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;
   color: #a1a1a1; font-size: 10px;
 }
-.bmp[data-playing="true"] .bmp-disc { animation: bmp-spin 8s linear infinite; }
+.bmp[data-playing="true"] .bmp-disc img,
+.bmp[data-playing="true"] .bmp-disc-fallback { animation: bmp-spin 2.8s linear infinite; }
 .bmp-collapsed-play { transition: transform .16s ease, box-shadow .3s ease; }
 .bmp[data-playing="true"] .bmp-collapsed-play { animation: bmp-play-pulse 1.8s ease-in-out infinite; }
 @keyframes bmp-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
@@ -920,14 +921,33 @@ const css = `
   0%,100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(17,17,17,0); }
   50% { transform: scale(1.06); box-shadow: 0 0 0 3px rgba(17,17,17,.06); }
 }
+.bmp[data-expanded="true"][data-playing="true"] .bmp-art {
+  border-radius: 50%; position: relative;
+}
+.bmp[data-expanded="true"][data-playing="true"] .bmp-art img,
+.bmp[data-expanded="true"][data-playing="true"] .bmp-art-fallback {
+  animation: bmp-spin 2.8s linear infinite;
+}
+.bmp-art::after {
+  content: ""; position: absolute; inset: 50%; width: .45rem; height: .45rem;
+  margin: -.225rem 0 0 -.225rem; border-radius: 50%; background: #fff;
+  box-shadow: 0 0 0 1px rgba(0,0,0,.08); opacity: 0; z-index: 1; pointer-events: none;
+}
+.bmp[data-expanded="true"][data-playing="true"] .bmp-art::after { opacity: 1; }
 @media (prefers-reduced-motion: reduce) {
-  .bmp-disc, .bmp-collapsed-play { animation: none !important; }
+  .bmp-disc img, .bmp-disc-fallback, .bmp-art img, .bmp-art-fallback, .bmp-collapsed-play {
+    animation: none !important;
+  }
 }
 .bmp-expanded { display: none; }
 .bmp[data-expanded="true"] .bmp-expanded { display: block; }
 .bmp-inner { padding: .9rem; }
 .bmp-top { display: flex; gap: .75rem; align-items: flex-start; }
-.bmp-art { width: 3.5rem; height: 3.5rem; border-radius: .6rem; overflow: hidden; background: #f3f3f1; flex-shrink: 0; }
+.bmp-art {
+  position: relative; width: 3.5rem; height: 3.5rem; border-radius: .6rem;
+  overflow: hidden; background: #f3f3f1; flex-shrink: 0;
+  transition: border-radius .28s ease;
+}
 .bmp-art img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .bmp-art-fallback { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: #a1a1a1; }
 .bmp-meta { min-width: 0; flex: 1; }

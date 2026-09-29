@@ -170,8 +170,9 @@
   color: #a1a1a1;
 }
 
-.mp[data-playing="true"] .mp-disc {
-  animation: mp-spin 8s linear infinite;
+.mp[data-playing="true"] .mp-disc img,
+.mp[data-playing="true"] .mp-disc-fallback {
+  animation: mp-spin 2.8s linear infinite;
 }
 
 .mp-collapsed-play {
@@ -247,10 +248,40 @@
   border-radius: 0.6rem;
   background: #f3f3f1;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+  transition: border-radius 0.28s ease;
 }
 
 .mp[data-expanded="true"] .mp-art {
   animation: mp-art-in 0.42s cubic-bezier(0.32, 0.72, 0, 1) both;
+}
+
+.mp[data-expanded="true"][data-playing="true"] .mp-art {
+  border-radius: 50%;
+}
+
+.mp[data-expanded="true"][data-playing="true"] .mp-art img,
+.mp[data-expanded="true"][data-playing="true"] .mp-art-fallback {
+  animation: mp-spin 2.8s linear infinite;
+}
+
+.mp-art::after {
+  content: "";
+  position: absolute;
+  inset: 50%;
+  width: 0.45rem;
+  height: 0.45rem;
+  margin: -0.225rem 0 0 -0.225rem;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.08);
+  opacity: 0;
+  z-index: 1;
+  transition: opacity 0.2s ease;
+  pointer-events: none;
+}
+
+.mp[data-expanded="true"][data-playing="true"] .mp-art::after {
+  opacity: 1;
 }
 
 .mp-art img {
@@ -526,8 +557,11 @@
   .mp-expanded,
   .mp-icon-btn,
   .mp-ctrl,
-  .mp-disc,
+  .mp-disc img,
+  .mp-disc-fallback,
   .mp-collapsed-play,
+  .mp-art img,
+  .mp-art-fallback,
   .mp-art,
   .mp-meta,
   .mp-transport,
