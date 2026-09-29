@@ -1,7 +1,7 @@
 /**
  * Blake Nav Bar — Framer Code Component
  *
- * Glass pills: [avatar · About · Work · LinkedIn · Email · Resume] + right music pill
+ * Glass pills: [avatar · About · Work · LinkedIn · Email · Resume] + music pill 16px beside (expands right/down)
  *
  * Setup:
  * 1. Deploy this repo to Netlify
@@ -944,7 +944,7 @@ export default BlakeNavBar
 const css = `
 .bn-root {
   position: fixed; inset: .95rem 1.1rem auto 1.1rem; z-index: 9999;
-  display: flex; align-items: flex-start; justify-content: space-between; gap: .85rem;
+  display: flex; align-items: flex-start; justify-content: flex-start; gap: 16px;
   pointer-events: none;
   font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif;
 }
@@ -960,9 +960,10 @@ const css = `
   box-shadow: 0 1px 0 rgba(255,255,255,.72) inset, 0 0 0 .5px rgba(0,0,0,.04), 0 10px 28px rgba(0,0,0,.07);
   backdrop-filter: blur(28px) saturate(180%);
   -webkit-backdrop-filter: blur(28px) saturate(180%);
-  max-width: min(38rem, calc(100vw - 10.5rem));
+  flex-shrink: 0;
+  max-width: min(38rem, calc(100vw - 10rem));
 }
-.bn-music { pointer-events: auto; display: flex; justify-content: flex-end; flex-shrink: 0; }
+.bn-music { pointer-events: auto; display: flex; justify-content: flex-start; flex-shrink: 0; }
 .bn-links { display: flex; align-items: center; gap: .12rem; margin-left: .15rem; }
 .bn-link, .bn-icon-btn {
   display: inline-flex; align-items: center; justify-content: center;
@@ -1015,7 +1016,7 @@ const css = `
   box-shadow: 0 1px 0 rgba(255,255,255,.72) inset, 0 0 0 .5px rgba(0,0,0,.04), 0 10px 28px rgba(0,0,0,.07);
   backdrop-filter: blur(28px) saturate(180%);
   -webkit-backdrop-filter: blur(28px) saturate(180%);
-  transform-origin: top right;
+  transform-origin: top left;
   transition:
     width .42s var(--ease),
     min-height .42s var(--ease),
