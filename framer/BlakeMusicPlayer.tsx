@@ -971,7 +971,7 @@ const css = `
   backdrop-filter: blur(28px) saturate(180%);
   -webkit-backdrop-filter: blur(28px) saturate(180%);
   flex-shrink: 0;
-  max-width: min(38rem, calc(100vw - 10rem));
+  max-width: min(44rem, calc(100vw - 10rem));
 }
 .bn-music { pointer-events: auto; display: flex; justify-content: flex-start; flex-shrink: 0; }
 .bn-links { display: flex; align-items: center; gap: .12rem; margin-left: .15rem; }
