@@ -1,7 +1,7 @@
 /**
  * Blake Nav Bar — Framer Code Component
  *
- * Glass pills: [avatar · About · Work · Why I'm looking · LinkedIn · Email · Resume] + music pill 16px beside (expands right/down)
+ * Three glass pills: [avatar · About · Work · Why I'm looking] · [LinkedIn · Email · Resume] · music (16px gaps, expands right/down)
  *
  * Setup:
  * 1. Deploy this repo to Netlify
@@ -681,40 +681,40 @@ function BlakeNavBar(props: Props) {
                             Why I&apos;m looking
                         </a>
                     </div>
-                    <span className="bn-divider" aria-hidden="true" />
-                    <div className="bn-actions">
-                        <a
-                            className="bn-icon-btn"
-                            href={props.linkedinUrl}
-                            target="_blank"
-                            rel="noreferrer"
-                            aria-label="Open LinkedIn profile"
-                        >
-                            in
-                        </a>
-                        <button
-                            type="button"
-                            className="bn-icon-btn"
-                            aria-label={`Copy email ${props.email}`}
-                            onClick={() => {
-                                void copyEmail()
-                            }}
-                        >
-                            @
-                        </button>
-                        <a
-                            className="bn-icon-btn"
-                            href={props.resumeUrl}
-                            download
-                            aria-label="Download resume"
-                        >
-                            CV
-                        </a>
-                    </div>
+                </nav>
+
+                <div className="bn-actions-pill" aria-label="Contact">
+                    <a
+                        className="bn-icon-btn"
+                        href={props.linkedinUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        aria-label="Open LinkedIn profile"
+                    >
+                        in
+                    </a>
+                    <button
+                        type="button"
+                        className="bn-icon-btn"
+                        aria-label={`Copy email ${props.email}`}
+                        onClick={() => {
+                            void copyEmail()
+                        }}
+                    >
+                        @
+                    </button>
+                    <a
+                        className="bn-icon-btn"
+                        href={props.resumeUrl}
+                        download
+                        aria-label="Download resume"
+                    >
+                        CV
+                    </a>
                     <div className="bn-toast" data-open={Boolean(toast)} role="status" aria-live="polite">
                         {toast}
                     </div>
-                </nav>
+                </div>
 
                 <div
                     className="bn-music"
@@ -958,8 +958,8 @@ const css = `
   pointer-events: none;
   font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif;
 }
-.bn, .bn-music { --ink: #0f0f0f; --muted: #6a6a6a; --ease: cubic-bezier(.32,.72,0,1); }
-.bn {
+.bn, .bn-actions-pill, .bn-music { --ink: #0f0f0f; --muted: #6a6a6a; --ease: cubic-bezier(.32,.72,0,1); }
+.bn, .bn-actions-pill {
   pointer-events: auto; position: relative;
   display: flex; align-items: center; gap: .35rem;
   min-height: 3.4rem; padding: .32rem .38rem .32rem .32rem;
@@ -971,8 +971,9 @@ const css = `
   backdrop-filter: blur(28px) saturate(180%);
   -webkit-backdrop-filter: blur(28px) saturate(180%);
   flex-shrink: 0;
-  max-width: min(44rem, calc(100vw - 10rem));
 }
+.bn { max-width: min(40rem, calc(100vw - 14rem)); }
+.bn-actions-pill { gap: .05rem; padding: .32rem; }
 .bn-music { pointer-events: auto; display: flex; justify-content: flex-start; flex-shrink: 0; }
 .bn-links { display: flex; align-items: center; gap: .12rem; margin-left: .15rem; }
 .bn-link, .bn-icon-btn {
@@ -1002,8 +1003,6 @@ const css = `
   transform: scale(1.06);
   box-shadow: 0 0 0 1px rgba(255,255,255,.28) inset, 0 0 0 1.5px rgba(255,255,255,.75), 0 0 0 3px rgba(0,0,0,.05), 0 8px 20px rgba(0,0,0,.16);
 }
-.bn-divider { width: 1px; height: 1.05rem; margin: 0 .35rem; background: rgba(0,0,0,.1); }
-.bn-actions { display: flex; align-items: center; gap: .05rem; margin-right: .05rem; }
 .bn-toast {
   position: absolute; top: calc(100% + .55rem); left: 50%; transform: translateX(-50%);
   padding: .45rem .75rem; border-radius: 999px; background: #141414; color: #fff;
