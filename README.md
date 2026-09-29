@@ -7,7 +7,15 @@ Next.js API + player for Blake's playlist. Deploy the API to **Netlify**, then d
 - **Netlify app** — Spotify playlist/track metadata + audio preview API, plus the surprise MP3
 - **Framer component** — [`framer/BlakeMusicPlayer.tsx`](framer/BlakeMusicPlayer.tsx) paste into Framer
 
-Spotify full-track streaming is not used (needs Web Playback SDK + Premium). The player uses 30s previews.
+Spotify full-track streaming is not used (needs Web Playback SDK + Premium). The player uses 30s previews (or local filler MP3s while the real playlist is pending).
+
+### Filler playlist (temporary)
+
+`USE_FILLER_PLAYLIST` is currently `true` in:
+- [`components/music-player/playlist.ts`](components/music-player/playlist.ts)
+- [`framer/BlakeMusicPlayer.tsx`](framer/BlakeMusicPlayer.tsx)
+
+That mode plays local `/audio/*.mp3` files while still loading Spotify title/artist/artwork for filler track links. When you have the real playlist, set both flags to `false` and update `SPOTIFY_PLAYLIST_URL` / the Framer **Playlist URL** control.
 
 ## 1. Deploy to Netlify
 

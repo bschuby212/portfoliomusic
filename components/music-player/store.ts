@@ -4,10 +4,12 @@ import { useSyncExternalStore } from "react";
 import { getPlaybackAdapter } from "./audio-engine";
 import { parseSpotifyTrackId } from "./parse-spotify-url";
 import {
+  FILLER_TRACKS,
   PLAYLIST_NAME,
   SPOTIFY_PLAYLIST_URL,
   SURPRISE_AFTER,
   SURPRISE_TRACK,
+  USE_FILLER_PLAYLIST,
 } from "./playlist";
 import {
   buildSurprisePlaylistOrder,
@@ -168,6 +170,21 @@ async function fetchTrackMetadata(spotifyUrl: string): Promise<TrackMetadata> {
   return (await response.json()) as TrackMetadata;
 }
 
+async function fetchRemotePlaylistTracks(): Promise<ResolvedTrack[]> {
+  const response = await fetch(
+    `/api/spotify/playlist?url=${encodeURIComponent(SPOTIFY_PLAYLIST_URL)}`,
+  );
+  if (!response.ok) throw new Error("playlist failed");
+
+  const data = (await response.json()) as {
+    tracks: { id: string; spotifyUrl: string }[];
+  };
+
+  return data.tracks.map((track) =>
+    toResolvedTrack({ id: track.id, spotifyUrl: track.spotifyUrl }),
+  );
+}
+
 export const playerActions = {
   init() {
     if (typeof window === "undefined") return;
@@ -231,18 +248,10 @@ export const playerActions = {
 
   async loadPlaylist() {
     try {
-      const response = await fetch(
-        `/api/spotify/playlist?url=${encodeURIComponent(SPOTIFY_PLAYLIST_URL)}`,
-      );
-      if (!response.ok) throw new Error("playlist failed");
+      const playlistTracks = USE_FILLER_PLAYLIST
+        ? FILLER_TRACKS.map((entry) => toResolvedTrack(entry))
+        : await fetchRemotePlaylistTracks();
 
-      const data = (await response.json()) as {
-        tracks: { id: string; spotifyUrl: string }[];
-      };
-
-      const playlistTracks = data.tracks.map((track) =>
-        toResolvedTrack({ id: track.id, spotifyUrl: track.spotifyUrl }),
-      );
       const surprise = toResolvedTrack(SURPRISE_TRACK);
       const ordered = buildSurprisePlaylistOrder(
         playlistTracks,
@@ -273,13 +282,21 @@ export const playerActions = {
       void playerActions.ensureNearbyMetadata();
     } catch {
       initialized = true;
-      const fallback = toResolvedTrack(SURPRISE_TRACK);
+      const fallbackTracks = FILLER_TRACKS.length
+        ? FILLER_TRACKS.map((entry) => toResolvedTrack(entry))
+        : [toResolvedTrack(SURPRISE_TRACK)];
+      const surprise = toResolvedTrack(SURPRISE_TRACK);
+      const ordered = buildSurprisePlaylistOrder(
+        fallbackTracks,
+        surprise,
+        Math.min(SURPRISE_AFTER, fallbackTracks.length),
+      );
       setState({
         ready: true,
-        tracks: [fallback],
-        queue: [0],
+        tracks: ordered,
+        queue: createSequentialQueue(ordered.length),
         queueIndex: 0,
-        hasAudio: Boolean(SURPRISE_TRACK.audioSrc),
+        hasAudio: Boolean(playableSrc(ordered[0])),
       });
       loadCurrent({ autoplay: false, from: state });
       void playerActions.ensureNearbyMetadata();

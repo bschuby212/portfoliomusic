@@ -73,6 +73,60 @@ const STORAGE_KEY = "blake-framer-music-player"
 const RESTART_THRESHOLD = 3
 const RICKROLL_ID = "4cOdK2wGLETKBW3PvgPWqT"
 
+/**
+ * Temporary filler playlist with local audio on the Netlify host.
+ * Flip to false when Blake sends the real Spotify playlist URL.
+ */
+const USE_FILLER_PLAYLIST = true
+const FILLER_TRACKS = [
+    {
+        id: "4sebUbjqbcgDSwG6PbSGI0",
+        spotifyUrl: "https://open.spotify.com/track/4sebUbjqbcgDSwG6PbSGI0",
+        audioPath: "/audio/track-a.mp3",
+    },
+    {
+        id: "6gSKswfcoWvaadqvuMF3Y7",
+        spotifyUrl: "https://open.spotify.com/track/6gSKswfcoWvaadqvuMF3Y7",
+        audioPath: "/audio/track-b.mp3",
+    },
+    {
+        id: "4iEOVEULZRvmzYSZY2ViKN",
+        spotifyUrl: "https://open.spotify.com/track/4iEOVEULZRvmzYSZY2ViKN",
+        audioPath: "/audio/man-of-the-year.mp3",
+    },
+    {
+        id: "0Fe3WxeO6lZZxj7ytvbDUh",
+        spotifyUrl: "https://open.spotify.com/track/0Fe3WxeO6lZZxj7ytvbDUh",
+        audioPath: "/audio/track-a.mp3",
+    },
+    {
+        id: "3AJwUDP919kvQ9QcozQPxg",
+        spotifyUrl: "https://open.spotify.com/track/3AJwUDP919kvQ9QcozQPxg",
+        audioPath: "/audio/track-b.mp3",
+    },
+    {
+        id: "0VjIjW4GlUZAMYd2vXMi3b",
+        spotifyUrl: "https://open.spotify.com/track/0VjIjW4GlUZAMYd2vXMi3b",
+        audioPath: "/audio/man-of-the-year.mp3",
+    },
+] as const
+
+async function fetchRemotePlaylistTracks(base: string, playlistUrl: string) {
+    const response = await fetch(
+        `${base}/api/spotify/playlist?url=${encodeURIComponent(playlistUrl)}`,
+    )
+    if (!response.ok) throw new Error("playlist failed")
+    const data = (await response.json()) as {
+        tracks: { id: string; spotifyUrl: string }[]
+    }
+    return data.tracks.map((track) => ({
+        id: track.id,
+        spotifyUrl: track.spotifyUrl,
+        metadata: null,
+        metadataStatus: "idle" as const,
+    }))
+}
+
 const emptyState = (): PlayerState => ({
     tracks: [],
     queue: [],
@@ -215,7 +269,7 @@ function readPrefs() {
 
 const actions = {
     async init(props: Props) {
-        const key = `${props.apiBaseUrl}|${props.playlistUrl}|${props.surpriseAfter}`
+        const key = `${props.apiBaseUrl}|${props.playlistUrl}|${props.surpriseAfter}|filler:${USE_FILLER_PLAYLIST}`
         if (initializedKey === key && state.tracks.length > 0) return
         initializedKey = key
 
@@ -236,22 +290,18 @@ const actions = {
             ready: false,
         })
 
-        try {
-            const base = props.apiBaseUrl.replace(/\/$/, "")
-            const response = await fetch(
-                `${base}/api/spotify/playlist?url=${encodeURIComponent(props.playlistUrl)}`,
-            )
-            if (!response.ok) throw new Error("playlist failed")
-            const data = (await response.json()) as {
-                tracks: { id: string; spotifyUrl: string }[]
-            }
+        const base = props.apiBaseUrl.replace(/\/$/, "")
 
-            const tracks = data.tracks.map((track) => ({
-                id: track.id,
-                spotifyUrl: track.spotifyUrl,
-                metadata: null,
-                metadataStatus: "idle" as const,
-            }))
+        try {
+            const tracks = USE_FILLER_PLAYLIST
+                ? FILLER_TRACKS.map((entry) => ({
+                      id: entry.id,
+                      spotifyUrl: entry.spotifyUrl,
+                      audioSrc: `${base}${entry.audioPath}`,
+                      metadata: null,
+                      metadataStatus: "idle" as const,
+                  }))
+                : await fetchRemotePlaylistTracks(base, props.playlistUrl)
 
             const surprise: ResolvedTrack = {
                 id: RICKROLL_ID,
@@ -272,7 +322,13 @@ const actions = {
             loadCurrent(false)
             await actions.ensureNearbyMetadata(base)
         } catch {
-            const base = props.apiBaseUrl.replace(/\/$/, "")
+            const tracks = FILLER_TRACKS.map((entry) => ({
+                id: entry.id,
+                spotifyUrl: entry.spotifyUrl,
+                audioSrc: `${base}${entry.audioPath}`,
+                metadata: null,
+                metadataStatus: "idle" as const,
+            }))
             const surprise: ResolvedTrack = {
                 id: RICKROLL_ID,
                 spotifyUrl: props.surpriseTrackUrl,
@@ -280,12 +336,13 @@ const actions = {
                 metadata: null,
                 metadataStatus: "idle",
             }
+            const ordered = buildOrder(tracks, surprise, Math.max(1, props.surpriseAfter || 4))
             setState({
-                tracks: [surprise],
-                queue: [0],
+                tracks: ordered,
+                queue: ordered.map((_, index) => index),
                 queueIndex: 0,
                 ready: true,
-                hasAudio: true,
+                hasAudio: Boolean(playableSrc(ordered[0])),
             })
             loadCurrent(false)
             await actions.ensureNearbyMetadata(base)

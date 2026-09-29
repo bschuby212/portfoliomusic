@@ -13,6 +13,7 @@ type SpotifyToken = {
 type SpotifyTrack = {
   name: string;
   duration_ms: number;
+  preview_url?: string | null;
   artists?: { name: string }[];
   album?: { images?: { url: string }[] };
   external_urls?: { spotify?: string };
@@ -93,7 +94,7 @@ async function fetchFromWebApi(trackId: string, spotifyUrl: string): Promise<Tra
     artworkUrl: track.album?.images?.[0]?.url ?? null,
     durationMs: track.duration_ms ?? null,
     spotifyUrl: track.external_urls?.spotify ?? spotifyUrl,
-    previewUrl: null,
+    previewUrl: track.preview_url ?? null,
   };
 }
 
@@ -141,36 +142,45 @@ async function fetchArtistFromPage(spotifyUrl: string): Promise<string | null> {
 
 async function fetchDeezerPreview(title: string, artist: string | null): Promise<string | null> {
   try {
-    const query = artist
-      ? `artist:"${artist}" track:"${title}"`
-      : `track:"${title}"`;
-    const endpoint = `https://api.deezer.com/search/track?q=${encodeURIComponent(query)}&limit=8`;
-    const response = await fetch(endpoint, { next: { revalidate: 3600 } });
-    if (!response.ok) return null;
-    const data = (await response.json()) as DeezerSearchResult;
-    const results = data.data ?? [];
-    if (results.length === 0) return null;
+    // Plain text search matches more reliably than quoted artist:/track: filters.
+    const queries = [
+      artist ? `${artist} ${title}` : title,
+      title,
+    ].filter((value, index, all) => value && all.indexOf(value) === index);
 
-    const normalizedTitle = normalize(title);
-    const normalizedArtist = artist ? normalize(artist) : "";
+    for (const query of queries) {
+      const endpoint = `https://api.deezer.com/search/track?q=${encodeURIComponent(query)}&limit=8`;
+      const response = await fetch(endpoint, { next: { revalidate: 3600 } });
+      if (!response.ok) continue;
+      const data = (await response.json()) as DeezerSearchResult;
+      const results = data.data ?? [];
+      if (results.length === 0) continue;
 
-    const exact = results.find((item) => {
-      const itemTitle = normalize(item.title ?? "");
-      const itemArtist = normalize(item.artist?.name ?? "");
-      const titleMatch = itemTitle === normalizedTitle;
-      const artistMatch =
-        !normalizedArtist ||
-        itemArtist.includes(normalizedArtist) ||
-        normalizedArtist.includes(itemArtist);
-      return titleMatch && artistMatch && item.preview;
-    });
+      const normalizedTitle = normalize(title);
+      const normalizedArtist = artist ? normalize(artist) : "";
 
-    if (exact?.preview) return exact.preview;
+      const exact = results.find((item) => {
+        const itemTitle = normalize(item.title ?? "");
+        const itemArtist = normalize(item.artist?.name ?? "");
+        const titleMatch = itemTitle === normalizedTitle;
+        const artistMatch =
+          !normalizedArtist ||
+          itemArtist.includes(normalizedArtist) ||
+          normalizedArtist.includes(itemArtist);
+        return titleMatch && artistMatch && item.preview;
+      });
 
-    const titleOnly = results.find(
-      (item) => normalize(item.title ?? "") === normalizedTitle && item.preview,
-    );
-    return titleOnly?.preview ?? results[0]?.preview ?? null;
+      if (exact?.preview) return exact.preview;
+
+      const titleOnly = results.find(
+        (item) => normalize(item.title ?? "") === normalizedTitle && item.preview,
+      );
+      if (titleOnly?.preview) return titleOnly.preview;
+
+      if (results[0]?.preview) return results[0].preview;
+    }
+
+    return null;
   } catch {
     return null;
   }
