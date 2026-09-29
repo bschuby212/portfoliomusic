@@ -1,7 +1,7 @@
 /**
  * Blake Nav Bar — Framer Code Component
  *
- * Glass pill nav: About · Work · avatar(home) · music player · LinkedIn · Email · Resume
+ * Glass pills: [avatar · About · Work · LinkedIn · Email · Resume] + right music pill
  *
  * Setup:
  * 1. Deploy this repo to Netlify
@@ -661,20 +661,22 @@ function BlakeNavBar(props: Props) {
             <style>{css}</style>
             <div className="bn-root">
                 <nav className="bn" aria-label="Blake Schubert primary">
-                    <a className="bn-link" href={props.aboutUrl}>
-                        About
-                    </a>
-                    <a className="bn-link" href={props.workUrl}>
-                        Work
-                    </a>
                     <a
                         className="bn-avatar"
                         href={props.homeUrl}
                         aria-label="Home"
                         title="Home"
                     >
-                        {props.brandInitials || "BS"}
+                        <span className="bn-avatar-mark">{props.brandInitials || "BS"}</span>
                     </a>
+                    <div className="bn-links">
+                        <a className="bn-link" href={props.aboutUrl}>
+                            About
+                        </a>
+                        <a className="bn-link" href={props.workUrl}>
+                            Work
+                        </a>
+                    </div>
                     <span className="bn-divider" aria-hidden="true" />
                     <div className="bn-actions">
                         <a
@@ -941,42 +943,56 @@ export default BlakeNavBar
 
 const css = `
 .bn-root {
-  position: fixed; inset: .9rem 1rem auto 1rem; z-index: 9999;
-  display: flex; align-items: flex-start; justify-content: space-between; gap: .75rem;
+  position: fixed; inset: .95rem 1.1rem auto 1.1rem; z-index: 9999;
+  display: flex; align-items: flex-start; justify-content: space-between; gap: .85rem;
   pointer-events: none;
   font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif;
 }
-.bn, .bn-music { --ink: #141414; --muted: #5c5c5c; --ease: cubic-bezier(.32,.72,0,1); }
+.bn, .bn-music { --ink: #0f0f0f; --muted: #6a6a6a; --ease: cubic-bezier(.32,.72,0,1); }
 .bn {
   pointer-events: auto; position: relative;
-  display: flex; align-items: center; gap: .2rem;
-  min-height: 3.25rem; padding: .35rem .4rem;
+  display: flex; align-items: center; gap: .35rem;
+  min-height: 3.4rem; padding: .32rem .38rem .32rem .32rem;
   color: var(--ink);
-  background: rgba(255,255,255,.72);
-  border: 1px solid rgba(255,255,255,.55);
+  background: rgba(255,255,255,.58);
+  border: 1px solid rgba(255,255,255,.62);
   border-radius: 999px;
-  box-shadow: 0 1px 0 rgba(255,255,255,.65) inset, 0 1px 2px rgba(0,0,0,.04), 0 12px 32px rgba(0,0,0,.08);
-  backdrop-filter: blur(22px) saturate(165%);
-  -webkit-backdrop-filter: blur(22px) saturate(165%);
-  max-width: min(36rem, calc(100vw - 10rem));
+  box-shadow: 0 1px 0 rgba(255,255,255,.72) inset, 0 0 0 .5px rgba(0,0,0,.04), 0 10px 28px rgba(0,0,0,.07);
+  backdrop-filter: blur(28px) saturate(180%);
+  -webkit-backdrop-filter: blur(28px) saturate(180%);
+  max-width: min(38rem, calc(100vw - 10.5rem));
 }
 .bn-music { pointer-events: auto; display: flex; justify-content: flex-end; flex-shrink: 0; }
+.bn-links { display: flex; align-items: center; gap: .12rem; margin-left: .15rem; }
 .bn-link, .bn-icon-btn {
   display: inline-flex; align-items: center; justify-content: center;
-  min-height: 2.5rem; padding: 0 .9rem; border: 0; border-radius: 999px;
+  min-height: 2.45rem; padding: 0 .95rem; border: 0; border-radius: 999px;
   background: transparent; color: var(--muted); font: inherit; font-size: .875rem;
-  font-weight: 550; letter-spacing: -.01em; text-decoration: none; cursor: pointer;
+  font-weight: 560; letter-spacing: -.015em; text-decoration: none; cursor: pointer;
+  transition: background .22s ease, color .22s ease, box-shadow .22s ease;
 }
-.bn-link:hover, .bn-icon-btn:hover { background: rgba(0,0,0,.05); color: var(--ink); }
-.bn-icon-btn { width: 2.5rem; padding: 0; color: var(--ink); font-size: .72rem; font-weight: 650; }
+.bn-link:hover, .bn-icon-btn:hover { background: rgba(0,0,0,.045); color: var(--ink); }
+.bn-link[aria-current="page"], .bn-link[data-active="true"] {
+  color: var(--ink); background: rgba(255,255,255,.72);
+  box-shadow: 0 1px 0 rgba(255,255,255,.9) inset, 0 1px 3px rgba(0,0,0,.06);
+}
+.bn-icon-btn { width: 2.45rem; padding: 0; color: rgba(15,15,15,.55); font-size: .72rem; font-weight: 650; }
+.bn-icon-btn:hover { color: var(--ink); background: rgba(0,0,0,.055); }
 .bn-avatar {
-  display: inline-flex; align-items: center; justify-content: center;
-  width: 2.35rem; height: 2.35rem; margin: 0 .2rem; border-radius: 50%;
-  background: linear-gradient(160deg, #2a2a2a 0%, #111 70%);
-  color: #fff; font-size: .7rem; font-weight: 650; text-decoration: none;
+  position: relative; display: inline-flex; align-items: center; justify-content: center;
+  width: 2.7rem; height: 2.7rem; flex-shrink: 0; border-radius: 50%;
+  background: linear-gradient(155deg, #2c2c2c 0%, #0d0d0d 72%);
+  color: #fff; text-decoration: none;
+  box-shadow: 0 0 0 1px rgba(255,255,255,.18) inset, 0 0 0 1.5px rgba(255,255,255,.55), 0 0 0 2.5px rgba(0,0,0,.04);
+  transition: transform .28s var(--ease), box-shadow .28s ease;
 }
-.bn-divider { width: 1px; height: 1.15rem; margin: 0 .25rem; background: rgba(0,0,0,.1); }
-.bn-actions { display: flex; align-items: center; gap: .1rem; }
+.bn-avatar-mark { font-size: .72rem; font-weight: 680; letter-spacing: .03em; }
+.bn-avatar:hover {
+  transform: scale(1.06);
+  box-shadow: 0 0 0 1px rgba(255,255,255,.28) inset, 0 0 0 1.5px rgba(255,255,255,.75), 0 0 0 3px rgba(0,0,0,.05), 0 8px 20px rgba(0,0,0,.16);
+}
+.bn-divider { width: 1px; height: 1.05rem; margin: 0 .35rem; background: rgba(0,0,0,.1); }
+.bn-actions { display: flex; align-items: center; gap: .05rem; margin-right: .05rem; }
 .bn-toast {
   position: absolute; top: calc(100% + .55rem); left: 50%; transform: translateX(-50%);
   padding: .45rem .75rem; border-radius: 999px; background: #141414; color: #fff;
@@ -986,19 +1002,19 @@ const css = `
 .bmp {
   position: relative;
   z-index: 2;
-  width: 7.75rem;
-  min-height: 3.25rem;
+  width: 7.9rem;
+  min-height: 3.4rem;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  color: #141414;
-  background: rgba(255,255,255,.72);
-  border: 1px solid rgba(255,255,255,.55);
+  color: #0f0f0f;
+  background: rgba(255,255,255,.58);
+  border: 1px solid rgba(255,255,255,.62);
   border-radius: 999px;
   overflow: hidden;
-  box-shadow: 0 1px 0 rgba(255,255,255,.65) inset, 0 1px 2px rgba(0,0,0,.04), 0 12px 32px rgba(0,0,0,.08);
-  backdrop-filter: blur(22px) saturate(165%);
-  -webkit-backdrop-filter: blur(22px) saturate(165%);
+  box-shadow: 0 1px 0 rgba(255,255,255,.72) inset, 0 0 0 .5px rgba(0,0,0,.04), 0 10px 28px rgba(0,0,0,.07);
+  backdrop-filter: blur(28px) saturate(180%);
+  -webkit-backdrop-filter: blur(28px) saturate(180%);
   transform-origin: top right;
   transition:
     width .42s var(--ease),
@@ -1009,9 +1025,17 @@ const css = `
 }
 .bmp[data-embedded="true"][data-expanded="true"] {
   width: min(21.25rem, calc(100vw - 2rem));
-  border-radius: 1.25rem;
-  background: rgba(255,255,255,.86);
-  box-shadow: 0 1px 0 rgba(255,255,255,.65) inset, 0 1px 2px rgba(0,0,0,.04), 0 18px 44px rgba(0,0,0,.12);
+  border-radius: 1.3rem;
+  background: rgba(255,255,255,.78);
+  box-shadow: 0 1px 0 rgba(255,255,255,.75) inset, 0 0 0 .5px rgba(0,0,0,.04), 0 18px 44px rgba(0,0,0,.11);
+}
+.bmp[data-playing="true"] .bmp-disc {
+  animation: bmp-disc-live 1.8s ease-out infinite;
+}
+@keyframes bmp-disc-live {
+  0% { box-shadow: inset 0 0 0 1px rgba(0,0,0,.06), 0 0 0 0 rgba(15,15,15,.16); }
+  70% { box-shadow: inset 0 0 0 1px rgba(0,0,0,.06), 0 0 0 6px rgba(15,15,15,0); }
+  100% { box-shadow: inset 0 0 0 1px rgba(0,0,0,.06), 0 0 0 0 rgba(15,15,15,0); }
 }
 .bmp-collapsed {
   display: flex;
@@ -1069,7 +1093,11 @@ const css = `
 }
 .bmp[data-expanded="true"][data-playing="true"] .bmp-art::after { opacity: 1; }
 @media (prefers-reduced-motion: reduce) {
-  .bmp-disc img, .bmp-disc-fallback, .bmp-art img, .bmp-art-fallback, .bmp-collapsed-play {
+  .bn-avatar, .bn-link, .bn-icon-btn, .bmp {
+    transition: none !important;
+  }
+  .bn-avatar:hover { transform: none; }
+  .bmp-disc, .bmp-disc img, .bmp-disc-fallback, .bmp-art img, .bmp-art-fallback, .bmp-collapsed-play {
     animation: none !important;
   }
 }

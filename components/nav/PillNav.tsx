@@ -63,25 +63,28 @@ export function PillNav({ current }: PillNavProps) {
   return (
     <div className="pn-root">
       <nav className="pn" aria-label={`${NAV_BRAND} primary`}>
-        {NAV_LINKS.map((link) => (
-          <Link
-            key={link.href}
-            href={link.href}
-            className="pn-link"
-            data-active={active === link.href}
-          >
-            {link.label}
-          </Link>
-        ))}
-
         <Link
           href="/"
           className="pn-avatar"
           aria-label={`${NAV_BRAND} home`}
           title="Home"
+          data-home={active === "/"}
         >
-          BS
+          <span className="pn-avatar-mark">BS</span>
         </Link>
+
+        <div className="pn-links">
+          {NAV_LINKS.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              className="pn-link"
+              data-active={active === link.href || active.startsWith(`${link.href}/`)}
+            >
+              {link.label}
+            </Link>
+          ))}
+        </div>
 
         <span className="pn-divider" aria-hidden="true" />
 
