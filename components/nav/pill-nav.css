@@ -76,8 +76,21 @@
   margin-left: 0.15rem;
 }
 
+.pn-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 .pn-link,
 .pn-icon-btn {
+  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -95,6 +108,7 @@
   line-height: 1;
   text-decoration: none;
   cursor: pointer;
+  overflow: hidden;
   transition:
     background 0.22s ease,
     color 0.22s ease,
@@ -128,6 +142,48 @@
   outline-offset: 2px;
 }
 
+.pn-slot {
+  display: inline-flex;
+  align-items: center;
+  height: 1.05em;
+  white-space: nowrap;
+}
+
+.pn-slot-char {
+  display: inline-block;
+  height: 1.05em;
+  overflow: hidden;
+  vertical-align: top;
+  line-height: 1.05em;
+}
+
+.pn-slot-reel {
+  display: flex;
+  flex-direction: column;
+  will-change: transform;
+  transform: translate3d(0, 0, 0);
+  transition: transform 0.58s var(--pn-ease);
+  transition-delay: calc(var(--i, 0) * 34ms);
+}
+
+.pn-slot-glyph {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 1.05em;
+  line-height: 1.05em;
+}
+
+.pn-link:hover .pn-slot-reel,
+.pn-link:focus-visible .pn-slot-reel {
+  transform: translate3d(0, -75%, 0);
+}
+
+.pn-link:not(:hover):not(:focus-visible) .pn-slot-reel {
+  transition-duration: 0.32s;
+  transition-delay: calc(var(--i, 0) * 14ms);
+}
+
 .pn-icon-btn {
   width: 2.45rem;
   padding: 0;
@@ -137,6 +193,42 @@
 .pn-icon-btn:hover {
   color: var(--pn-ink);
   background: rgba(0, 0, 0, 0.055);
+}
+
+.pn-icon-slot {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.15rem;
+  height: 1.15rem;
+  overflow: hidden;
+}
+
+.pn-icon-reel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  will-change: transform;
+  transform: translate3d(0, 0, 0);
+  transition: transform 0.48s var(--pn-ease);
+}
+
+.pn-icon-face {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.15rem;
+  height: 1.15rem;
+  flex-shrink: 0;
+}
+
+.pn-icon-btn:hover .pn-icon-reel,
+.pn-icon-btn:focus-visible .pn-icon-reel {
+  transform: translate3d(0, -50%, 0);
+}
+
+.pn-icon-btn:not(:hover):not(:focus-visible) .pn-icon-reel {
+  transition-duration: 0.28s;
 }
 
 .pn-avatar {
@@ -233,11 +325,20 @@
   .pn-link,
   .pn-icon-btn,
   .pn-avatar,
-  .pn-toast {
+  .pn-toast,
+  .pn-slot-reel,
+  .pn-icon-reel {
     transition: none !important;
   }
 
   .pn-avatar:hover {
+    transform: none;
+  }
+
+  .pn-link:hover .pn-slot-reel,
+  .pn-link:focus-visible .pn-slot-reel,
+  .pn-icon-btn:hover .pn-icon-reel,
+  .pn-icon-btn:focus-visible .pn-icon-reel {
     transform: none;
   }
 }

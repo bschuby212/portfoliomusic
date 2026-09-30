@@ -593,6 +593,48 @@ function rangeFill(percent: number): CSSProperties {
     }
 }
 
+const REEL_GLYPHS = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz"
+
+function reelForChar(char: string, index: number): string[] {
+    if (char === " ") return ["\u00A0", "\u00A0", "\u00A0", "\u00A0"]
+    const a = REEL_GLYPHS[(index * 7 + char.charCodeAt(0)) % REEL_GLYPHS.length]
+    const b = REEL_GLYPHS[(index * 13 + 11) % REEL_GLYPHS.length]
+    return [char, a, b, char]
+}
+
+function SlotText({ text }: { text: string }) {
+    return (
+        <span className="bn-slot" aria-hidden="true">
+            {Array.from(text).map((char, index) => (
+                <span
+                    key={`${char}-${index}`}
+                    className="bn-slot-char"
+                    style={{ "--i": index } as CSSProperties}
+                >
+                    <span className="bn-slot-reel">
+                        {reelForChar(char, index).map((glyph, glyphIndex) => (
+                            <span key={`${glyph}-${glyphIndex}`} className="bn-slot-glyph">
+                                {glyph}
+                            </span>
+                        ))}
+                    </span>
+                </span>
+            ))}
+        </span>
+    )
+}
+
+function SlotIcon({ label }: { label: string }) {
+    return (
+        <span className="bn-icon-slot" aria-hidden="true">
+            <span className="bn-icon-reel">
+                <span className="bn-icon-face">{label}</span>
+                <span className="bn-icon-face">{label}</span>
+            </span>
+        </span>
+    )
+}
+
 /**
  * @framerSupportedLayoutWidth any
  * @framerSupportedLayoutHeight any
@@ -673,13 +715,16 @@ function BlakeNavBar(props: Props) {
                     </a>
                     <div className="bn-links">
                         <a className="bn-link" href={props.aboutUrl}>
-                            About
+                            <span className="bn-sr">About</span>
+                            <SlotText text="About" />
                         </a>
                         <a className="bn-link" href={props.workUrl}>
-                            Work
+                            <span className="bn-sr">Work</span>
+                            <SlotText text="Work" />
                         </a>
                         <a className="bn-link" href={props.lookingUrl}>
-                            Why I&apos;m looking
+                            <span className="bn-sr">Why I&apos;m looking</span>
+                            <SlotText text="Why I'm looking" />
                         </a>
                     </div>
                     <span className="bn-divider" aria-hidden="true" />
@@ -691,7 +736,7 @@ function BlakeNavBar(props: Props) {
                             rel="noreferrer"
                             aria-label="Open LinkedIn profile"
                         >
-                            in
+                            <SlotIcon label="in" />
                         </a>
                         <button
                             type="button"
@@ -701,7 +746,7 @@ function BlakeNavBar(props: Props) {
                                 void copyEmail()
                             }}
                         >
-                            @
+                            <SlotIcon label="@" />
                         </button>
                         <a
                             className="bn-icon-btn"
@@ -709,7 +754,7 @@ function BlakeNavBar(props: Props) {
                             download
                             aria-label="Download resume"
                         >
-                            CV
+                            <SlotIcon label="CV" />
                         </a>
                     </div>
                     <div className="bn-toast" data-open={Boolean(toast)} role="status" aria-live="polite">
@@ -996,12 +1041,18 @@ const css = `
 }
 .bn-music { pointer-events: auto; display: flex; justify-content: flex-start; flex-shrink: 0; max-width: 100%; }
 .bn-links { display: flex; align-items: center; gap: .12rem; margin-left: .15rem; min-width: 0; }
+.bn-sr {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+}
 .bn-link, .bn-icon-btn {
+  position: relative;
   display: inline-flex; align-items: center; justify-content: center;
   min-height: 2.45rem; padding: 0 .95rem; border: 0; border-radius: 999px;
   background: transparent; color: var(--muted); font: inherit; font-size: .875rem;
   font-weight: 560; letter-spacing: -.015em; text-decoration: none; cursor: pointer;
-  transition: background .22s ease, color .22s ease, box-shadow .22s ease;
+  overflow: hidden;
+  transition: background .22s ease, color .22s ease, box-shadow .22s ease, transform .18s var(--ease);
   white-space: nowrap;
 }
 .bn-link:hover, .bn-icon-btn:hover { background: rgba(0,0,0,.045); color: var(--ink); }
@@ -1009,8 +1060,37 @@ const css = `
   color: var(--ink); background: rgba(255,255,255,.72);
   box-shadow: 0 1px 0 rgba(255,255,255,.9) inset, 0 1px 3px rgba(0,0,0,.06);
 }
+.bn-slot { display: inline-flex; align-items: center; height: 1.05em; white-space: nowrap; }
+.bn-slot-char { display: inline-block; height: 1.05em; overflow: hidden; vertical-align: top; line-height: 1.05em; }
+.bn-slot-reel {
+  display: flex; flex-direction: column; will-change: transform;
+  transform: translate3d(0,0,0);
+  transition: transform .58s var(--ease);
+  transition-delay: calc(var(--i, 0) * 34ms);
+}
+.bn-slot-glyph { display: flex; align-items: center; justify-content: center; height: 1.05em; line-height: 1.05em; }
+.bn-link:hover .bn-slot-reel, .bn-link:focus-visible .bn-slot-reel { transform: translate3d(0,-75%,0); }
+.bn-link:not(:hover):not(:focus-visible) .bn-slot-reel {
+  transition-duration: .32s;
+  transition-delay: calc(var(--i, 0) * 14ms);
+}
 .bn-icon-btn { width: 2.45rem; padding: 0; color: rgba(15,15,15,.55); font-size: .72rem; font-weight: 650; }
 .bn-icon-btn:hover { color: var(--ink); background: rgba(0,0,0,.055); }
+.bn-icon-slot {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 1.25rem; height: 1.15rem; overflow: hidden;
+}
+.bn-icon-reel {
+  display: flex; flex-direction: column; align-items: center;
+  will-change: transform; transform: translate3d(0,0,0);
+  transition: transform .48s var(--ease);
+}
+.bn-icon-face {
+  display: flex; align-items: center; justify-content: center;
+  width: 1.25rem; height: 1.15rem; flex-shrink: 0;
+}
+.bn-icon-btn:hover .bn-icon-reel, .bn-icon-btn:focus-visible .bn-icon-reel { transform: translate3d(0,-50%,0); }
+.bn-icon-btn:not(:hover):not(:focus-visible) .bn-icon-reel { transition-duration: .28s; }
 .bn-avatar {
   position: relative; display: inline-flex; align-items: center; justify-content: center;
   width: 2.7rem; height: 2.7rem; flex-shrink: 0; border-radius: 50%;
@@ -1127,10 +1207,14 @@ const css = `
 }
 .bmp[data-expanded="true"][data-playing="true"] .bmp-art::after { opacity: 1; }
 @media (prefers-reduced-motion: reduce) {
-  .bn-avatar, .bn-link, .bn-icon-btn, .bmp {
+  .bn-avatar, .bn-link, .bn-icon-btn, .bmp, .bn-slot-reel, .bn-icon-reel {
     transition: none !important;
   }
   .bn-avatar:hover { transform: none; }
+  .bn-link:hover .bn-slot-reel, .bn-link:focus-visible .bn-slot-reel,
+  .bn-icon-btn:hover .bn-icon-reel, .bn-icon-btn:focus-visible .bn-icon-reel {
+    transform: none;
+  }
   .bmp-disc, .bmp-disc img, .bmp-disc-fallback, .bmp-art img, .bmp-art-fallback, .bmp-collapsed-play {
     animation: none !important;
   }

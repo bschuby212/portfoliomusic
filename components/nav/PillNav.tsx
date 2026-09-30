@@ -3,7 +3,7 @@
 import { FileDown, Mail } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, type CSSProperties, type ReactNode } from "react";
 import { MusicPlayer } from "@/components/music-player/MusicPlayer";
 import { usePlayerStore } from "@/components/music-player/store";
 import {
@@ -15,11 +15,55 @@ import {
 } from "./nav-config";
 import "./pill-nav.css";
 
+const REEL_GLYPHS = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz";
+
 function LinkedInIcon() {
   return (
     <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
       <path d="M4.98 3.5C4.98 4.88 3.88 6 2.5 6S0 4.88 0 3.5 1.12 1 2.5 1s2.48 1.12 2.48 2.5zM.5 8.5h4V23h-4V8.5zM8.5 8.5h3.8v2h.05c.53-1 1.84-2.05 3.8-2.05 4.06 0 4.8 2.67 4.8 6.15V23h-4v-6.6c0-1.57-.03-3.6-2.2-3.6-2.2 0-2.54 1.72-2.54 3.5V23h-4V8.5z" />
     </svg>
+  );
+}
+
+function reelForChar(char: string, index: number): string[] {
+  if (char === " ") {
+    return ["\u00A0", "\u00A0", "\u00A0", "\u00A0"];
+  }
+  const a = REEL_GLYPHS[(index * 7 + char.charCodeAt(0)) % REEL_GLYPHS.length];
+  const b = REEL_GLYPHS[(index * 13 + 11) % REEL_GLYPHS.length];
+  return [char, a, b, char];
+}
+
+function SlotText({ text }: { text: string }) {
+  return (
+    <span className="pn-slot" aria-hidden="true">
+      {Array.from(text).map((char, index) => (
+        <span
+          key={`${char}-${index}`}
+          className="pn-slot-char"
+          style={{ "--i": index } as CSSProperties}
+        >
+          <span className="pn-slot-reel">
+            {reelForChar(char, index).map((glyph, glyphIndex) => (
+              <span key={`${glyph}-${glyphIndex}`} className="pn-slot-glyph">
+                {glyph}
+              </span>
+            ))}
+          </span>
+        </span>
+      ))}
+    </span>
+  );
+}
+
+function SlotIcon({ children }: { children: ReactNode }) {
+  return (
+    <span className="pn-icon-slot" aria-hidden="true">
+      <span className="pn-icon-reel">
+        <span className="pn-icon-face">{children}</span>
+        <span className="pn-icon-face">{children}</span>
+      </span>
+    </span>
   );
 }
 
@@ -81,7 +125,8 @@ export function PillNav({ current }: PillNavProps) {
               className="pn-link"
               data-active={active === link.href || active.startsWith(`${link.href}/`)}
             >
-              {link.label}
+              <span className="pn-sr">{link.label}</span>
+              <SlotText text={link.label} />
             </Link>
           ))}
         </div>
@@ -96,7 +141,9 @@ export function PillNav({ current }: PillNavProps) {
             rel="noreferrer"
             aria-label="Open LinkedIn profile"
           >
-            <LinkedInIcon />
+            <SlotIcon>
+              <LinkedInIcon />
+            </SlotIcon>
           </a>
           <button
             type="button"
@@ -106,7 +153,9 @@ export function PillNav({ current }: PillNavProps) {
               void copyEmail();
             }}
           >
-            <Mail size={16} strokeWidth={2} />
+            <SlotIcon>
+              <Mail size={16} strokeWidth={2} />
+            </SlotIcon>
           </button>
           <a
             className="pn-icon-btn"
@@ -114,7 +163,9 @@ export function PillNav({ current }: PillNavProps) {
             download
             aria-label="Download resume"
           >
-            <FileDown size={16} strokeWidth={2} />
+            <SlotIcon>
+              <FileDown size={16} strokeWidth={2} />
+            </SlotIcon>
           </a>
         </div>
 
