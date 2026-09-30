@@ -7,6 +7,7 @@ import { useEffect, useState, type CSSProperties } from "react";
 import { MusicPlayer } from "@/components/music-player/MusicPlayer";
 import { usePlayerStore } from "@/components/music-player/store";
 import {
+  NAV_AVATAR_SRC,
   NAV_BRAND,
   NAV_EMAIL,
   NAV_LINKEDIN_URL,
@@ -103,7 +104,8 @@ export function PillNav({ current }: PillNavProps) {
           title="Home"
           data-home={active === "/"}
         >
-          <span className="pn-avatar-mark">BS</span>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img className="pn-avatar-img" src={NAV_AVATAR_SRC} alt="" width={43} height={43} />
         </Link>
 
         <div className="pn-links">

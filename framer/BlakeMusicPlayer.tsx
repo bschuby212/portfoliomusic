@@ -74,6 +74,7 @@ type Props = {
     email: string
     resumeUrl: string
     brandInitials: string
+    logoUrl: string
 }
 
 const STORAGE_KEY = "blake-framer-music-player"
@@ -708,7 +709,11 @@ function BlakeNavBar(props: Props) {
                         aria-label="Home"
                         title="Home"
                     >
-                        <span className="bn-avatar-mark">{props.brandInitials || "BS"}</span>
+                        {props.logoUrl ? (
+                            <img className="bn-avatar-img" src={props.logoUrl} alt="" />
+                        ) : (
+                            <span className="bn-avatar-mark">{props.brandInitials || "BS"}</span>
+                        )}
                     </a>
                     <div className="bn-links">
                         <a className="bn-link" href={props.aboutUrl}>
@@ -922,6 +927,7 @@ BlakeNavBar.defaultProps = {
     email: "hello@blakeschubert.com",
     resumeUrl: "https://blake-music-player.netlify.app/resume.pdf",
     brandInitials: "BS",
+    logoUrl: "https://blake-music-player.netlify.app/avatar.png",
 }
 
 addPropertyControls(BlakeNavBar, {
@@ -965,6 +971,11 @@ addPropertyControls(BlakeNavBar, {
         type: ControlType.String,
         title: "Avatar initials",
         defaultValue: "BS",
+    },
+    logoUrl: {
+        type: ControlType.String,
+        title: "Logo URL",
+        defaultValue: "https://blake-music-player.netlify.app/avatar.png",
     },
     playlistUrl: {
         type: ControlType.String,
@@ -1107,11 +1118,14 @@ const css = `
 }
 .bn-avatar {
   position: relative; display: inline-flex; align-items: center; justify-content: center;
-  width: 2.7rem; height: 2.7rem; flex-shrink: 0; border-radius: 50%;
-  background: linear-gradient(155deg, #2c2c2c 0%, #0d0d0d 72%);
-  color: #fff; text-decoration: none;
+  width: 2.7rem; height: 2.7rem; flex-shrink: 0; border-radius: 50%; overflow: hidden;
+  background: #e8e6e1; color: #fff; text-decoration: none;
   box-shadow: 0 0 0 1px rgba(255,255,255,.18) inset, 0 0 0 1.5px rgba(255,255,255,.55), 0 0 0 2.5px rgba(0,0,0,.04);
   transition: transform .28s var(--ease), box-shadow .28s ease;
+}
+.bn-avatar-img {
+  width: 100%; height: 100%; object-fit: cover; object-position: center 18%;
+  display: block; image-rendering: pixelated; image-rendering: crisp-edges;
 }
 .bn-avatar-mark { font-size: .72rem; font-weight: 680; letter-spacing: .03em; }
 .bn-avatar:hover {
