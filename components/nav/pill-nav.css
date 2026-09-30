@@ -195,40 +195,78 @@
   background: rgba(0, 0, 0, 0.055);
 }
 
-.pn-icon-slot {
+.pn-icon-face {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   width: 1.15rem;
   height: 1.15rem;
-  overflow: hidden;
-}
-
-.pn-icon-reel {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  transform-origin: center;
   will-change: transform;
-  transform: translate3d(0, 0, 0);
-  transition: transform 0.48s var(--pn-ease);
+  transition: transform 0.28s var(--pn-ease);
 }
 
-.pn-icon-face {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 1.15rem;
-  height: 1.15rem;
-  flex-shrink: 0;
+/* LinkedIn — snap tilt + pop */
+.pn-fx-spin:hover .pn-icon-face,
+.pn-fx-spin:focus-visible .pn-icon-face {
+  animation: pn-fx-spin 0.55s var(--pn-ease) both;
 }
 
-.pn-icon-btn:hover .pn-icon-reel,
-.pn-icon-btn:focus-visible .pn-icon-reel {
-  transform: translate3d(0, -50%, 0);
+@keyframes pn-fx-spin {
+  0% {
+    transform: rotate(0deg) scale(1);
+  }
+  35% {
+    transform: rotate(-22deg) scale(1.2);
+  }
+  70% {
+    transform: rotate(10deg) scale(1.06);
+  }
+  100% {
+    transform: rotate(0deg) scale(1.1);
+  }
 }
 
-.pn-icon-btn:not(:hover):not(:focus-visible) .pn-icon-reel {
-  transition-duration: 0.28s;
+/* Email — lifts off like a send */
+.pn-fx-lift:hover .pn-icon-face,
+.pn-fx-lift:focus-visible .pn-icon-face {
+  animation: pn-fx-lift 0.58s var(--pn-ease) both;
+}
+
+@keyframes pn-fx-lift {
+  0% {
+    transform: translateY(0) rotate(0deg);
+  }
+  30% {
+    transform: translateY(-6px) rotate(-8deg);
+  }
+  58% {
+    transform: translateY(-2px) rotate(5deg);
+  }
+  100% {
+    transform: translateY(-3px) rotate(0deg);
+  }
+}
+
+/* Resume — download tug downward */
+.pn-fx-nudge:hover .pn-icon-face,
+.pn-fx-nudge:focus-visible .pn-icon-face {
+  animation: pn-fx-nudge 0.52s var(--pn-ease) both;
+}
+
+@keyframes pn-fx-nudge {
+  0% {
+    transform: translateY(0) scale(1);
+  }
+  28% {
+    transform: translateY(5px) scale(0.94);
+  }
+  58% {
+    transform: translateY(-2px) scale(1.06);
+  }
+  100% {
+    transform: translateY(1px) scale(1.04);
+  }
 }
 
 .pn-avatar {
@@ -327,8 +365,9 @@
   .pn-avatar,
   .pn-toast,
   .pn-slot-reel,
-  .pn-icon-reel {
+  .pn-icon-face {
     transition: none !important;
+    animation: none !important;
   }
 
   .pn-avatar:hover {
@@ -336,9 +375,16 @@
   }
 
   .pn-link:hover .pn-slot-reel,
-  .pn-link:focus-visible .pn-slot-reel,
-  .pn-icon-btn:hover .pn-icon-reel,
-  .pn-icon-btn:focus-visible .pn-icon-reel {
+  .pn-link:focus-visible .pn-slot-reel {
+    transform: none;
+  }
+
+  .pn-fx-spin:hover .pn-icon-face,
+  .pn-fx-spin:focus-visible .pn-icon-face,
+  .pn-fx-lift:hover .pn-icon-face,
+  .pn-fx-lift:focus-visible .pn-icon-face,
+  .pn-fx-nudge:hover .pn-icon-face,
+  .pn-fx-nudge:focus-visible .pn-icon-face {
     transform: none;
   }
 }

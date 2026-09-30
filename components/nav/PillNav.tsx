@@ -3,7 +3,7 @@
 import { FileDown, Mail } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState, type CSSProperties, type ReactNode } from "react";
+import { useEffect, useState, type CSSProperties } from "react";
 import { MusicPlayer } from "@/components/music-player/MusicPlayer";
 import { usePlayerStore } from "@/components/music-player/store";
 import {
@@ -52,17 +52,6 @@ function SlotText({ text }: { text: string }) {
           </span>
         </span>
       ))}
-    </span>
-  );
-}
-
-function SlotIcon({ children }: { children: ReactNode }) {
-  return (
-    <span className="pn-icon-slot" aria-hidden="true">
-      <span className="pn-icon-reel">
-        <span className="pn-icon-face">{children}</span>
-        <span className="pn-icon-face">{children}</span>
-      </span>
     </span>
   );
 }
@@ -135,37 +124,37 @@ export function PillNav({ current }: PillNavProps) {
 
         <div className="pn-actions">
           <a
-            className="pn-icon-btn"
+            className="pn-icon-btn pn-fx-spin"
             href={NAV_LINKEDIN_URL}
             target="_blank"
             rel="noreferrer"
             aria-label="Open LinkedIn profile"
           >
-            <SlotIcon>
+            <span className="pn-icon-face" aria-hidden="true">
               <LinkedInIcon />
-            </SlotIcon>
+            </span>
           </a>
           <button
             type="button"
-            className="pn-icon-btn"
+            className="pn-icon-btn pn-fx-lift"
             aria-label={`Copy email ${NAV_EMAIL}`}
             onClick={() => {
               void copyEmail();
             }}
           >
-            <SlotIcon>
+            <span className="pn-icon-face" aria-hidden="true">
               <Mail size={16} strokeWidth={2} />
-            </SlotIcon>
+            </span>
           </button>
           <a
-            className="pn-icon-btn"
+            className="pn-icon-btn pn-fx-nudge"
             href={NAV_RESUME_HREF}
             download
             aria-label="Download resume"
           >
-            <SlotIcon>
+            <span className="pn-icon-face" aria-hidden="true">
               <FileDown size={16} strokeWidth={2} />
-            </SlotIcon>
+            </span>
           </a>
         </div>
 

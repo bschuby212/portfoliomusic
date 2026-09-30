@@ -626,11 +626,8 @@ function SlotText({ text }: { text: string }) {
 
 function SlotIcon({ label }: { label: string }) {
     return (
-        <span className="bn-icon-slot" aria-hidden="true">
-            <span className="bn-icon-reel">
-                <span className="bn-icon-face">{label}</span>
-                <span className="bn-icon-face">{label}</span>
-            </span>
+        <span className="bn-icon-face" aria-hidden="true">
+            {label}
         </span>
     )
 }
@@ -730,7 +727,7 @@ function BlakeNavBar(props: Props) {
                     <span className="bn-divider" aria-hidden="true" />
                     <div className="bn-actions">
                         <a
-                            className="bn-icon-btn"
+                            className="bn-icon-btn bn-fx-spin"
                             href={props.linkedinUrl}
                             target="_blank"
                             rel="noreferrer"
@@ -740,7 +737,7 @@ function BlakeNavBar(props: Props) {
                         </a>
                         <button
                             type="button"
-                            className="bn-icon-btn"
+                            className="bn-icon-btn bn-fx-lift"
                             aria-label={`Copy email ${props.email}`}
                             onClick={() => {
                                 void copyEmail()
@@ -749,7 +746,7 @@ function BlakeNavBar(props: Props) {
                             <SlotIcon label="@" />
                         </button>
                         <a
-                            className="bn-icon-btn"
+                            className="bn-icon-btn bn-fx-nudge"
                             href={props.resumeUrl}
                             download
                             aria-label="Download resume"
@@ -1076,21 +1073,38 @@ const css = `
 }
 .bn-icon-btn { width: 2.45rem; padding: 0; color: rgba(15,15,15,.55); font-size: .72rem; font-weight: 650; }
 .bn-icon-btn:hover { color: var(--ink); background: rgba(0,0,0,.055); }
-.bn-icon-slot {
-  display: inline-flex; align-items: center; justify-content: center;
-  width: 1.25rem; height: 1.15rem; overflow: hidden;
-}
-.bn-icon-reel {
-  display: flex; flex-direction: column; align-items: center;
-  will-change: transform; transform: translate3d(0,0,0);
-  transition: transform .48s var(--ease);
-}
 .bn-icon-face {
-  display: flex; align-items: center; justify-content: center;
-  width: 1.25rem; height: 1.15rem; flex-shrink: 0;
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 1.25rem; height: 1.15rem; transform-origin: center;
+  will-change: transform; transition: transform .28s var(--ease);
 }
-.bn-icon-btn:hover .bn-icon-reel, .bn-icon-btn:focus-visible .bn-icon-reel { transform: translate3d(0,-50%,0); }
-.bn-icon-btn:not(:hover):not(:focus-visible) .bn-icon-reel { transition-duration: .28s; }
+.bn-fx-spin:hover .bn-icon-face, .bn-fx-spin:focus-visible .bn-icon-face {
+  animation: bn-fx-spin .55s var(--ease) both;
+}
+@keyframes bn-fx-spin {
+  0% { transform: rotate(0deg) scale(1); }
+  35% { transform: rotate(-22deg) scale(1.2); }
+  70% { transform: rotate(10deg) scale(1.06); }
+  100% { transform: rotate(0deg) scale(1.1); }
+}
+.bn-fx-lift:hover .bn-icon-face, .bn-fx-lift:focus-visible .bn-icon-face {
+  animation: bn-fx-lift .58s var(--ease) both;
+}
+@keyframes bn-fx-lift {
+  0% { transform: translateY(0) rotate(0deg); }
+  30% { transform: translateY(-6px) rotate(-8deg); }
+  58% { transform: translateY(-2px) rotate(5deg); }
+  100% { transform: translateY(-3px) rotate(0deg); }
+}
+.bn-fx-nudge:hover .bn-icon-face, .bn-fx-nudge:focus-visible .bn-icon-face {
+  animation: bn-fx-nudge .52s var(--ease) both;
+}
+@keyframes bn-fx-nudge {
+  0% { transform: translateY(0) scale(1); }
+  28% { transform: translateY(5px) scale(.94); }
+  58% { transform: translateY(-2px) scale(1.06); }
+  100% { transform: translateY(1px) scale(1.04); }
+}
 .bn-avatar {
   position: relative; display: inline-flex; align-items: center; justify-content: center;
   width: 2.7rem; height: 2.7rem; flex-shrink: 0; border-radius: 50%;
@@ -1207,12 +1221,17 @@ const css = `
 }
 .bmp[data-expanded="true"][data-playing="true"] .bmp-art::after { opacity: 1; }
 @media (prefers-reduced-motion: reduce) {
-  .bn-avatar, .bn-link, .bn-icon-btn, .bmp, .bn-slot-reel, .bn-icon-reel {
+  .bn-avatar, .bn-link, .bn-icon-btn, .bmp, .bn-slot-reel, .bn-icon-face {
     transition: none !important;
+    animation: none !important;
   }
   .bn-avatar:hover { transform: none; }
-  .bn-link:hover .bn-slot-reel, .bn-link:focus-visible .bn-slot-reel,
-  .bn-icon-btn:hover .bn-icon-reel, .bn-icon-btn:focus-visible .bn-icon-reel {
+  .bn-link:hover .bn-slot-reel, .bn-link:focus-visible .bn-slot-reel {
+    transform: none;
+  }
+  .bn-fx-spin:hover .bn-icon-face, .bn-fx-spin:focus-visible .bn-icon-face,
+  .bn-fx-lift:hover .bn-icon-face, .bn-fx-lift:focus-visible .bn-icon-face,
+  .bn-fx-nudge:hover .bn-icon-face, .bn-fx-nudge:focus-visible .bn-icon-face {
     transform: none;
   }
   .bmp-disc, .bmp-disc img, .bmp-disc-fallback, .bmp-art img, .bmp-art-fallback, .bmp-collapsed-play {
