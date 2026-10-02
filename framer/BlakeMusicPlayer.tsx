@@ -1233,39 +1233,6 @@ const css = `
   font-size: .75rem; font-weight: 550; opacity: 0; pointer-events: none;
 }
 .bn-toast[data-open="true"] { opacity: 1; }
-.bmp {
-  position: relative;
-  z-index: 2;
-  width: 7.9rem;
-  min-height: 3.4rem;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  color: #0f0f0f;
-  background: linear-gradient(155deg, rgba(255,255,255,.42) 0%, rgba(255,255,255,.14) 55%, rgba(255,255,255,.22) 100%);
-  border: 1px solid rgba(255,255,255,.55);
-  border-radius: 999px;
-  overflow: hidden;
-  box-shadow: 0 1px 0 rgba(255,255,255,.75) inset, 0 -1px 0 rgba(255,255,255,.18) inset, 0 0 0 .5px rgba(0,0,0,.04), 0 10px 28px rgba(0,0,0,.06);
-  backdrop-filter: blur(40px) saturate(180%);
-  -webkit-backdrop-filter: blur(40px) saturate(180%);
-  transform-origin: top left;
-  isolation: isolate;
-  transition:
-    width .42s var(--ease),
-    min-height .42s var(--ease),
-    border-radius .42s var(--ease),
-    box-shadow .42s ease,
-    background .3s ease;
-}
-.bmp[data-embedded="true"][data-expanded="true"] {
-  width: min(21.25rem, 100%);
-  max-width: 100%;
-  border-radius: 1.3rem;
-  background: linear-gradient(160deg, rgba(255,255,255,.5) 0%, rgba(255,255,255,.22) 100%);
-  border-color: rgba(255,255,255,.58);
-  box-shadow: 0 1px 0 rgba(255,255,255,.72) inset, 0 -1px 0 rgba(255,255,255,.16) inset, 0 0 0 .5px rgba(0,0,0,.04), 0 16px 40px rgba(0,0,0,.08);
-}
 .bmp[data-playing="true"] .bmp-disc {
   animation: bmp-disc-live 1.8s ease-out infinite;
 }
