@@ -1,7 +1,7 @@
 /**
  * Blake Nav Bar — Framer Code Component
  *
- * Two glassmorphic pills centered in the Framer frame (no scroll):
+ * Two glassmorphic pills for Framer embed (fixed frame size, no scrollbars):
  * [avatar · About · Work · Why I'm looking · LinkedIn · Email · Resume] · music (16px gap, expands right/down)
  *
  * Setup:
@@ -9,7 +9,8 @@
  * 2. In Framer → Assets → Code → New Component
  * 3. Paste this entire file
  * 4. Set API Base URL + link/contact props
- * 5. Place once in a site-wide overlay / template (desktop); center frame or full-width
+ * 5. Place on a site-wide overlay; keep the component frame fixed (~720×56).
+ *    Overflow is visible so the expanded player can spill out — never enable scroll.
  */
 import { addPropertyControls, ControlType } from "framer"
 import {
@@ -638,10 +639,11 @@ function SlotIcon({ label }: { label: string }) {
 }
 
 /**
- * @framerSupportedLayoutWidth any
- * @framerSupportedLayoutHeight any
- * @framerIntrinsicWidth 100
- * @framerIntrinsicHeight 40
+ * Fixed embed chrome: collapsed pills only. Expanded player overflows visibly.
+ * @framerSupportedLayoutWidth fixed
+ * @framerSupportedLayoutHeight fixed
+ * @framerIntrinsicWidth 720
+ * @framerIntrinsicHeight 56
  */
 function BlakeNavBar(props: Props) {
     const player = usePlayer()
@@ -1013,33 +1015,50 @@ const css = `
 .bn-shell {
   position: relative;
   box-sizing: border-box;
-  width: 100%;
-  height: 100%;
+  width: 720px;
+  height: 56px;
+  max-width: 720px;
+  max-height: 56px;
+  min-width: 720px;
+  min-height: 56px;
   margin: 0;
   padding: 0;
-  overflow: hidden;
+  overflow: visible;
   overscroll-behavior: none;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
   pointer-events: none;
+  background: transparent;
   font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif;
-  background:
-    radial-gradient(ellipse 70% 48% at 18% -8%, rgba(186,204,220,.55), transparent 58%),
-    radial-gradient(ellipse 62% 42% at 88% 4%, rgba(220,200,186,.45), transparent 55%),
-    linear-gradient(180deg, #f3f2ee 0%, #ebeae5 100%);
+}
+.bn-shell::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
 }
 .bn-root {
   position: absolute;
   top: 0;
   left: 0;
-  right: 0;
   z-index: 1;
   display: flex;
   align-items: flex-start;
   justify-content: center;
   gap: 16px;
-  width: 100%;
-  max-width: 100%;
+  width: 720px;
+  height: 56px;
+  max-width: 720px;
+  max-height: 56px;
   overflow: visible;
+  overscroll-behavior: none;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
   pointer-events: none;
+}
+.bn-root::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
 }
 .bn, .bn-music { --ink: #0f0f0f; --muted: #6a6a6a; --ease: cubic-bezier(.32,.72,0,1); }
 .bn {
@@ -1053,12 +1072,21 @@ const css = `
   box-shadow: 0 1px 0 rgba(255,255,255,.75) inset, 0 -1px 0 rgba(255,255,255,.18) inset, 0 0 0 .5px rgba(0,0,0,.04), 0 10px 28px rgba(0,0,0,.06);
   backdrop-filter: blur(40px) saturate(180%);
   -webkit-backdrop-filter: blur(40px) saturate(180%);
-  flex-shrink: 1;
+  flex-shrink: 0;
   min-width: 0;
-  max-width: min(44rem, calc(100% - 8.9rem));
+  max-width: 560px;
   isolation: isolate;
+  overflow: visible;
 }
-.bn-music { pointer-events: auto; display: flex; justify-content: flex-start; flex-shrink: 0; max-width: 100%; }
+.bn-music {
+  pointer-events: auto;
+  position: relative;
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  flex-shrink: 0;
+  overflow: visible;
+}
 .bn-links { display: flex; align-items: center; gap: .12rem; margin-left: .15rem; min-width: 0; }
 .bn-sr {
   position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
