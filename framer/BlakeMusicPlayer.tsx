@@ -1,16 +1,17 @@
 /**
- * Blake Nav Bar — Framer Code Component
+ * Blake Nav Bar — Framer Code Component (paste / agent source of truth)
  *
- * Two glassmorphic pills for Framer embed (fixed frame size, no scrollbars):
- * [avatar · About · Work · Why I'm looking · LinkedIn · Email · Resume] · music (16px gap, expands right/down)
+ * Two glassmorphic pills (fixed 720×56 frame, overflow visible, no scrollbars):
+ * [avatar · About · Work · Why I'm looking · LinkedIn · Email · Resume] · music
  *
- * Setup (agent or manual):
- * 1. Deploy this repo to Netlify
- * 2. Prefer Framer External Agent / GitHub Link — see FRAMER.md + AGENT_PROMPT.md
- * 3. Or Framer → Assets → Code → New Component → paste this entire file
- * 4. Set API Base URL + link/contact props
- * 5. Place on a site-wide overlay; keep the component frame fixed (720×56).
- *    Overflow is visible so the expanded player can spill out — never enable scroll.
+ * Links (defaults):
+ *  - Avatar → https://blakeschubert.com/
+ *  - About → https://blakeschubert.com/about
+ *  - Work → https://blakeschubert.com/#all-campus  (Selected Work)
+ *  - Why I'm looking → https://blakeschubert.com/#why-im-looking
+ *
+ * Fastest install: give Framer External Agent this file + framer/GIVE_TO_FRAMER_AGENT.md
+ * Manual: Assets → Code → New Component → paste entire file → frame 720×56, Overflow Visible
  */
 import { addPropertyControls, ControlType } from "framer"
 import {

@@ -48,7 +48,7 @@ Confirm:
 
 ## Framer
 
-**Agent path (preferred):** see [`FRAMER.md`](FRAMER.md). Run `npx @framer/agent@latest setup`, connect with `/framer` + your project link, then send [`framer/AGENT_PROMPT.md`](framer/AGENT_PROMPT.md) so the agent creates the code file and places a fixed **720×56** / overflow-visible instance on the page.
+**Agent path (preferred):** see [`FRAMER.md`](FRAMER.md). Run `npx @framer/agent@latest setup`, connect with `/framer` + your project link, then paste [`framer/GIVE_TO_FRAMER_AGENT.md`](framer/GIVE_TO_FRAMER_AGENT.md) so the agent installs [`framer/BlakeMusicPlayer.tsx`](framer/BlakeMusicPlayer.tsx) as `BlakeNavBar` at **720×56** / overflow visible.
 
 **Manual paste:**
 
