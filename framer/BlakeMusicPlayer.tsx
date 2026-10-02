@@ -1,7 +1,7 @@
 /**
  * Blake Nav Bar — Framer Code Component
  *
- * Two glass pills pinned top-left in the Framer frame (no scroll):
+ * Two subtle glass pills centered in the Framer frame (no scroll):
  * [avatar · About · Work · Why I'm looking · LinkedIn · Email · Resume] · music (16px gap, expands right/down)
  *
  * Setup:
@@ -9,7 +9,7 @@
  * 2. In Framer → Assets → Code → New Component
  * 3. Paste this entire file
  * 4. Set API Base URL + link/contact props
- * 5. Place once in a site-wide overlay / template (desktop); pin frame top-left
+ * 5. Place once in a site-wide overlay / template (desktop); center frame or full-width
  */
 import { addPropertyControls, ControlType } from "framer"
 import {
@@ -1022,11 +1022,13 @@ const css = `
   position: absolute;
   top: 0;
   left: 0;
+  right: 0;
   z-index: 1;
   display: flex;
   align-items: flex-start;
-  justify-content: flex-start;
+  justify-content: center;
   gap: 16px;
+  width: 100%;
   max-width: 100%;
   overflow: visible;
   pointer-events: none;
@@ -1037,12 +1039,12 @@ const css = `
   display: flex; align-items: center; gap: .35rem;
   min-height: 3.4rem; padding: .32rem .38rem .32rem .32rem;
   color: var(--ink);
-  background: rgba(255,255,255,.58);
-  border: 1px solid rgba(255,255,255,.62);
+  background: rgba(255,255,255,.38);
+  border: 1px solid rgba(255,255,255,.42);
   border-radius: 999px;
-  box-shadow: 0 1px 0 rgba(255,255,255,.72) inset, 0 0 0 .5px rgba(0,0,0,.04), 0 10px 28px rgba(0,0,0,.07);
-  backdrop-filter: blur(28px) saturate(180%);
-  -webkit-backdrop-filter: blur(28px) saturate(180%);
+  box-shadow: 0 1px 0 rgba(255,255,255,.45) inset, 0 0 0 .5px rgba(0,0,0,.03), 0 6px 18px rgba(0,0,0,.04);
+  backdrop-filter: blur(18px) saturate(140%);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
   flex-shrink: 1;
   min-width: 0;
   max-width: min(44rem, calc(100% - 8.9rem));
@@ -1065,8 +1067,8 @@ const css = `
 }
 .bn-link:hover, .bn-icon-btn:hover { background: rgba(0,0,0,.045); color: var(--ink); }
 .bn-link[aria-current="page"], .bn-link[data-active="true"] {
-  color: var(--ink); background: rgba(255,255,255,.72);
-  box-shadow: 0 1px 0 rgba(255,255,255,.9) inset, 0 1px 3px rgba(0,0,0,.06);
+  color: var(--ink); background: rgba(255,255,255,.48);
+  box-shadow: 0 1px 0 rgba(255,255,255,.55) inset, 0 1px 2px rgba(0,0,0,.04);
 }
 .bn-slot { display: inline-flex; align-items: center; height: 1.05em; white-space: nowrap; }
 .bn-slot-char { display: inline-block; height: 1.05em; overflow: hidden; vertical-align: top; line-height: 1.05em; }
