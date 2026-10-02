@@ -1158,12 +1158,12 @@ const css = `
     calc(.48rem - (var(--pn-elevate) * .16rem))
     calc(.55rem - (var(--pn-elevate) * .23rem));
   color: var(--ink);
-  background: linear-gradient(155deg, rgba(255,255,255,calc(.86 * var(--pn-elevate))) 0%, rgba(255,255,255,calc(.68 * var(--pn-elevate))) 55%, rgba(255,255,255,calc(.78 * var(--pn-elevate))) 100%);
-  border: 1px solid rgba(255,255,255,calc(.78 * var(--pn-elevate)));
+  background: linear-gradient(155deg, rgba(255,255,255,calc(.96 * var(--pn-elevate))) 0%, rgba(255,255,255,calc(.88 * var(--pn-elevate))) 55%, rgba(255,255,255,calc(.92 * var(--pn-elevate))) 100%), rgba(247,246,243,calc(.82 * var(--pn-elevate)));
+  border: 1px solid rgba(255,255,255,calc(.9 * var(--pn-elevate)));
   border-radius: 999px;
-  box-shadow: 0 1px 0 rgba(255,255,255,calc(.9 * var(--pn-elevate))) inset, 0 -1px 0 rgba(255,255,255,calc(.28 * var(--pn-elevate))) inset, 0 0 0 .5px rgba(0,0,0,calc(.05 * var(--pn-elevate))), 0 12px 32px rgba(0,0,0,calc(.1 * var(--pn-elevate)));
-  backdrop-filter: blur(calc(var(--pn-elevate) * 48px)) saturate(calc(100% + (var(--pn-elevate) * 90%)));
-  -webkit-backdrop-filter: blur(calc(var(--pn-elevate) * 48px)) saturate(calc(100% + (var(--pn-elevate) * 90%)));
+  box-shadow: 0 1px 0 rgba(255,255,255,calc(.95 * var(--pn-elevate))) inset, 0 -1px 0 rgba(255,255,255,calc(.35 * var(--pn-elevate))) inset, 0 0 0 .5px rgba(0,0,0,calc(.06 * var(--pn-elevate))), 0 14px 36px rgba(0,0,0,calc(.12 * var(--pn-elevate)));
+  backdrop-filter: blur(calc(var(--pn-elevate) * 56px)) saturate(calc(100% + (var(--pn-elevate) * 100%)));
+  -webkit-backdrop-filter: blur(calc(var(--pn-elevate) * 56px)) saturate(calc(100% + (var(--pn-elevate) * 100%)));
   isolation: isolate; overflow: visible;
 }
 .bn-links {
@@ -1179,20 +1179,20 @@ const css = `
   width: 7.9rem; min-height: 3.4rem;
   display: flex; flex-direction: column; justify-content: center;
   color: #0f0f0f;
-  background: linear-gradient(155deg, rgba(255,255,255,calc(.86 * var(--pn-elevate))) 0%, rgba(255,255,255,calc(.68 * var(--pn-elevate))) 55%, rgba(255,255,255,calc(.78 * var(--pn-elevate))) 100%);
-  border: 1px solid rgba(255,255,255,calc(.78 * var(--pn-elevate)));
+  background: linear-gradient(155deg, rgba(255,255,255,calc(.96 * var(--pn-elevate))) 0%, rgba(255,255,255,calc(.88 * var(--pn-elevate))) 55%, rgba(255,255,255,calc(.92 * var(--pn-elevate))) 100%), rgba(247,246,243,calc(.82 * var(--pn-elevate)));
+  border: 1px solid rgba(255,255,255,calc(.9 * var(--pn-elevate)));
   border-radius: 999px; overflow: hidden;
-  box-shadow: 0 1px 0 rgba(255,255,255,calc(.9 * var(--pn-elevate))) inset, 0 -1px 0 rgba(255,255,255,calc(.28 * var(--pn-elevate))) inset, 0 0 0 .5px rgba(0,0,0,calc(.05 * var(--pn-elevate))), 0 12px 32px rgba(0,0,0,calc(.1 * var(--pn-elevate)));
-  backdrop-filter: blur(calc(var(--pn-elevate) * 48px)) saturate(calc(100% + (var(--pn-elevate) * 90%)));
-  -webkit-backdrop-filter: blur(calc(var(--pn-elevate) * 48px)) saturate(calc(100% + (var(--pn-elevate) * 90%)));
+  box-shadow: 0 1px 0 rgba(255,255,255,calc(.95 * var(--pn-elevate))) inset, 0 -1px 0 rgba(255,255,255,calc(.35 * var(--pn-elevate))) inset, 0 0 0 .5px rgba(0,0,0,calc(.06 * var(--pn-elevate))), 0 14px 36px rgba(0,0,0,calc(.12 * var(--pn-elevate)));
+  backdrop-filter: blur(calc(var(--pn-elevate) * 56px)) saturate(calc(100% + (var(--pn-elevate) * 100%)));
+  -webkit-backdrop-filter: blur(calc(var(--pn-elevate) * 56px)) saturate(calc(100% + (var(--pn-elevate) * 100%)));
   transform-origin: top left; isolation: isolate;
   transition: width .42s var(--ease), min-height .42s var(--ease), border-radius .42s var(--ease), box-shadow .42s ease, background .3s ease;
 }
 .bmp[data-embedded="true"][data-expanded="true"] {
   width: 21.25rem; max-width: 21.25rem; border-radius: 1.3rem;
-  background: linear-gradient(160deg, rgba(255,255,255,calc(.9 * max(var(--pn-elevate), .45))) 0%, rgba(255,255,255,calc(.74 * max(var(--pn-elevate), .45))) 100%);
-  border-color: rgba(255,255,255,calc(.82 * max(var(--pn-elevate), .45)));
-  box-shadow: 0 1px 0 rgba(255,255,255,calc(.9 * max(var(--pn-elevate), .45))) inset, 0 -1px 0 rgba(255,255,255,calc(.24 * max(var(--pn-elevate), .45))) inset, 0 0 0 .5px rgba(0,0,0,calc(.05 * max(var(--pn-elevate), .45))), 0 16px 40px rgba(0,0,0,calc(.12 * max(var(--pn-elevate), .45)));
+  background: linear-gradient(160deg, rgba(255,255,255,calc(.97 * max(var(--pn-elevate), .5))) 0%, rgba(255,255,255,calc(.9 * max(var(--pn-elevate), .5))) 100%), rgba(247,246,243,calc(.86 * max(var(--pn-elevate), .5)));
+  border-color: rgba(255,255,255,calc(.92 * max(var(--pn-elevate), .5)));
+  box-shadow: 0 1px 0 rgba(255,255,255,calc(.95 * max(var(--pn-elevate), .5))) inset, 0 -1px 0 rgba(255,255,255,calc(.3 * max(var(--pn-elevate), .5))) inset, 0 0 0 .5px rgba(0,0,0,calc(.06 * max(var(--pn-elevate), .5))), 0 18px 44px rgba(0,0,0,calc(.14 * max(var(--pn-elevate), .5)));
 }
 .bn-sr {
   position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
