@@ -707,13 +707,22 @@ function BlakeNavBar(props: Props) {
     return (
         <div
             className="bn-shell"
-            style={{
-                width: 720,
-                height: 56,
-                maxWidth: 720,
-                maxHeight: 56,
-                overflow: "visible",
-            }}
+            style={
+                {
+                    width: 720,
+                    height: 56,
+                    minWidth: 720,
+                    minHeight: 56,
+                    maxWidth: 720,
+                    maxHeight: 56,
+                    overflow: "visible",
+                    overflowX: "visible",
+                    overflowY: "visible",
+                    position: "relative",
+                    clipPath: "none",
+                    contain: "none",
+                } as CSSProperties
+            }
         >
             <style>{css}</style>
             <div className="bn-root">
@@ -1090,11 +1099,46 @@ const css = `
 .bn-music {
   pointer-events: auto;
   position: relative;
-  display: flex;
-  justify-content: flex-start;
-  align-items: flex-start;
+  display: block;
   flex-shrink: 0;
+  width: 7.9rem;
+  height: 3.4rem;
   overflow: visible;
+}
+.bmp {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 2;
+  width: 7.9rem;
+  min-height: 3.4rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  color: #0f0f0f;
+  background: linear-gradient(155deg, rgba(255,255,255,.42) 0%, rgba(255,255,255,.14) 55%, rgba(255,255,255,.22) 100%);
+  border: 1px solid rgba(255,255,255,.55);
+  border-radius: 999px;
+  overflow: hidden;
+  box-shadow: 0 1px 0 rgba(255,255,255,.75) inset, 0 -1px 0 rgba(255,255,255,.18) inset, 0 0 0 .5px rgba(0,0,0,.04), 0 10px 28px rgba(0,0,0,.06);
+  backdrop-filter: blur(40px) saturate(180%);
+  -webkit-backdrop-filter: blur(40px) saturate(180%);
+  transform-origin: top left;
+  isolation: isolate;
+  transition:
+    width .42s var(--ease),
+    min-height .42s var(--ease),
+    border-radius .42s var(--ease),
+    box-shadow .42s ease,
+    background .3s ease;
+}
+.bmp[data-embedded="true"][data-expanded="true"] {
+  width: 21.25rem;
+  max-width: 21.25rem;
+  border-radius: 1.3rem;
+  background: linear-gradient(160deg, rgba(255,255,255,.5) 0%, rgba(255,255,255,.22) 100%);
+  border-color: rgba(255,255,255,.58);
+  box-shadow: 0 1px 0 rgba(255,255,255,.72) inset, 0 -1px 0 rgba(255,255,255,.16) inset, 0 0 0 .5px rgba(0,0,0,.04), 0 16px 40px rgba(0,0,0,.08);
 }
 .bn-links { display: flex; align-items: center; gap: .12rem; margin-left: .15rem; min-width: 0; }
 .bn-sr {
