@@ -1021,6 +1021,10 @@ const css = `
   overscroll-behavior: none;
   pointer-events: none;
   font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif;
+  background:
+    radial-gradient(ellipse 70% 48% at 18% -8%, rgba(186,204,220,.55), transparent 58%),
+    radial-gradient(ellipse 62% 42% at 88% 4%, rgba(220,200,186,.45), transparent 55%),
+    linear-gradient(180deg, #f3f2ee 0%, #ebeae5 100%);
 }
 .bn-root {
   position: absolute;
@@ -1043,15 +1047,16 @@ const css = `
   display: flex; align-items: center; gap: .35rem;
   min-height: 3.4rem; padding: .32rem .38rem .32rem .32rem;
   color: var(--ink);
-  background: rgba(255,255,255,.42);
-  border: 1px solid rgba(255,255,255,.58);
+  background: linear-gradient(155deg, rgba(255,255,255,.42) 0%, rgba(255,255,255,.14) 55%, rgba(255,255,255,.22) 100%);
+  border: 1px solid rgba(255,255,255,.55);
   border-radius: 999px;
-  box-shadow: 0 1px 0 rgba(255,255,255,.7) inset, 0 0 0 .5px rgba(0,0,0,.035), 0 8px 24px rgba(0,0,0,.055);
-  backdrop-filter: blur(28px) saturate(165%);
-  -webkit-backdrop-filter: blur(28px) saturate(165%);
+  box-shadow: 0 1px 0 rgba(255,255,255,.75) inset, 0 -1px 0 rgba(255,255,255,.18) inset, 0 0 0 .5px rgba(0,0,0,.04), 0 10px 28px rgba(0,0,0,.06);
+  backdrop-filter: blur(40px) saturate(180%);
+  -webkit-backdrop-filter: blur(40px) saturate(180%);
   flex-shrink: 1;
   min-width: 0;
   max-width: min(44rem, calc(100% - 8.9rem));
+  isolation: isolate;
 }
 .bn-music { pointer-events: auto; display: flex; justify-content: flex-start; flex-shrink: 0; max-width: 100%; }
 .bn-links { display: flex; align-items: center; gap: .12rem; margin-left: .15rem; min-width: 0; }
@@ -1156,14 +1161,15 @@ const css = `
   flex-direction: column;
   justify-content: center;
   color: #0f0f0f;
-  background: rgba(255,255,255,.42);
-  border: 1px solid rgba(255,255,255,.58);
+  background: linear-gradient(155deg, rgba(255,255,255,.42) 0%, rgba(255,255,255,.14) 55%, rgba(255,255,255,.22) 100%);
+  border: 1px solid rgba(255,255,255,.55);
   border-radius: 999px;
   overflow: hidden;
-  box-shadow: 0 1px 0 rgba(255,255,255,.7) inset, 0 0 0 .5px rgba(0,0,0,.035), 0 8px 24px rgba(0,0,0,.055);
-  backdrop-filter: blur(28px) saturate(165%);
-  -webkit-backdrop-filter: blur(28px) saturate(165%);
+  box-shadow: 0 1px 0 rgba(255,255,255,.75) inset, 0 -1px 0 rgba(255,255,255,.18) inset, 0 0 0 .5px rgba(0,0,0,.04), 0 10px 28px rgba(0,0,0,.06);
+  backdrop-filter: blur(40px) saturate(180%);
+  -webkit-backdrop-filter: blur(40px) saturate(180%);
   transform-origin: top left;
+  isolation: isolate;
   transition:
     width .42s var(--ease),
     min-height .42s var(--ease),
@@ -1175,9 +1181,9 @@ const css = `
   width: min(21.25rem, 100%);
   max-width: 100%;
   border-radius: 1.3rem;
-  background: rgba(255,255,255,.58);
-  border-color: rgba(255,255,255,.62);
-  box-shadow: 0 1px 0 rgba(255,255,255,.72) inset, 0 0 0 .5px rgba(0,0,0,.035), 0 14px 36px rgba(0,0,0,.08);
+  background: linear-gradient(160deg, rgba(255,255,255,.5) 0%, rgba(255,255,255,.22) 100%);
+  border-color: rgba(255,255,255,.58);
+  box-shadow: 0 1px 0 rgba(255,255,255,.72) inset, 0 -1px 0 rgba(255,255,255,.16) inset, 0 0 0 .5px rgba(0,0,0,.04), 0 16px 40px rgba(0,0,0,.08);
 }
 .bmp[data-playing="true"] .bmp-disc {
   animation: bmp-disc-live 1.8s ease-out infinite;
