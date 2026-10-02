@@ -1071,8 +1071,7 @@ const css = `
 }
 .bn-link:hover, .bn-icon-btn:hover { background: rgba(0,0,0,.045); color: var(--ink); }
 .bn-link[aria-current="page"], .bn-link[data-active="true"] {
-  color: var(--ink); background: rgba(255,255,255,.55);
-  box-shadow: 0 1px 0 rgba(255,255,255,.75) inset, 0 1px 2px rgba(0,0,0,.04);
+  color: var(--ink); background: rgba(0,0,0,.06); box-shadow: none;
 }
 .bn-slot { display: inline-flex; align-items: baseline; height: 1em; letter-spacing: normal; white-space: nowrap; }
 .bn-slot-char { position: relative; display: inline-block; height: 1em; overflow: hidden; vertical-align: baseline; line-height: 1; }
