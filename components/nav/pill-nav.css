@@ -203,13 +203,14 @@
 
 .pn-root[data-elevate="1"] .pn-link,
 .pn-root[data-elevate="1"] .pn-icon-btn {
-  color: rgba(15, 15, 15, 0.78);
+  color: rgba(15, 15, 15, 0.88);
+  font-weight: 600;
 }
 
 .pn-root[data-elevate="1"] .pn-link:hover,
 .pn-root[data-elevate="1"] .pn-icon-btn:hover,
 .pn-root[data-elevate="1"] .pn-link[data-active="true"] {
-  color: var(--pn-ink);
+  color: #0a0a0a;
 }
 
 .pn-link:hover,
