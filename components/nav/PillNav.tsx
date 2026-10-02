@@ -1,7 +1,6 @@
 "use client";
 
 import { FileDown, Mail } from "lucide-react";
-import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState, type CSSProperties } from "react";
 import { MusicPlayer } from "@/components/music-player/MusicPlayer";
@@ -10,6 +9,7 @@ import {
   NAV_AVATAR_SRC,
   NAV_BRAND,
   NAV_EMAIL,
+  NAV_HOME_URL,
   NAV_LINKEDIN_URL,
   NAV_LINKS,
   NAV_RESUME_HREF,
@@ -101,8 +101,8 @@ export function PillNav({ current }: PillNavProps) {
   return (
     <div className="pn-root">
       <nav className="pn" aria-label={`${NAV_BRAND} primary`}>
-        <Link
-          href="/"
+        <a
+          href={NAV_HOME_URL}
           className="pn-avatar"
           aria-label={`${NAV_BRAND} home`}
           title="Home"
@@ -110,19 +110,14 @@ export function PillNav({ current }: PillNavProps) {
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img className="pn-avatar-img" src={NAV_AVATAR_SRC} alt="" width={43} height={43} />
-        </Link>
+        </a>
 
         <div className="pn-links">
           {NAV_LINKS.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className="pn-link"
-              data-active={active === link.href || active.startsWith(`${link.href}/`)}
-            >
+            <a key={link.href} href={link.href} className="pn-link">
               <span className="pn-sr">{link.label}</span>
               <SlotText text={link.label} />
-            </Link>
+            </a>
           ))}
         </div>
 
