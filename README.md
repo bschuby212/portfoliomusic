@@ -48,11 +48,17 @@ Confirm:
 
 ## Framer
 
+**Agent path (preferred):** see [`FRAMER.md`](FRAMER.md). Run `npx @framer/agent@latest setup`, connect with `/framer` + your project link, then send [`framer/AGENT_PROMPT.md`](framer/AGENT_PROMPT.md) so the agent creates the code file and places a fixed **720×56** / overflow-visible instance on the page.
+
+**Manual paste:**
+
 1. **Assets → Code → New Component**
 2. Paste [`framer/BlakeMusicPlayer.tsx`](framer/BlakeMusicPlayer.tsx)
 3. Set API Base URL, About/Work/Home URLs, LinkedIn, email, resume URL
-4. Place once in a site-wide desktop overlay / template
+4. Place once in a site-wide desktop overlay / template at **720×56**, Overflow **Visible**, scroll off
 5. Publish
+
+**GitHub Link:** point the plugin at the `framer/` folder so `BlakeMusicPlayer.tsx` syncs into the project.
 
 Mobile can stay on your separate Framer setup for now.
 
