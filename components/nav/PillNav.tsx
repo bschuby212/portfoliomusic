@@ -2,7 +2,12 @@
 
 import { FileDown, Mail } from "lucide-react";
 import { usePathname } from "next/navigation";
-import { useEffect, useState, type CSSProperties } from "react";
+import {
+  useEffect,
+  useState,
+  useSyncExternalStore,
+  type CSSProperties,
+} from "react";
 import { MusicPlayer } from "@/components/music-player/MusicPlayer";
 import { usePlayerStore } from "@/components/music-player/store";
 import {
@@ -17,6 +22,70 @@ import {
 import "./pill-nav.css";
 
 const REEL_GLYPHS = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz";
+
+/** Scroll range where the glass shell materializes around the nav. */
+const ELEVATE_START_PX = 60;
+const ELEVATE_END_PX = 120;
+
+function elevateFromScrollY(scrollY: number): number {
+  if (scrollY <= ELEVATE_START_PX) return 0;
+  if (scrollY >= ELEVATE_END_PX) return 1;
+  const t = (scrollY - ELEVATE_START_PX) / (ELEVATE_END_PX - ELEVATE_START_PX);
+  // Subtle ease-out so the glass settles in softly.
+  return 1 - (1 - t) ** 2.2;
+}
+
+let elevateCache = 0
+
+function subscribeElevate(onStoreChange: () => void) {
+  let frame = 0;
+  const publish = () => {
+    const next =
+      Math.round(
+        elevateFromScrollY(window.scrollY || window.pageYOffset || 0) * 100,
+      ) / 100;
+    if (next === elevateCache) return;
+    elevateCache = next;
+    onStoreChange();
+  };
+  const onScroll = () => {
+    if (frame) return;
+    frame = window.requestAnimationFrame(() => {
+      frame = 0;
+      publish();
+    });
+  };
+  publish();
+  window.addEventListener("scroll", onScroll, { passive: true });
+  window.addEventListener("resize", onScroll, { passive: true });
+  return () => {
+    if (frame) window.cancelAnimationFrame(frame);
+    window.removeEventListener("scroll", onScroll);
+    window.removeEventListener("resize", onScroll);
+  };
+}
+
+function getElevateSnapshot() {
+  return elevateCache;
+}
+
+function getElevateServerSnapshot() {
+  return 0;
+}
+
+function useNavElevate() {
+  const elevate = useSyncExternalStore(
+    subscribeElevate,
+    getElevateSnapshot,
+    getElevateServerSnapshot,
+  );
+  const ready = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false,
+  );
+  return { elevate, ready };
+}
 
 function LinkedInIcon() {
   return (
@@ -70,6 +139,7 @@ export function PillNav({ current }: PillNavProps) {
   const active = current ?? pathname;
   const player = usePlayerStore();
   const [toast, setToast] = useState<string | null>(null);
+  const { elevate, ready } = useNavElevate();
 
   useEffect(() => {
     if (!toast) return;
@@ -98,8 +168,15 @@ export function PillNav({ current }: PillNavProps) {
     }
   }
 
+  const elevated = elevate >= 0.5;
+
   return (
-    <div className="pn-root">
+    <div
+      className="pn-root"
+      data-elevate={elevated ? "1" : "0"}
+      data-elevate-ready={ready ? "true" : "false"}
+      style={{ "--pn-elevate": String(elevate) } as CSSProperties}
+    >
       <nav className="pn" aria-label={`${NAV_BRAND} primary`}>
         <a
           href={NAV_HOME_URL}

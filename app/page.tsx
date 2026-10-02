@@ -39,6 +39,13 @@ export default function HomePage() {
           previews. After the fourth song, a little surprise kicks in.
         </p>
       </section>
+      <section className="mt-24 max-w-xl text-sm leading-6 text-neutral-500">
+        <p>
+          Scroll to watch the header shift from a responsive text bar into the
+          floating glass optic pill — then scroll back up to reverse it.
+        </p>
+      </section>
+      <div className="h-[120vh]" aria-hidden="true" />
     </main>
   );
 }
