@@ -32,15 +32,15 @@
   flex-direction: column;
   justify-content: center;
   color: #0f0f0f;
-  background: rgba(255, 255, 255, 0.38);
-  border: 1px solid rgba(255, 255, 255, 0.42);
+  background: rgba(255, 255, 255, 0.42);
+  border: 1px solid rgba(255, 255, 255, 0.58);
   border-radius: 999px;
   box-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.45) inset,
-    0 0 0 0.5px rgba(0, 0, 0, 0.03),
-    0 6px 18px rgba(0, 0, 0, 0.04);
-  backdrop-filter: blur(18px) saturate(140%);
-  -webkit-backdrop-filter: blur(18px) saturate(140%);
+    0 1px 0 rgba(255, 255, 255, 0.7) inset,
+    0 0 0 0.5px rgba(0, 0, 0, 0.035),
+    0 8px 24px rgba(0, 0, 0, 0.055);
+  backdrop-filter: blur(28px) saturate(165%);
+  -webkit-backdrop-filter: blur(28px) saturate(165%);
   transform-origin: top left;
   transition:
     width 0.42s var(--pn-ease),
@@ -55,20 +55,20 @@
   width: min(21.25rem, calc(100vw - 2rem));
   min-height: 0;
   border-radius: 1.3rem;
-  background: rgba(255, 255, 255, 0.52);
-  border-color: rgba(255, 255, 255, 0.48);
+  background: rgba(255, 255, 255, 0.58);
+  border-color: rgba(255, 255, 255, 0.62);
   box-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.5) inset,
-    0 0 0 0.5px rgba(0, 0, 0, 0.03),
-    0 12px 32px rgba(0, 0, 0, 0.07);
+    0 1px 0 rgba(255, 255, 255, 0.72) inset,
+    0 0 0 0.5px rgba(0, 0, 0, 0.035),
+    0 14px 36px rgba(0, 0, 0, 0.08);
   padding: 0;
 }
 
 .mp[data-embedded="true"][data-playing="true"]:not([data-expanded="true"]) {
   box-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.45) inset,
-    0 0 0 0.5px rgba(0, 0, 0, 0.03),
-    0 6px 18px rgba(0, 0, 0, 0.04);
+    0 1px 0 rgba(255, 255, 255, 0.7) inset,
+    0 0 0 0.5px rgba(0, 0, 0, 0.035),
+    0 8px 24px rgba(0, 0, 0, 0.055);
 }
 
 .mp[data-embedded="true"][data-playing="true"] .mp-disc {

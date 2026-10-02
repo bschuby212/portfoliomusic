@@ -1,7 +1,7 @@
 /**
  * Blake Nav Bar — Framer Code Component
  *
- * Two subtle glass pills centered in the Framer frame (no scroll):
+ * Two glassmorphic pills centered in the Framer frame (no scroll):
  * [avatar · About · Work · Why I'm looking · LinkedIn · Email · Resume] · music (16px gap, expands right/down)
  *
  * Setup:
@@ -606,21 +606,25 @@ function reelForChar(char: string, index: number): string[] {
 function SlotText({ text }: { text: string }) {
     return (
         <span className="bn-slot" aria-hidden="true">
-            {Array.from(text).map((char, index) => (
-                <span
-                    key={`${char}-${index}`}
-                    className="bn-slot-char"
-                    style={{ "--i": index } as CSSProperties}
-                >
-                    <span className="bn-slot-reel">
-                        {reelForChar(char, index).map((glyph, glyphIndex) => (
-                            <span key={`${glyph}-${glyphIndex}`} className="bn-slot-glyph">
-                                {glyph}
-                            </span>
-                        ))}
+            {Array.from(text).map((char, index) => {
+                const display = char === " " ? "\u00A0" : char
+                return (
+                    <span
+                        key={`${char}-${index}`}
+                        className="bn-slot-char"
+                        style={{ "--i": index } as CSSProperties}
+                    >
+                        <span className="bn-slot-width">{display}</span>
+                        <span className="bn-slot-reel">
+                            {reelForChar(char, index).map((glyph, glyphIndex) => (
+                                <span key={`${glyph}-${glyphIndex}`} className="bn-slot-glyph">
+                                    {glyph}
+                                </span>
+                            ))}
+                        </span>
                     </span>
-                </span>
-            ))}
+                )
+            })}
         </span>
     )
 }
@@ -1039,12 +1043,12 @@ const css = `
   display: flex; align-items: center; gap: .35rem;
   min-height: 3.4rem; padding: .32rem .38rem .32rem .32rem;
   color: var(--ink);
-  background: rgba(255,255,255,.38);
-  border: 1px solid rgba(255,255,255,.42);
+  background: rgba(255,255,255,.42);
+  border: 1px solid rgba(255,255,255,.58);
   border-radius: 999px;
-  box-shadow: 0 1px 0 rgba(255,255,255,.45) inset, 0 0 0 .5px rgba(0,0,0,.03), 0 6px 18px rgba(0,0,0,.04);
-  backdrop-filter: blur(18px) saturate(140%);
-  -webkit-backdrop-filter: blur(18px) saturate(140%);
+  box-shadow: 0 1px 0 rgba(255,255,255,.7) inset, 0 0 0 .5px rgba(0,0,0,.035), 0 8px 24px rgba(0,0,0,.055);
+  backdrop-filter: blur(28px) saturate(165%);
+  -webkit-backdrop-filter: blur(28px) saturate(165%);
   flex-shrink: 1;
   min-width: 0;
   max-width: min(44rem, calc(100% - 8.9rem));
@@ -1060,26 +1064,28 @@ const css = `
   display: inline-flex; align-items: center; justify-content: center;
   min-height: 2.45rem; padding: 0 .95rem; border: 0; border-radius: 999px;
   background: transparent; color: var(--muted); font: inherit; font-size: .875rem;
-  font-weight: 560; letter-spacing: -.015em; text-decoration: none; cursor: pointer;
+  font-weight: 560; letter-spacing: normal; text-decoration: none; cursor: pointer;
   overflow: hidden;
   transition: background .22s ease, color .22s ease, box-shadow .22s ease, transform .18s var(--ease);
   white-space: nowrap;
 }
 .bn-link:hover, .bn-icon-btn:hover { background: rgba(0,0,0,.045); color: var(--ink); }
 .bn-link[aria-current="page"], .bn-link[data-active="true"] {
-  color: var(--ink); background: rgba(255,255,255,.48);
-  box-shadow: 0 1px 0 rgba(255,255,255,.55) inset, 0 1px 2px rgba(0,0,0,.04);
+  color: var(--ink); background: rgba(255,255,255,.55);
+  box-shadow: 0 1px 0 rgba(255,255,255,.75) inset, 0 1px 2px rgba(0,0,0,.04);
 }
-.bn-slot { display: inline-flex; align-items: center; height: 1.05em; white-space: nowrap; }
-.bn-slot-char { display: inline-block; height: 1.05em; overflow: hidden; vertical-align: top; line-height: 1.05em; }
+.bn-slot { display: inline-flex; align-items: baseline; height: 1em; letter-spacing: normal; white-space: nowrap; }
+.bn-slot-char { position: relative; display: inline-block; height: 1em; overflow: hidden; vertical-align: baseline; line-height: 1; }
+.bn-slot-width { display: inline-block; visibility: hidden; line-height: 1; }
 .bn-slot-reel {
-  display: flex; flex-direction: column; will-change: transform;
-  transform: translate3d(0,0,0);
+  position: absolute; top: 0; left: 50%;
+  display: flex; flex-direction: column; align-items: center; width: max-content;
+  will-change: transform; transform: translate3d(-50%,0,0);
   transition: transform .58s var(--ease);
   transition-delay: calc(var(--i, 0) * 34ms);
 }
-.bn-slot-glyph { display: flex; align-items: center; justify-content: center; height: 1.05em; line-height: 1.05em; }
-.bn-link:hover .bn-slot-reel, .bn-link:focus-visible .bn-slot-reel { transform: translate3d(0,-75%,0); }
+.bn-slot-glyph { display: flex; align-items: center; justify-content: center; height: 1em; line-height: 1; }
+.bn-link:hover .bn-slot-reel, .bn-link:focus-visible .bn-slot-reel { transform: translate3d(-50%,-75%,0); }
 .bn-link:not(:hover):not(:focus-visible) .bn-slot-reel {
   transition-duration: .32s;
   transition-delay: calc(var(--i, 0) * 14ms);
@@ -1151,13 +1157,13 @@ const css = `
   flex-direction: column;
   justify-content: center;
   color: #0f0f0f;
-  background: rgba(255,255,255,.38);
-  border: 1px solid rgba(255,255,255,.42);
+  background: rgba(255,255,255,.42);
+  border: 1px solid rgba(255,255,255,.58);
   border-radius: 999px;
   overflow: hidden;
-  box-shadow: 0 1px 0 rgba(255,255,255,.45) inset, 0 0 0 .5px rgba(0,0,0,.03), 0 6px 18px rgba(0,0,0,.04);
-  backdrop-filter: blur(18px) saturate(140%);
-  -webkit-backdrop-filter: blur(18px) saturate(140%);
+  box-shadow: 0 1px 0 rgba(255,255,255,.7) inset, 0 0 0 .5px rgba(0,0,0,.035), 0 8px 24px rgba(0,0,0,.055);
+  backdrop-filter: blur(28px) saturate(165%);
+  -webkit-backdrop-filter: blur(28px) saturate(165%);
   transform-origin: top left;
   transition:
     width .42s var(--ease),
@@ -1170,9 +1176,9 @@ const css = `
   width: min(21.25rem, 100%);
   max-width: 100%;
   border-radius: 1.3rem;
-  background: rgba(255,255,255,.52);
-  border-color: rgba(255,255,255,.48);
-  box-shadow: 0 1px 0 rgba(255,255,255,.5) inset, 0 0 0 .5px rgba(0,0,0,.03), 0 12px 32px rgba(0,0,0,.07);
+  background: rgba(255,255,255,.58);
+  border-color: rgba(255,255,255,.62);
+  box-shadow: 0 1px 0 rgba(255,255,255,.72) inset, 0 0 0 .5px rgba(0,0,0,.035), 0 14px 36px rgba(0,0,0,.08);
 }
 .bmp[data-playing="true"] .bmp-disc {
   animation: bmp-disc-live 1.8s ease-out infinite;

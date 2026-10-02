@@ -38,21 +38,25 @@ function reelForChar(char: string, index: number): string[] {
 function SlotText({ text }: { text: string }) {
   return (
     <span className="pn-slot" aria-hidden="true">
-      {Array.from(text).map((char, index) => (
-        <span
-          key={`${char}-${index}`}
-          className="pn-slot-char"
-          style={{ "--i": index } as CSSProperties}
-        >
-          <span className="pn-slot-reel">
-            {reelForChar(char, index).map((glyph, glyphIndex) => (
-              <span key={`${glyph}-${glyphIndex}`} className="pn-slot-glyph">
-                {glyph}
-              </span>
-            ))}
+      {Array.from(text).map((char, index) => {
+        const display = char === " " ? "\u00A0" : char;
+        return (
+          <span
+            key={`${char}-${index}`}
+            className="pn-slot-char"
+            style={{ "--i": index } as CSSProperties}
+          >
+            <span className="pn-slot-width">{display}</span>
+            <span className="pn-slot-reel">
+              {reelForChar(char, index).map((glyph, glyphIndex) => (
+                <span key={`${glyph}-${glyphIndex}`} className="pn-slot-glyph">
+                  {glyph}
+                </span>
+              ))}
+            </span>
           </span>
-        </span>
-      ))}
+        );
+      })}
     </span>
   );
 }
