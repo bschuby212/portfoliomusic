@@ -1212,10 +1212,10 @@ const css = `
 .bn-shell[data-elevate="0"] .bn-link,
 .bn-shell[data-elevate="0"] .bn-icon-btn { color: rgba(15,15,15,.72); }
 .bn-shell[data-elevate="1"] .bn-link,
-.bn-shell[data-elevate="1"] .bn-icon-btn { color: rgba(15,15,15,.78); }
+.bn-shell[data-elevate="1"] .bn-icon-btn { color: rgba(15,15,15,.88); font-weight: 600; }
 .bn-shell[data-elevate="1"] .bn-link:hover,
 .bn-shell[data-elevate="1"] .bn-icon-btn:hover,
-.bn-shell[data-elevate="1"] .bn-link[data-active="true"] { color: var(--ink); }
+.bn-shell[data-elevate="1"] .bn-link[data-active="true"] { color: #0a0a0a; }
 .bn-link:hover, .bn-icon-btn:hover { background: rgba(0,0,0,.045); color: var(--ink); }
 .bn-link[aria-current="page"], .bn-link[data-active="true"] {
   color: var(--ink); background: rgba(0,0,0,calc(.06 * max(var(--pn-elevate), .4))); box-shadow: none;

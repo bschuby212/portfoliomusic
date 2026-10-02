@@ -58,14 +58,13 @@
     calc(0.48rem - (var(--pn-elevate) * 0.16rem))
     calc(0.55rem - (var(--pn-elevate) * 0.23rem));
   color: var(--pn-ink);
-  background:
-    linear-gradient(
-      155deg,
-      rgba(255, 255, 255, calc(0.96 * var(--pn-elevate))) 0%,
-      rgba(255, 255, 255, calc(0.88 * var(--pn-elevate))) 55%,
-      rgba(255, 255, 255, calc(0.92 * var(--pn-elevate))) 100%
-    ),
-    rgba(247, 246, 243, calc(0.82 * var(--pn-elevate)));
+  background-color: rgba(247, 246, 243, calc(0.88 * var(--pn-elevate)));
+  background-image: linear-gradient(
+    155deg,
+    rgba(255, 255, 255, calc(0.94 * var(--pn-elevate))) 0%,
+    rgba(255, 255, 255, calc(0.84 * var(--pn-elevate))) 55%,
+    rgba(255, 255, 255, calc(0.9 * var(--pn-elevate))) 100%
+  );
   border: 1px solid rgba(255, 255, 255, calc(0.9 * var(--pn-elevate)));
   border-radius: 999px;
   box-shadow:
@@ -90,14 +89,13 @@
 
 /* Embedded music pill inherits glass elevate from .pn-root */
 .pn-root .mp[data-embedded="true"] {
-  background:
-    linear-gradient(
-      155deg,
-      rgba(255, 255, 255, calc(0.96 * var(--pn-elevate))) 0%,
-      rgba(255, 255, 255, calc(0.88 * var(--pn-elevate))) 55%,
-      rgba(255, 255, 255, calc(0.92 * var(--pn-elevate))) 100%
-    ),
-    rgba(247, 246, 243, calc(0.82 * var(--pn-elevate)));
+  background-color: rgba(247, 246, 243, calc(0.88 * var(--pn-elevate)));
+  background-image: linear-gradient(
+    155deg,
+    rgba(255, 255, 255, calc(0.94 * var(--pn-elevate))) 0%,
+    rgba(255, 255, 255, calc(0.84 * var(--pn-elevate))) 55%,
+    rgba(255, 255, 255, calc(0.9 * var(--pn-elevate))) 100%
+  );
   border-color: rgba(255, 255, 255, calc(0.9 * var(--pn-elevate)));
   box-shadow:
     0 1px 0 rgba(255, 255, 255, calc(0.95 * var(--pn-elevate))) inset,
@@ -109,13 +107,12 @@
 }
 
 .pn-root .mp[data-embedded="true"][data-expanded="true"] {
-  background:
-    linear-gradient(
-      160deg,
-      rgba(255, 255, 255, calc(0.97 * max(var(--pn-elevate), 0.5))) 0%,
-      rgba(255, 255, 255, calc(0.9 * max(var(--pn-elevate), 0.5))) 100%
-    ),
-    rgba(247, 246, 243, calc(0.86 * max(var(--pn-elevate), 0.5)));
+  background-color: rgba(247, 246, 243, calc(0.9 * max(var(--pn-elevate), 0.5)));
+  background-image: linear-gradient(
+    160deg,
+    rgba(255, 255, 255, calc(0.97 * max(var(--pn-elevate), 0.5))) 0%,
+    rgba(255, 255, 255, calc(0.9 * max(var(--pn-elevate), 0.5))) 100%
+  );
   border-color: rgba(255, 255, 255, calc(0.92 * max(var(--pn-elevate), 0.5)));
   box-shadow:
     0 1px 0 rgba(255, 255, 255, calc(0.95 * max(var(--pn-elevate), 0.5))) inset,
