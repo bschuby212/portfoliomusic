@@ -61,19 +61,20 @@
   background:
     linear-gradient(
       155deg,
-      rgba(255, 255, 255, calc(0.86 * var(--pn-elevate))) 0%,
-      rgba(255, 255, 255, calc(0.68 * var(--pn-elevate))) 55%,
-      rgba(255, 255, 255, calc(0.78 * var(--pn-elevate))) 100%
-    );
-  border: 1px solid rgba(255, 255, 255, calc(0.78 * var(--pn-elevate)));
+      rgba(255, 255, 255, calc(0.96 * var(--pn-elevate))) 0%,
+      rgba(255, 255, 255, calc(0.88 * var(--pn-elevate))) 55%,
+      rgba(255, 255, 255, calc(0.92 * var(--pn-elevate))) 100%
+    ),
+    rgba(247, 246, 243, calc(0.82 * var(--pn-elevate)));
+  border: 1px solid rgba(255, 255, 255, calc(0.9 * var(--pn-elevate)));
   border-radius: 999px;
   box-shadow:
-    0 1px 0 rgba(255, 255, 255, calc(0.9 * var(--pn-elevate))) inset,
-    0 -1px 0 rgba(255, 255, 255, calc(0.28 * var(--pn-elevate))) inset,
-    0 0 0 0.5px rgba(0, 0, 0, calc(0.05 * var(--pn-elevate))),
-    0 12px 32px rgba(0, 0, 0, calc(0.1 * var(--pn-elevate)));
-  backdrop-filter: blur(calc(var(--pn-elevate) * 48px)) saturate(calc(100% + (var(--pn-elevate) * 90%)));
-  -webkit-backdrop-filter: blur(calc(var(--pn-elevate) * 48px)) saturate(calc(100% + (var(--pn-elevate) * 90%)));
+    0 1px 0 rgba(255, 255, 255, calc(0.95 * var(--pn-elevate))) inset,
+    0 -1px 0 rgba(255, 255, 255, calc(0.35 * var(--pn-elevate))) inset,
+    0 0 0 0.5px rgba(0, 0, 0, calc(0.06 * var(--pn-elevate))),
+    0 14px 36px rgba(0, 0, 0, calc(0.12 * var(--pn-elevate)));
+  backdrop-filter: blur(calc(var(--pn-elevate) * 56px)) saturate(calc(100% + (var(--pn-elevate) * 100%)));
+  -webkit-backdrop-filter: blur(calc(var(--pn-elevate) * 56px)) saturate(calc(100% + (var(--pn-elevate) * 100%)));
   isolation: isolate;
 }
 
@@ -92,33 +93,35 @@
   background:
     linear-gradient(
       155deg,
-      rgba(255, 255, 255, calc(0.86 * var(--pn-elevate))) 0%,
-      rgba(255, 255, 255, calc(0.68 * var(--pn-elevate))) 55%,
-      rgba(255, 255, 255, calc(0.78 * var(--pn-elevate))) 100%
-    );
-  border-color: rgba(255, 255, 255, calc(0.78 * var(--pn-elevate)));
+      rgba(255, 255, 255, calc(0.96 * var(--pn-elevate))) 0%,
+      rgba(255, 255, 255, calc(0.88 * var(--pn-elevate))) 55%,
+      rgba(255, 255, 255, calc(0.92 * var(--pn-elevate))) 100%
+    ),
+    rgba(247, 246, 243, calc(0.82 * var(--pn-elevate)));
+  border-color: rgba(255, 255, 255, calc(0.9 * var(--pn-elevate)));
   box-shadow:
-    0 1px 0 rgba(255, 255, 255, calc(0.9 * var(--pn-elevate))) inset,
-    0 -1px 0 rgba(255, 255, 255, calc(0.28 * var(--pn-elevate))) inset,
-    0 0 0 0.5px rgba(0, 0, 0, calc(0.05 * var(--pn-elevate))),
-    0 12px 32px rgba(0, 0, 0, calc(0.1 * var(--pn-elevate)));
-  backdrop-filter: blur(calc(var(--pn-elevate) * 48px)) saturate(calc(100% + (var(--pn-elevate) * 90%)));
-  -webkit-backdrop-filter: blur(calc(var(--pn-elevate) * 48px)) saturate(calc(100% + (var(--pn-elevate) * 90%)));
+    0 1px 0 rgba(255, 255, 255, calc(0.95 * var(--pn-elevate))) inset,
+    0 -1px 0 rgba(255, 255, 255, calc(0.35 * var(--pn-elevate))) inset,
+    0 0 0 0.5px rgba(0, 0, 0, calc(0.06 * var(--pn-elevate))),
+    0 14px 36px rgba(0, 0, 0, calc(0.12 * var(--pn-elevate)));
+  backdrop-filter: blur(calc(var(--pn-elevate) * 56px)) saturate(calc(100% + (var(--pn-elevate) * 100%)));
+  -webkit-backdrop-filter: blur(calc(var(--pn-elevate) * 56px)) saturate(calc(100% + (var(--pn-elevate) * 100%)));
 }
 
 .pn-root .mp[data-embedded="true"][data-expanded="true"] {
   background:
     linear-gradient(
       160deg,
-      rgba(255, 255, 255, calc(0.9 * max(var(--pn-elevate), 0.45))) 0%,
-      rgba(255, 255, 255, calc(0.74 * max(var(--pn-elevate), 0.45))) 100%
-    );
-  border-color: rgba(255, 255, 255, calc(0.82 * max(var(--pn-elevate), 0.45)));
+      rgba(255, 255, 255, calc(0.97 * max(var(--pn-elevate), 0.5))) 0%,
+      rgba(255, 255, 255, calc(0.9 * max(var(--pn-elevate), 0.5))) 100%
+    ),
+    rgba(247, 246, 243, calc(0.86 * max(var(--pn-elevate), 0.5)));
+  border-color: rgba(255, 255, 255, calc(0.92 * max(var(--pn-elevate), 0.5)));
   box-shadow:
-    0 1px 0 rgba(255, 255, 255, calc(0.9 * max(var(--pn-elevate), 0.45))) inset,
-    0 -1px 0 rgba(255, 255, 255, calc(0.24 * max(var(--pn-elevate), 0.45))) inset,
-    0 0 0 0.5px rgba(0, 0, 0, calc(0.05 * max(var(--pn-elevate), 0.45))),
-    0 16px 40px rgba(0, 0, 0, calc(0.12 * max(var(--pn-elevate), 0.45)));
+    0 1px 0 rgba(255, 255, 255, calc(0.95 * max(var(--pn-elevate), 0.5))) inset,
+    0 -1px 0 rgba(255, 255, 255, calc(0.3 * max(var(--pn-elevate), 0.5))) inset,
+    0 0 0 0.5px rgba(0, 0, 0, calc(0.06 * max(var(--pn-elevate), 0.5))),
+    0 18px 44px rgba(0, 0, 0, calc(0.14 * max(var(--pn-elevate), 0.5)));
 }
 
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
