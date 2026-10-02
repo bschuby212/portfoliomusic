@@ -705,7 +705,16 @@ function BlakeNavBar(props: Props) {
     }
 
     return (
-        <div className="bn-shell">
+        <div
+            className="bn-shell"
+            style={{
+                width: 720,
+                height: 56,
+                maxWidth: 720,
+                maxHeight: 56,
+                overflow: "visible",
+            }}
+        >
             <style>{css}</style>
             <div className="bn-root">
                 <nav className="bn" aria-label="Blake Schubert primary">
