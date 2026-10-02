@@ -1151,13 +1151,13 @@ const css = `
   flex-direction: column;
   justify-content: center;
   color: #0f0f0f;
-  background: rgba(255,255,255,.58);
-  border: 1px solid rgba(255,255,255,.62);
+  background: rgba(255,255,255,.38);
+  border: 1px solid rgba(255,255,255,.42);
   border-radius: 999px;
   overflow: hidden;
-  box-shadow: 0 1px 0 rgba(255,255,255,.72) inset, 0 0 0 .5px rgba(0,0,0,.04), 0 10px 28px rgba(0,0,0,.07);
-  backdrop-filter: blur(28px) saturate(180%);
-  -webkit-backdrop-filter: blur(28px) saturate(180%);
+  box-shadow: 0 1px 0 rgba(255,255,255,.45) inset, 0 0 0 .5px rgba(0,0,0,.03), 0 6px 18px rgba(0,0,0,.04);
+  backdrop-filter: blur(18px) saturate(140%);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
   transform-origin: top left;
   transition:
     width .42s var(--ease),
@@ -1170,8 +1170,9 @@ const css = `
   width: min(21.25rem, 100%);
   max-width: 100%;
   border-radius: 1.3rem;
-  background: rgba(255,255,255,.78);
-  box-shadow: 0 1px 0 rgba(255,255,255,.75) inset, 0 0 0 .5px rgba(0,0,0,.04), 0 18px 44px rgba(0,0,0,.11);
+  background: rgba(255,255,255,.52);
+  border-color: rgba(255,255,255,.48);
+  box-shadow: 0 1px 0 rgba(255,255,255,.5) inset, 0 0 0 .5px rgba(0,0,0,.03), 0 12px 32px rgba(0,0,0,.07);
 }
 .bmp[data-playing="true"] .bmp-disc {
   animation: bmp-disc-live 1.8s ease-out infinite;
