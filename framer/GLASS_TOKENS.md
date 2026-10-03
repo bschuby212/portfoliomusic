@@ -7,7 +7,7 @@ Top-of-page state: **no fill / no blur / no border** (`elevate = 0`).
 
 | Token | Value | Framer |
 | --- | --- | --- |
-| Underfill | cream `#FAF9F6` @ **28%** | Fill opacity **28** (scales with elevate) |
+| Underfill | cream `#FAF9F6` @ **35%** | Fill opacity **35** (scales with elevate) |
 | Gradient | 155° over underfill | Linear gradient |
 | Stop 0% | white @ **100%** | opacity **100** |
 | Stop 55% | white @ **54%** | opacity **54** |
@@ -22,7 +22,7 @@ Top-of-page state: **no fill / no blur / no border** (`elevate = 0`).
 
 | Token | Value |
 | --- | --- |
-| Underfill | cream `#FAF9F6` @ **28%** |
+| Underfill | cream `#FAF9F6` @ **35%** |
 | Gradient | 160° · white **100% → 76%** |
 | Border | white **100%** |
 | Radius | **1.3rem** (~21px) |
@@ -31,7 +31,7 @@ Top-of-page state: **no fill / no blur / no border** (`elevate = 0`).
 
 | | Original | Now |
 | --- | --- | --- |
-| Underfill | none | **cream 28%** (subtle) |
+| Underfill | none | **cream 35%** |
 | Gradient | 42 / 14 / 22 | **100 / 54 / 76** |
 | Border | 55% | **100%** |
 | Blur | 40px | **132px** |

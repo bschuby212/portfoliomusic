@@ -58,8 +58,8 @@
     calc(0.48rem - (var(--pn-elevate) * 0.16rem))
     calc(0.55rem - (var(--pn-elevate) * 0.23rem));
   color: var(--pn-ink);
-  /* Soft cream underfill (~28%) + frost gradient — readable glass. */
-  background-color: rgba(250, 249, 246, calc(0.28 * var(--pn-elevate)));
+  /* Soft cream underfill (~35%) + frost gradient — readable glass. */
+  background-color: rgba(250, 249, 246, calc(0.35 * var(--pn-elevate)));
   background-image: linear-gradient(
     155deg,
     rgba(255, 255, 255, calc(1 * var(--pn-elevate))) 0%,
@@ -90,7 +90,7 @@
 
 /* Embedded music pill inherits glass elevate from .pn-root */
 .pn-root .mp[data-embedded="true"] {
-  background-color: rgba(250, 249, 246, calc(0.28 * var(--pn-elevate)));
+  background-color: rgba(250, 249, 246, calc(0.35 * var(--pn-elevate)));
   background-image: linear-gradient(
     155deg,
     rgba(255, 255, 255, calc(1 * var(--pn-elevate))) 0%,
@@ -108,7 +108,7 @@
 }
 
 .pn-root .mp[data-embedded="true"][data-expanded="true"] {
-  background-color: rgba(250, 249, 246, calc(0.28 * max(var(--pn-elevate), 0.35)));
+  background-color: rgba(250, 249, 246, calc(0.35 * max(var(--pn-elevate), 0.35)));
   background-image: linear-gradient(
     160deg,
     rgba(255, 255, 255, calc(1 * max(var(--pn-elevate), 0.35))) 0%,
