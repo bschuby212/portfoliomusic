@@ -21,3 +21,9 @@
   [headers.values]
     Content-Security-Policy = "frame-ancestors *"
     # Omit X-Frame-Options so CSP frame-ancestors controls embedding.
+    # Tip for parents: iframe { overflow: visible } + height ~420px so expand isn't clipped by the frame box.
+
+[[headers]]
+  for = "/embed/*"
+  [headers.values]
+    Content-Security-Policy = "frame-ancestors *"

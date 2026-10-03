@@ -162,9 +162,23 @@ Raw: https://raw.githubusercontent.com/bschuby212/portfoliomusic/main/framer/Bla
 Expanded panel is the **custom** player UI (transport/scrub/volume). Spotify is used only for the track list + preview audio. Collapsed pill: note · disc · play · chevron. Do not show our playlist name.
 
 
-## 5) Why not the Netlify iframe?
+## 5) Netlify `/embed` iframe (optional)
 
-`/embed` is nav-only and fine for a static bar, but it **cannot read Framer page scroll**, so the plain → glass morph never runs. Prefer this code component on a pinned overlay.
+Glass is always on now, so `/embed` is fine if you just want the nav iframe’d:
+
+```html
+<iframe
+  src="https://YOUR-SITE.netlify.app/embed"
+  title="Blake nav"
+  style="width:100%;height:420px;border:0;background:transparent;overflow:visible;"
+  allow="autoplay; encrypted-media; clipboard-write"
+  loading="lazy"
+></iframe>
+```
+
+- Document inside `/embed` is `overflow: visible` (expanded player not clipped by html/body).
+- The **iframe box itself** still clips to its height — use ~420px (or taller) and keep the Framer parent **Overflow = Visible**.
+- Prefer the code component when you want the nav native to the Framer page.
 
 Keep Netlify for:
 - `GET /api/spotify` + `/api/spotify/playlist`

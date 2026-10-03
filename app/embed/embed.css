@@ -1,39 +1,50 @@
-/* Framer / Netlify iframe shell: nav only, transparent, no scrollbars. */
+/* Framer / Netlify iframe shell: nav only, transparent, overflow visible. */
 
 html:has([data-embed]),
-html:has([data-embed]) body {
+html[data-embed],
+html:has([data-embed]) body,
+body[data-embed] {
   background: transparent !important;
   background-color: transparent !important;
   background-image: none !important;
   height: auto !important;
   min-height: 0 !important;
   max-height: none !important;
+  /* Beat globals.css overflow-x: clip so the expanded player isn't chopped. */
   overflow: visible !important;
   overflow-x: visible !important;
   overflow-y: visible !important;
+  clip-path: none !important;
+  contain: none !important;
   scrollbar-width: none !important;
   -ms-overflow-style: none !important;
   color-scheme: normal;
 }
 
 html:has([data-embed])::-webkit-scrollbar,
+html[data-embed]::-webkit-scrollbar,
 html:has([data-embed]) body::-webkit-scrollbar,
-html:has([data-embed]) *::-webkit-scrollbar {
+body[data-embed]::-webkit-scrollbar {
   width: 0 !important;
   height: 0 !important;
   display: none !important;
   background: transparent !important;
 }
 
-html:has([data-embed]) body::before {
+html:has([data-embed]) body::before,
+body[data-embed]::before {
   content: none !important;
   display: none !important;
   background: none !important;
 }
 
-html:has([data-embed]) body > * {
+html:has([data-embed]) body > *,
+body[data-embed] > * {
   position: relative;
   z-index: 1;
+  overflow: visible !important;
+  clip-path: none !important;
+  contain: none !important;
 }
 
 .embed-shell {
@@ -44,5 +55,27 @@ html:has([data-embed]) body > * {
   margin: 0;
   padding: 0;
   background: transparent;
-  overflow: visible;
+  overflow: visible !important;
+  overflow-x: visible !important;
+  overflow-y: visible !important;
+  clip-path: none !important;
+  contain: none !important;
+}
+
+/* Nav + music slot must not clip the expanded panel. */
+html:has([data-embed]) .pn-root,
+html[data-embed] .pn-root,
+html:has([data-embed]) .pn-music,
+html[data-embed] .pn-music,
+html:has([data-embed]) .pn,
+html[data-embed] .pn {
+  overflow: visible !important;
+  clip-path: none !important;
+  contain: none !important;
+}
+
+/* Expanded player paints outside the collapsed footprint. */
+html:has([data-embed]) .mp[data-expanded="true"],
+html[data-embed] .mp[data-expanded="true"] {
+  overflow: visible !important;
 }

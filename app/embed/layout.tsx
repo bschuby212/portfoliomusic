@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { EmbedDocument } from "./EmbedDocument";
 import "./embed.css";
 
 export const metadata: Metadata = {
@@ -17,6 +18,7 @@ export default function EmbedLayout({
 }) {
   return (
     <div className="embed-shell" data-embed="">
+      <EmbedDocument />
       {children}
     </div>
   );
