@@ -1,5 +1,9 @@
 # FULL COPY-PASTE FOR FRAMER
 
+Use the **code component** (not a Netlify iframe). Iframes cannot see Framer page scroll, so the glass morph never runs.
+
+Netlify is still required as the **API host** for playlist + preview audio (`apiBaseUrl`).
+
 ## 1) Paste this entire block to Framer Agent
 
 ```
@@ -11,7 +15,7 @@ SOURCE OF TRUTH (use verbatim):
 - Default export: BlakeNavBar
 
 STEPS:
-1. Read framer/BlakeMusicPlayer.tsx in full from the repo.
+1. Read framer/BlakeMusicPlayer.tsx in full from the repo (branch main).
 2. Create or overwrite a Framer code file named BlakeNavBar with that source.
 3. Priority: a working installed component > byte-identical copy. If a trailing backtick or similar typo makes the file unparseable, delete only that typo so TypeScript parses — do not redesign or restyle.
 4. Place ONE BlakeNavBar instance on a site-wide desktop overlay / template (or every primary page if no overlay exists).
@@ -19,12 +23,15 @@ STEPS:
 6. Frame size: FIXED 720 × 56 (not fill, not hug).
 7. Layer Overflow = Visible. Scroll = off. No clipping parent.
 8. Music player expands outside the 720×56 shell on purpose — must stay visible (no scrollbars).
-9. Collapsed music pill (~9.2rem): note · spinning disc · play · chevron. Expanded: Spotify playlist iframe (5zXp8gIyEeJteiSZj1RTqJ) + collapse chevron — no playlist name chrome.
-10. Keep these default link props:
+9. Collapsed music pill (~9.2rem): note · spinning disc · play/pause · chevron. Expanded: custom transport UI (scrub + volume), not a Spotify iframe. No playlist name chrome.
+10. Keep apiBaseUrl = https://blake-music-player.netlify.app (playlist + preview API).
+11. Keep these default link props:
    - Home: https://blakeschubert.com/
    - About: https://blakeschubert.com/about
    - Work: https://blakeschubert.com/#all-campus
    - Why I'm looking: https://blakeschubert.com/#why-im-looking
+   - Email: blakeschubertux@gmail.com (mailto)
+   - Resume: Netlify PDF download
 
 VISUAL TOKENS (already baked into the file — do not change):
 - Ink / text: #212324
@@ -41,6 +48,7 @@ VISUAL TOKENS (already baked into the file — do not change):
 DONE WHEN:
 - Code file exists in the Framer project
 - One instance is on the canvas at 720×56, Overflow Visible
+- Scrolling the Framer page morphs plain nav → glass pill
 - Confirm with a screenshot if you can
 ```
 
@@ -74,11 +82,10 @@ Shadow:          black 7%, X 0, Y 10, Blur 28, Spread 0
 
 ### Expanded music panel
 ```
-Underfill:       #FAF9F6 @ 35%
-Gradient:        160° · #FFFFFF 100% → 76%
-Border:          #FFFFFF @ 100%
+Underfill:       #FAF9F6 @ ~92% when open
 Radius:          21px
-Content:         Spotify embed iframe 352px tall (playlist 5zXp8gIyEeJteiSZj1RTqJ)
+Content:         Custom player (shuffle / prev / play / next / repeat + scrub + volume)
+Audio:           ~30s previews via Netlify API (Spotify playlist + Deezer/iTunes preview)
 ```
 
 ### Collapsed music pill
@@ -101,6 +108,9 @@ Home:            https://blakeschubert.com/
 About:           https://blakeschubert.com/about
 Work:            https://blakeschubert.com/#all-campus
 Why I'm looking: https://blakeschubert.com/#why-im-looking
+Email:           mailto:blakeschubertux@gmail.com
+Resume:          Blake Schubert Product Designer Resume 2026.pdf (via Netlify)
+API base:        https://blake-music-player.netlify.app
 ```
 
 
@@ -146,38 +156,19 @@ backdrop-filter: blur(calc(var(--pn-elevate) * 132px)) saturate(calc(100% + (var
 ## 4) Full component source
 
 Repo path: `framer/BlakeMusicPlayer.tsx`  
-Branch: `cursor/collapsed-album-spin-653c`  
-Raw: https://raw.githubusercontent.com/bschuby212/portfoliomusic/cursor/collapsed-album-spin-653c/framer/BlakeMusicPlayer.tsx
+Branch: `main`  
+Raw: https://raw.githubusercontent.com/bschuby212/portfoliomusic/main/framer/BlakeMusicPlayer.tsx
 
 ## H) Expanded player
 
 Expanded panel is the **custom** player UI (transport/scrub/volume). Spotify is used only for the track list + preview audio. Collapsed pill: note · disc · play · chevron. Do not show our playlist name.
 
 
-## 5) Netlify iframe embed (nav-only)
+## 5) Why not the Netlify iframe?
 
-If you prefer an iframe over a Framer code component, host the nav-only route:
+`/embed` is nav-only and fine for a static bar, but it **cannot read Framer page scroll**, so the plain → glass morph never runs. Prefer this code component on a pinned overlay.
 
-| | |
-| --- | --- |
-| **Route** | `/embed` |
-| **Production** | `https://blake-music-player.netlify.app/embed` |
-| **Local** | `http://localhost:3000/embed` |
-
-That page renders **only** PillNav + music player: transparent `html`/`body`, no marketing chrome, overflow visible for the expanded Spotify panel, scrollbars hidden.
-
-### Framer Embed / HTML embed
-
-```html
-<iframe
-  src="https://blake-music-player.netlify.app/embed"
-  title="Blake nav"
-  style="width:100%;height:420px;border:0;background:transparent;overflow:visible;"
-  allow="autoplay; encrypted-media; clipboard-write"
-  loading="lazy"
-></iframe>
-```
-
-- Frame height ~420px leaves room for the expanded Spotify iframe (~352px) under the 56px bar.
-- Keep the parent layer **Overflow = Visible** (same as BlakeNavBar).
-- Do not add a page background behind the iframe if you want glass blur against the Framer canvas.
+Keep Netlify for:
+- `GET /api/spotify` + `/api/spotify/playlist`
+- Resume PDF + avatar assets
+- `apiBaseUrl` default: `https://blake-music-player.netlify.app`
