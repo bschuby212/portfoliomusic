@@ -14,14 +14,17 @@ export const PLAYLIST_NAME = "Blake's Playlist";
 export const EXPAND_DIRECTION: ExpandDirection = "down";
 
 /**
- * Temporary: play local filler audio + Spotify metadata links.
- * Flip to false and set SPOTIFY_PLAYLIST_URL when Blake sends the real playlist.
+ * Local filler was for early demos. Real playlist is live — keep false.
  */
-export const USE_FILLER_PLAYLIST = true;
+export const USE_FILLER_PLAYLIST = false;
 
 /** Public Spotify playlist used when USE_FILLER_PLAYLIST is false. */
 export const SPOTIFY_PLAYLIST_URL =
   "https://open.spotify.com/playlist/5zXp8gIyEeJteiSZj1RTqJ";
+
+/** Official Spotify embed for the expanded panel (full tracks). */
+export const SPOTIFY_EMBED_URL =
+  "https://open.spotify.com/embed/playlist/5zXp8gIyEeJteiSZj1RTqJ?utm_source=generator";
 
 /**
  * After this many playlist songs, insert the surprise track.

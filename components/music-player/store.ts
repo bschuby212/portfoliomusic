@@ -177,6 +177,21 @@ function loadCurrent(options: { autoplay: boolean; from: PlayerState }) {
   } else {
     adapter?.pause();
     setState({ isPlaying: false });
+    // No preview yet — fetch metadata, then skip if still unplayable.
+    if (options.autoplay && track && track.metadataStatus !== "ready") {
+      const trackIndex = options.from.queue[options.from.queueIndex];
+      if (typeof trackIndex === "number") {
+        void playerActions.ensureTrackMetadata(trackIndex).then(() => {
+          if (playableSrc(currentTrack())) {
+            loadCurrent({ autoplay: true, from: state });
+            return;
+          }
+          playerActions.skipUnplayableForward();
+        });
+      }
+    } else if (options.autoplay && !hasAudio) {
+      playerActions.skipUnplayableForward();
+    }
   }
 }
 
@@ -406,6 +421,17 @@ export const playerActions = {
         const shouldPlay = pendingAutoplay || state.isPlaying;
         pendingAutoplay = false;
         loadCurrent({ autoplay: shouldPlay, from: state });
+      } else {
+        const currentIndex = state.queue[state.queueIndex];
+        const isCurrent = currentIndex === trackIndex;
+        if (
+          isCurrent &&
+          !playableSrc(state.tracks[trackIndex]) &&
+          (pendingAutoplay || state.isPlaying)
+        ) {
+          pendingAutoplay = false;
+          playerActions.skipUnplayableForward();
+        }
       }
     } catch {
       setState((current) => {
@@ -415,6 +441,14 @@ export const playerActions = {
         tracks[trackIndex] = { ...existing, metadataStatus: "error" };
         return { ...current, tracks };
       });
+      const currentIndex = state.queue[state.queueIndex];
+      if (
+        currentIndex === trackIndex &&
+        (pendingAutoplay || state.isPlaying)
+      ) {
+        pendingAutoplay = false;
+        playerActions.skipUnplayableForward();
+      }
     }
   },
 
@@ -455,18 +489,33 @@ export const playerActions = {
     }
 
     const nextIndex = state.queueIndex + 1;
+    // Always wrap the playlist so collapsed preview keeps looping.
     if (nextIndex >= state.queue.length) {
-      if (fromEnded) {
-        adapter?.pause();
-        adapter?.seek(0);
-        setState({ isPlaying: false, currentTime: 0 });
-        return;
-      }
       applyQueueIndex(0, true);
       return;
     }
 
     applyQueueIndex(nextIndex, true);
+  },
+
+  /** Advance past tracks with no preview / audioSrc (wraps once through the queue). */
+  skipUnplayableForward() {
+    const len = state.queue.length;
+    if (len <= 1) return;
+    const start = state.queueIndex;
+    for (let step = 1; step < len; step += 1) {
+      const qi = (start + step) % len;
+      const track = state.tracks[state.queue[qi] ?? -1];
+      if (playableSrc(track)) {
+        applyQueueIndex(qi, true);
+        return;
+      }
+      // Still loading metadata — jump there and let loadCurrent finish the resolve.
+      if (track && track.metadataStatus !== "ready" && track.metadataStatus !== "error") {
+        applyQueueIndex(qi, true);
+        return;
+      }
+    }
   },
 
   previous() {
@@ -541,7 +590,20 @@ export const playerActions = {
   },
 
   setExpanded(expanded: boolean) {
-    setState({ expanded, volumeOpen: expanded ? state.volumeOpen : false });
+    // Pause HTML preview when opening the Spotify embed so audio doesn’t double up.
+    if (expanded && state.isPlaying) {
+      adapter?.pause();
+      setState({
+        expanded,
+        volumeOpen: false,
+        isPlaying: false,
+      });
+    } else {
+      setState({
+        expanded,
+        volumeOpen: expanded ? state.volumeOpen : false,
+      });
+    }
     persistPrefs();
   },
 

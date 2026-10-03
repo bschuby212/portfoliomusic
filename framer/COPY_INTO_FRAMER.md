@@ -140,3 +140,7 @@ backdrop-filter: blur(calc(var(--pn-elevate) * 132px)) saturate(calc(100% + (var
 Repo path: `framer/BlakeMusicPlayer.tsx`  
 Branch: `cursor/collapsed-album-spin-653c`  
 Raw: https://raw.githubusercontent.com/bschuby212/portfoliomusic/cursor/collapsed-album-spin-653c/framer/BlakeMusicPlayer.tsx
+
+## H) Expanded player
+
+Expanded panel is the official Spotify playlist embed (full tracks). Collapsed pill: note · disc · play · chevron. Do not show our playlist name in custom chrome.

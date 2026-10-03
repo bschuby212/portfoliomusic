@@ -88,7 +88,8 @@ const RICKROLL_ID = "4cOdK2wGLETKBW3PvgPWqT"
  * Temporary filler playlist with local audio on the Netlify host.
  * Flip to false when Blake sends the real Spotify playlist URL.
  */
-const USE_FILLER_PLAYLIST = true
+const USE_FILLER_PLAYLIST = false
+const SPOTIFY_EMBED_URL = "https://open.spotify.com/embed/playlist/5zXp8gIyEeJteiSZj1RTqJ?utm_source=generator"
 const FILLER_TRACKS = [
     {
         id: "4sebUbjqbcgDSwG6PbSGI0",
@@ -459,12 +460,6 @@ const actions = {
         }
         const nextIndex = state.queueIndex + 1
         if (nextIndex >= state.queue.length) {
-            if (fromEnded) {
-                audio?.pause()
-                if (audio) audio.currentTime = 0
-                setState({ isPlaying: false, currentTime: 0 })
-                return
-            }
             pendingAutoplay = true
             setState({ queueIndex: 0 })
             loadCurrent(true)
@@ -544,7 +539,12 @@ const actions = {
     },
 
     setExpanded(expanded: boolean) {
-        setState({ expanded, volumeOpen: expanded ? state.volumeOpen : false })
+        if (expanded && state.isPlaying) {
+            audio?.pause()
+            setState({ expanded, volumeOpen: false, isPlaying: false })
+        } else {
+            setState({ expanded, volumeOpen: expanded ? state.volumeOpen : false })
+        }
         persist()
     },
 
@@ -803,11 +803,11 @@ const css = `
 }
 .bn-music {
   pointer-events: auto; position: relative; display: block;
-  flex-shrink: 0; width: 7.9rem; height: 3.4rem; overflow: visible;
+  flex-shrink: 0; width: 9.2rem; height: 3.4rem; overflow: visible;
 }
 .bmp {
   position: absolute; top: 0; left: 0; z-index: 2;
-  width: 7.9rem; min-height: 3.4rem;
+  width: 9.2rem; min-height: 3.4rem;
   display: flex; flex-direction: column; justify-content: center;
   color: #212324;
   background-color: rgba(250, 249, 246, calc(.35 * var(--pn-elevate)));
@@ -821,7 +821,7 @@ const css = `
   transition: width .42s var(--ease), min-height .42s var(--ease), border-radius .42s var(--ease), box-shadow .42s ease, background .3s ease;
 }
 .bmp[data-embedded="true"][data-expanded="true"] {
-  width: 21.25rem; max-width: 21.25rem; border-radius: 1.3rem;
+  width: min(24rem, 100%); max-width: 24rem; border-radius: 1.3rem;
   background-color: rgba(250, 249, 246, calc(.35 * max(var(--pn-elevate), .35)));
   background-image: linear-gradient(160deg, rgba(255,255,255,calc(1 * max(var(--pn-elevate), .35))) 0%, rgba(255,255,255,calc(.76 * max(var(--pn-elevate), .35))) 100%);
   border-color: rgba(255,255,255,calc(1 * max(var(--pn-elevate), .35)));
@@ -923,6 +923,11 @@ const css = `
   70% { box-shadow: inset 0 0 0 1px rgba(0,0,0,.06), 0 0 0 6px rgba(33,35,36,0); }
   100% { box-shadow: inset 0 0 0 1px rgba(0,0,0,.06), 0 0 0 0 rgba(33,35,36,0); }
 }
+.bmp-collapsed-chevron { color: rgba(33,35,36,.72); font-size: .85rem; line-height: 1; }
+.bmp-embed-bar { display:flex; justify-content:flex-end; margin-bottom:.45rem; }
+.bmp-expanded-embed { padding-top:.65rem !important; }
+.bmp-embed-frame { width:100%; border-radius:12px; overflow:hidden; background:#000; line-height:0; }
+.bmp-embed-frame iframe { display:block; width:100%; border:0; border-radius:12px; }
 .bmp-collapsed {
   display: flex; align-items: center; gap: .35rem;
   height: 2.5rem; padding: 0 .3rem 0 .55rem; cursor: pointer;
@@ -1225,101 +1230,42 @@ function BlakeNavBar(props: Props) {
                     >
                         {player.isPlaying ? "❚❚" : "▶"}
                     </button>
+                    <button
+                        type="button"
+                        className="bmp-icon-btn bmp-collapsed-chevron"
+                        aria-label="Expand music player"
+                        onClick={(event) => {
+                            event.stopPropagation()
+                            actions.setExpanded(true)
+                        }}
+                    >
+                        ▾
+                    </button>
                 </div>
 
                 <div className="bmp-expanded">
-                    <div className="bmp-inner">
-                        <div className="bmp-top">
-                            <div className="bmp-art">
-                                {track?.metadata?.artworkUrl ? (
-                                    <img src={track.metadata.artworkUrl} alt="" />
-                                ) : (
-                                    <div className="bmp-art-fallback">♪</div>
-                                )}
-                            </div>
-                            <div className="bmp-meta">
-                                <span className="bmp-title">{title}</span>
-                                {artist ? <span className="bmp-artist">{artist}</span> : null}
-                                <span className="bmp-playlist">
-                                    {props.playlistName || "Blake's Playlist"}
-                                </span>
-                            </div>
+                    <div className="bmp-inner bmp-expanded-embed">
+                        <div className="bmp-embed-bar">
                             <button
                                 type="button"
                                 className="bmp-icon-btn"
                                 aria-label="Collapse"
                                 onClick={() => actions.setExpanded(false)}
                             >
-                                ⌃
+                                ▴
                             </button>
                         </div>
-
-                        <div className="bmp-transport">
-                            <button type="button" className="bmp-ctrl" aria-label="Shuffle" data-active={player.shuffle} onClick={actions.toggleShuffle}>
-                                ⇄
-                            </button>
-                            <button type="button" className="bmp-ctrl" aria-label="Previous" onClick={() => actions.previous(props.apiBaseUrl)}>
-                                ⏮
-                            </button>
-                            <button
-                                type="button"
-                                className="bmp-ctrl bmp-play"
-                                disabled={!player.ready}
-                                aria-label={player.isPlaying ? "Pause" : "Play"}
-                                onClick={() => actions.togglePlay(props.apiBaseUrl)}
-                            >
-                                {player.isPlaying ? "❚❚" : "▶"}
-                            </button>
-                            <button type="button" className="bmp-ctrl" aria-label="Next" onClick={() => actions.next(false, props.apiBaseUrl)}>
-                                ⏭
-                            </button>
-                            <button type="button" className="bmp-ctrl" aria-label="Repeat" data-active={player.repeat} onClick={actions.toggleRepeat}>
-                                ↻
-                            </button>
-                        </div>
-
-                        <div className="bmp-progress">
-                            <span className="bmp-time">{formatTime(player.currentTime)}</span>
-                            <input
-                                className="bmp-range"
-                                type="range"
-                                min={0}
-                                max={progressMax || 0}
-                                step={0.01}
-                                value={progressValue}
-                                disabled={!player.hasAudio || progressMax === 0}
-                                style={rangeFill(progressMax > 0 ? progressValue / progressMax : 0)}
-                                onChange={(event) => actions.seek(Number(event.currentTarget.value))}
+                        <div className="bmp-embed-frame">
+                            <iframe
+                                title="Spotify playlist"
+                                src="https://open.spotify.com/embed/playlist/5zXp8gIyEeJteiSZj1RTqJ?utm_source=generator"
+                                width="100%"
+                                height={352}
+                                frameBorder={0}
+                                allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                                loading="lazy"
+                                allowFullScreen
                             />
-                            <span className="bmp-time">{formatTime(player.duration)}</span>
-                        </div>
-
-                        <div className="bmp-footer">
-                            <div className="bmp-volume">
-                                <button
-                                    type="button"
-                                    className="bmp-icon-btn"
-                                    aria-label={player.muted ? "Unmute" : "Mute"}
-                                    onClick={actions.toggleMuted}
-                                >
-                                    {player.muted || player.volume === 0 ? "🔇" : "🔊"}
-                                </button>
-                                <input
-                                    className="bmp-range bmp-vol"
-                                    type="range"
-                                    min={0}
-                                    max={1}
-                                    step={0.01}
-                                    value={player.muted ? 0 : player.volume}
-                                    style={rangeFill(player.muted ? 0 : player.volume)}
-                                    onChange={(event) =>
-                                        actions.setVolume(Number(event.currentTarget.value))
-                                    }
-                                />
-                            </div>
-                            <span className="bmp-note">
-                                {player.hasAudio ? "30s preview" : "Loading audio"}
-                            </span>
                         </div>
                     </div>
                 </div>
