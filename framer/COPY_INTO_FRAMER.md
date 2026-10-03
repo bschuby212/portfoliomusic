@@ -12,8 +12,8 @@ SOURCE OF TRUTH (use verbatim):
 
 STEPS:
 1. Read framer/BlakeMusicPlayer.tsx in full from the repo.
-2. Create or overwrite a Framer code file named BlakeNavBar with EXACTLY that source.
-3. Do not rewrite, simplify, restyle, or split the file.
+2. Create or overwrite a Framer code file named BlakeNavBar with that source.
+3. Priority: a working installed component > byte-identical copy. If a trailing backtick or similar typo makes the file unparseable, delete only that typo so TypeScript parses — do not redesign or restyle.
 4. Place ONE BlakeNavBar instance on a site-wide desktop overlay / template (or every primary page if no overlay exists).
 5. Pin near the top, horizontally centered, high z-index above page content.
 6. Frame size: FIXED 720 × 56 (not fill, not hug).
