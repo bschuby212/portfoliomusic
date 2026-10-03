@@ -590,20 +590,8 @@ export const playerActions = {
   },
 
   setExpanded(expanded: boolean) {
-    // Pause HTML preview when opening the Spotify embed so audio doesn’t double up.
-    if (expanded && state.isPlaying) {
-      adapter?.pause();
-      setState({
-        expanded,
-        volumeOpen: false,
-        isPlaying: false,
-      });
-    } else {
-      setState({
-        expanded,
-        volumeOpen: expanded ? state.volumeOpen : false,
-      });
-    }
+    // Keep playback across expand/collapse — custom panel is the same player.
+    setState({ expanded, volumeOpen: expanded ? state.volumeOpen : false });
     persistPrefs();
   },
 

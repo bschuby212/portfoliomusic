@@ -85,11 +85,10 @@ const RESTART_THRESHOLD = 3
 const RICKROLL_ID = "4cOdK2wGLETKBW3PvgPWqT"
 
 /**
- * Local filler was for early demos. Real playlist is live — keep false.
+ * Temporary filler playlist with local audio on the Netlify host.
+ * Flip to false when Blake sends the real Spotify playlist URL.
  */
 const USE_FILLER_PLAYLIST = false
-const SPOTIFY_EMBED_URL =
-    "https://open.spotify.com/embed/playlist/5zXp8gIyEeJteiSZj1RTqJ?utm_source=generator"
 const FILLER_TRACKS = [
     {
         id: "4sebUbjqbcgDSwG6PbSGI0",
@@ -165,7 +164,6 @@ let audio: HTMLAudioElement | null = null
 let initializedKey = ""
 let pendingAutoplay = false
 let endedLock = false
-let lastApiBase = ""
 
 function emit() {
     listeners.forEach((listener) => listener())
@@ -238,19 +236,6 @@ function loadCurrent(autoplay: boolean) {
         el.pause()
         el.removeAttribute("src")
         setState({ hasAudio: false, currentTime: 0, duration: 0, isPlaying: false })
-        if (autoplay && track && track.metadataStatus !== "ready") {
-            if (typeof trackIndex === "number") {
-                void actions.ensureTrackMetadata(lastApiBase, trackIndex).then(() => {
-                    if (playableSrc(currentTrack())) {
-                        loadCurrent(true)
-                        return
-                    }
-                    actions.skipUnplayableForward()
-                })
-            }
-        } else if (autoplay) {
-            actions.skipUnplayableForward()
-        }
         return
     }
     el.src = src
@@ -262,12 +247,6 @@ function loadCurrent(autoplay: boolean) {
         el.pause()
         setState({ isPlaying: false })
     }
-}
-
-function currentTrack() {
-    const trackIndex = state.queue[state.queueIndex]
-    if (typeof trackIndex !== "number") return undefined
-    return state.tracks[trackIndex]
 }
 
 function persist() {
@@ -325,7 +304,6 @@ const actions = {
         })
 
         const base = props.apiBaseUrl.replace(/\/$/, "")
-        lastApiBase = base
 
         try {
             const tracks = USE_FILLER_PLAYLIST
@@ -431,16 +409,6 @@ const actions = {
                 const shouldPlay = pendingAutoplay || state.isPlaying
                 pendingAutoplay = false
                 loadCurrent(shouldPlay)
-            } else {
-                const isCurrent = state.queue[state.queueIndex] === trackIndex
-                if (
-                    isCurrent &&
-                    !playableSrc(state.tracks[trackIndex]) &&
-                    (pendingAutoplay || state.isPlaying)
-                ) {
-                    pendingAutoplay = false
-                    actions.skipUnplayableForward()
-                }
             }
         } catch {
             setState((current) => {
@@ -450,13 +418,6 @@ const actions = {
                 tracks[trackIndex] = { ...existing, metadataStatus: "error" }
                 return { ...current, tracks }
             })
-            if (
-                state.queue[state.queueIndex] === trackIndex &&
-                (pendingAutoplay || state.isPlaying)
-            ) {
-                pendingAutoplay = false
-                actions.skipUnplayableForward()
-            }
         }
     },
 
@@ -497,47 +458,17 @@ const actions = {
             return
         }
         const nextIndex = state.queueIndex + 1
-        // Always wrap so collapsed preview keeps looping.
         if (nextIndex >= state.queue.length) {
             pendingAutoplay = true
             setState({ queueIndex: 0 })
             loadCurrent(true)
-            if (apiBaseUrl || lastApiBase) {
-                void actions.ensureNearbyMetadata(apiBaseUrl || lastApiBase)
-            }
+            if (apiBaseUrl) void actions.ensureNearbyMetadata(apiBaseUrl)
             return
         }
         pendingAutoplay = true
         setState({ queueIndex: nextIndex })
         loadCurrent(true)
-        if (apiBaseUrl || lastApiBase) {
-            void actions.ensureNearbyMetadata(apiBaseUrl || lastApiBase)
-        }
-    },
-
-    /** Advance past tracks with no preview / audioSrc (wraps once through the queue). */
-    skipUnplayableForward() {
-        const len = state.queue.length
-        if (len <= 1) return
-        const start = state.queueIndex
-        for (let step = 1; step < len; step += 1) {
-            const qi = (start + step) % len
-            const track = state.tracks[state.queue[qi] ?? -1]
-            if (playableSrc(track)) {
-                pendingAutoplay = true
-                setState({ queueIndex: qi })
-                loadCurrent(true)
-                if (lastApiBase) void actions.ensureNearbyMetadata(lastApiBase)
-                return
-            }
-            if (track && track.metadataStatus !== "ready" && track.metadataStatus !== "error") {
-                pendingAutoplay = true
-                setState({ queueIndex: qi })
-                loadCurrent(true)
-                if (lastApiBase) void actions.ensureNearbyMetadata(lastApiBase)
-                return
-            }
-        }
+        if (apiBaseUrl) void actions.ensureNearbyMetadata(apiBaseUrl)
     },
 
     previous(apiBaseUrl: string) {
@@ -607,13 +538,7 @@ const actions = {
     },
 
     setExpanded(expanded: boolean) {
-        // Pause HTML preview when opening the Spotify embed so audio doesn’t double up.
-        if (expanded && state.isPlaying) {
-            audio?.pause()
-            setState({ expanded, volumeOpen: false, isPlaying: false })
-        } else {
-            setState({ expanded, volumeOpen: expanded ? state.volumeOpen : false })
-        }
+        setState({ expanded, volumeOpen: expanded ? state.volumeOpen : false })
         persist()
     },
 
@@ -649,6 +574,21 @@ function usePlayer() {
         () => state,
         () => emptyState(),
     )
+}
+
+function formatTime(seconds: number) {
+    if (!Number.isFinite(seconds) || seconds < 0) return "0:00"
+    const total = Math.floor(seconds)
+    const minutes = Math.floor(total / 60)
+    const remainder = total % 60
+    return `${minutes}:${remainder.toString().padStart(2, "0")}`
+}
+
+function rangeFill(percent: number): CSSProperties {
+    const clamped = Math.min(1, Math.max(0, percent)) * 100
+    return {
+        background: `linear-gradient(to right, #111 ${clamped}%, rgba(17,17,17,0.08) ${clamped}%)`,
+    }
 }
 
 const REEL_GLYPHS = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz"
@@ -875,7 +815,7 @@ const css = `
   transition: width .42s var(--ease), min-height .42s var(--ease), border-radius .42s var(--ease), box-shadow .42s ease, background .3s ease;
 }
 .bmp[data-embedded="true"][data-expanded="true"] {
-  width: min(24rem, 100%); max-width: 24rem; border-radius: 1.3rem;
+  width: 21.25rem; max-width: 21.25rem; border-radius: 1.3rem;
   background-color: rgba(250, 249, 246, calc(.35 * max(var(--pn-elevate), .35)));
   background-image: linear-gradient(160deg, rgba(255,255,255,calc(1 * max(var(--pn-elevate), .35))) 0%, rgba(255,255,255,calc(.76 * max(var(--pn-elevate), .35))) 100%);
   border-color: rgba(255,255,255,calc(1 * max(var(--pn-elevate), .35)));
@@ -978,11 +918,6 @@ const css = `
   100% { box-shadow: inset 0 0 0 1px rgba(0,0,0,.06), 0 0 0 0 rgba(33,35,36,0); }
 }
 .bmp-collapsed-chevron { color: rgba(33,35,36,.72); font-size: .85rem; line-height: 1; }
-.bmp-collapsed-chevron:hover { color: #212324; }
-.bmp-embed-bar { display:flex; align-items:center; justify-content:flex-end; min-height:1.75rem; margin-bottom:.25rem; }
-.bmp-expanded-embed { padding: .45rem .55rem .6rem !important; }
-.bmp-embed-frame { width:100%; max-width:352px; margin:0 auto; border-radius:.75rem; overflow:hidden; background:#000; line-height:0; }
-.bmp-embed-frame iframe { display:block; width:100%; height:352px; border:0; }
 .bmp-collapsed {
   display: flex; align-items: center; gap: .35rem;
   height: 2.5rem; padding: 0 .3rem 0 .55rem; cursor: pointer;
@@ -1122,6 +1057,16 @@ function BlakeNavBar(props: Props) {
         return () => window.clearTimeout(timer)
     }, [toast])
 
+    const title = track?.metadata?.title
+        ? track.metadata.title
+        : !player.ready
+          ? "Loading playlist"
+          : track?.metadataStatus === "loading"
+            ? "Loading track"
+            : "Untitled track"
+    const artist = track?.metadata?.artist || ""
+    const progressMax = player.duration > 0 ? player.duration : 0
+    const progressValue = progressMax > 0 ? Math.min(player.currentTime, progressMax) : 0
     const elevated = elevate >= 0.5
 
     async function copyEmail() {
@@ -1289,28 +1234,95 @@ function BlakeNavBar(props: Props) {
                 </div>
 
                 <div className="bmp-expanded">
-                    <div className="bmp-inner bmp-expanded-embed">
-                        <div className="bmp-embed-bar">
+                    <div className="bmp-inner">
+                        <div className="bmp-top">
+                            <div className="bmp-art">
+                                {track?.metadata?.artworkUrl ? (
+                                    <img src={track.metadata.artworkUrl} alt="" />
+                                ) : (
+                                    <div className="bmp-art-fallback">♪</div>
+                                )}
+                            </div>
+                            <div className="bmp-meta">
+                                <span className="bmp-title">{title}</span>
+                                {artist ? <span className="bmp-artist">{artist}</span> : null}
+                            </div>
                             <button
                                 type="button"
                                 className="bmp-icon-btn"
                                 aria-label="Collapse"
                                 onClick={() => actions.setExpanded(false)}
                             >
-                                ▴
+                                ⌃
                             </button>
                         </div>
-                        <div className="bmp-embed-frame">
-                            <iframe
-                                title="Spotify playlist"
-                                src={SPOTIFY_EMBED_URL}
-                                width="100%"
-                                height={352}
-                                frameBorder={0}
-                                allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-                                loading="lazy"
-                                allowFullScreen
+
+                        <div className="bmp-transport">
+                            <button type="button" className="bmp-ctrl" aria-label="Shuffle" data-active={player.shuffle} onClick={actions.toggleShuffle}>
+                                ⇄
+                            </button>
+                            <button type="button" className="bmp-ctrl" aria-label="Previous" onClick={() => actions.previous(props.apiBaseUrl)}>
+                                ⏮
+                            </button>
+                            <button
+                                type="button"
+                                className="bmp-ctrl bmp-play"
+                                disabled={!player.ready}
+                                aria-label={player.isPlaying ? "Pause" : "Play"}
+                                onClick={() => actions.togglePlay(props.apiBaseUrl)}
+                            >
+                                {player.isPlaying ? "❚❚" : "▶"}
+                            </button>
+                            <button type="button" className="bmp-ctrl" aria-label="Next" onClick={() => actions.next(false, props.apiBaseUrl)}>
+                                ⏭
+                            </button>
+                            <button type="button" className="bmp-ctrl" aria-label="Repeat" data-active={player.repeat} onClick={actions.toggleRepeat}>
+                                ↻
+                            </button>
+                        </div>
+
+                        <div className="bmp-progress">
+                            <span className="bmp-time">{formatTime(player.currentTime)}</span>
+                            <input
+                                className="bmp-range"
+                                type="range"
+                                min={0}
+                                max={progressMax || 0}
+                                step={0.01}
+                                value={progressValue}
+                                disabled={!player.hasAudio || progressMax === 0}
+                                style={rangeFill(progressMax > 0 ? progressValue / progressMax : 0)}
+                                onChange={(event) => actions.seek(Number(event.currentTarget.value))}
                             />
+                            <span className="bmp-time">{formatTime(player.duration)}</span>
+                        </div>
+
+                        <div className="bmp-footer">
+                            <div className="bmp-volume">
+                                <button
+                                    type="button"
+                                    className="bmp-icon-btn"
+                                    aria-label={player.muted ? "Unmute" : "Mute"}
+                                    onClick={actions.toggleMuted}
+                                >
+                                    {player.muted || player.volume === 0 ? "🔇" : "🔊"}
+                                </button>
+                                <input
+                                    className="bmp-range bmp-vol"
+                                    type="range"
+                                    min={0}
+                                    max={1}
+                                    step={0.01}
+                                    value={player.muted ? 0 : player.volume}
+                                    style={rangeFill(player.muted ? 0 : player.volume)}
+                                    onChange={(event) =>
+                                        actions.setVolume(Number(event.currentTarget.value))
+                                    }
+                                />
+                            </div>
+                            <span className="bmp-note">
+                                {player.hasAudio ? "30s preview" : "Loading audio"}
+                            </span>
                         </div>
                     </div>
                 </div>

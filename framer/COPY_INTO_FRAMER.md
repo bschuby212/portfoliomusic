@@ -151,7 +151,7 @@ Raw: https://raw.githubusercontent.com/bschuby212/portfoliomusic/cursor/collapse
 
 ## H) Expanded player
 
-Expanded panel is the official Spotify playlist embed (full tracks). Collapsed pill: note · disc · play · chevron. Do not show our playlist name in custom chrome.
+Expanded panel is the **custom** player UI (transport/scrub/volume). Spotify is used only for the track list + preview audio. Collapsed pill: note · disc · play · chevron. Do not show our playlist name.
 
 
 ## 5) Netlify iframe embed (nav-only)
