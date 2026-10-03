@@ -42,4 +42,4 @@ Top-of-page state: **no fill / no blur / no border** (`elevate = 0`).
 | --- | --- |
 | Frame | **720 × 56**, Overflow **Visible** |
 | Gap nav ↔ music | **16px** |
-| Scroll morph | **60 → 120px** |
+| Scroll morph | **36 → 168px** |

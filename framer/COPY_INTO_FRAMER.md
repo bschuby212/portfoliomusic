@@ -34,7 +34,7 @@ VISUAL TOKENS (already baked into the file — do not change):
 - Radius: 999 (pill)
 - Backdrop blur: 132px, saturate 190%
 - Shadow: black 7%, Y 10, Blur 28
-- Scroll morph: 60px → 120px (plain text nav → glass pill)
+- Scroll morph: 36px → 168px (plain text nav → glass pill)
 - Top of page (scroll 0): no fill / no blur / no border
 
 DONE WHEN:
@@ -84,7 +84,7 @@ Radius:          21px
 Frame:           720 × 56
 Overflow:        Visible
 Gap nav↔music:   16px
-Scroll morph:    60 → 120px
+Scroll morph:    36 → 168px
 ```
 
 ### Links

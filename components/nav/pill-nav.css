@@ -73,8 +73,21 @@
     0 -1px 0 rgba(255, 255, 255, calc(0.22 * var(--pn-elevate))) inset,
     0 0 0 0.5px rgba(0, 0, 0, calc(0.045 * var(--pn-elevate))),
     0 10px 28px rgba(0, 0, 0, calc(0.07 * var(--pn-elevate)));
-  backdrop-filter: blur(calc(var(--pn-elevate) * 132px)) saturate(calc(100% + (var(--pn-elevate) * 90%)));
-  -webkit-backdrop-filter: blur(calc(var(--pn-elevate) * 132px)) saturate(calc(100% + (var(--pn-elevate) * 90%)));
+  /* Softer blur onset (quadratic) so frost eases in with the fill */
+  backdrop-filter: blur(
+      calc(
+        (var(--pn-elevate) * var(--pn-elevate) * 48px) +
+          (var(--pn-elevate) * 70px)
+      )
+    )
+    saturate(calc(100% + (var(--pn-elevate) * 80%)));
+  -webkit-backdrop-filter: blur(
+      calc(
+        (var(--pn-elevate) * var(--pn-elevate) * 48px) +
+          (var(--pn-elevate) * 70px)
+      )
+    )
+    saturate(calc(100% + (var(--pn-elevate) * 80%)));
   isolation: isolate;
 }
 
@@ -103,8 +116,20 @@
     0 -1px 0 rgba(255, 255, 255, calc(0.22 * var(--pn-elevate))) inset,
     0 0 0 0.5px rgba(0, 0, 0, calc(0.045 * var(--pn-elevate))),
     0 10px 28px rgba(0, 0, 0, calc(0.07 * var(--pn-elevate)));
-  backdrop-filter: blur(calc(var(--pn-elevate) * 132px)) saturate(calc(100% + (var(--pn-elevate) * 90%)));
-  -webkit-backdrop-filter: blur(calc(var(--pn-elevate) * 132px)) saturate(calc(100% + (var(--pn-elevate) * 90%)));
+  backdrop-filter: blur(
+      calc(
+        (var(--pn-elevate) * var(--pn-elevate) * 48px) +
+          (var(--pn-elevate) * 70px)
+      )
+    )
+    saturate(calc(100% + (var(--pn-elevate) * 80%)));
+  -webkit-backdrop-filter: blur(
+      calc(
+        (var(--pn-elevate) * var(--pn-elevate) * 48px) +
+          (var(--pn-elevate) * 70px)
+      )
+    )
+    saturate(calc(100% + (var(--pn-elevate) * 80%)));
 }
 
 .pn-root .mp[data-embedded="true"][data-expanded="true"] {
@@ -181,7 +206,8 @@
   border: 0;
   border-radius: 999px;
   background: transparent;
-  color: var(--pn-muted);
+  /* Interpolate ink with elevate — no font-weight snap at the midpoint */
+  color: rgba(33, 35, 36, calc(0.72 + (0.16 * var(--pn-elevate))));
   font: inherit;
   font-size: 0.875rem;
   font-weight: 560;
@@ -195,17 +221,6 @@
     color 0.22s ease,
     transform 0.18s var(--pn-ease),
     box-shadow 0.22s ease;
-}
-
-.pn-root[data-elevate="0"] .pn-link,
-.pn-root[data-elevate="0"] .pn-icon-btn {
-  color: rgba(33, 35, 36, 0.72);
-}
-
-.pn-root[data-elevate="1"] .pn-link,
-.pn-root[data-elevate="1"] .pn-icon-btn {
-  color: rgba(33, 35, 36, 0.88);
-  font-weight: 600;
 }
 
 .pn-root[data-elevate="1"] .pn-link:hover,
@@ -296,7 +311,7 @@
 .pn-icon-btn {
   width: 2.45rem;
   padding: 0;
-  color: rgba(33, 35, 36, 0.55);
+  color: rgba(33, 35, 36, calc(0.58 + (0.3 * var(--pn-elevate))));
 }
 
 .pn-icon-btn:hover {
@@ -308,11 +323,19 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 1.15rem;
-  height: 1.15rem;
+  width: 1rem;
+  height: 1rem;
+  line-height: 0;
+  flex-shrink: 0;
   transform-origin: center;
   will-change: transform;
   transition: transform 0.28s var(--pn-ease);
+}
+
+.pn-icon-face svg {
+  width: 16px;
+  height: 16px;
+  display: block;
 }
 
 /* LinkedIn — snap tilt + pop */
@@ -383,8 +406,8 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 2.7rem;
-  height: 2.7rem;
+  width: 2.55rem;
+  height: 2.55rem;
   flex-shrink: 0;
   border-radius: 50%;
   overflow: hidden;
@@ -404,10 +427,14 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center 18%;
+  object-position: center 28%;
   display: block;
-  image-rendering: pixelated;
-  image-rendering: crisp-edges;
+  /* Smooth upsample — pixelated made the small avatar look broken */
+  image-rendering: auto;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  transform: translateZ(0) scale(1.04);
+  transform-origin: center 30%;
 }
 
 .pn-avatar-mark {

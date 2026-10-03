@@ -46,8 +46,8 @@
     0 -1px 0 rgba(255, 255, 255, 0.22) inset,
     0 0 0 0.5px rgba(0, 0, 0, 0.045),
     0 10px 28px rgba(0, 0, 0, 0.07);
-  backdrop-filter: blur(132px) saturate(190%);
-  -webkit-backdrop-filter: blur(132px) saturate(190%);
+  backdrop-filter: blur(118px) saturate(180%);
+  -webkit-backdrop-filter: blur(118px) saturate(180%);
   transform-origin: top left;
   isolation: isolate;
   transition:

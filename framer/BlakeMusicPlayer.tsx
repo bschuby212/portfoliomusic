@@ -20,6 +20,7 @@ import {
     useState,
     useSyncExternalStore,
     type CSSProperties,
+    type ReactNode,
 } from "react"
 
 type TrackMetadata = {
@@ -631,22 +632,52 @@ function SlotText({ text }: { text: string }) {
     )
 }
 
-function SlotIcon({ label }: { label: string }) {
+const ICON_SIZE = 16
+const ICON_STROKE = 1.75
+
+function StrokeIcon({ children }: { children: ReactNode }) {
+    return <span className="bn-icon-face" aria-hidden="true">{children}</span>
+}
+
+function LinkedInIcon() {
     return (
-        <span className="bn-icon-face" aria-hidden="true">
-            {label}
-        </span>
+        <svg width={ICON_SIZE} height={ICON_SIZE} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={ICON_STROKE} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6z" />
+            <rect width="4" height="12" x="2" y="9" rx="0.5" />
+            <circle cx="4" cy="4" r="2" />
+        </svg>
     )
 }
 
-const ELEVATE_START_PX = 60
-const ELEVATE_END_PX = 120
+function MailIcon() {
+    return (
+        <svg width={ICON_SIZE} height={ICON_SIZE} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={ICON_STROKE} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7" />
+            <rect x="2" y="4" width="20" height="16" rx="2" />
+        </svg>
+    )
+}
+
+function FileDownIcon() {
+    return (
+        <svg width={ICON_SIZE} height={ICON_SIZE} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={ICON_STROKE} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z" />
+            <path d="M14 2v4a2 2 0 0 0 2 2h4" />
+            <path d="M12 18v-6" />
+            <path d="m9 15 3 3 3-3" />
+        </svg>
+    )
+}
+
+const ELEVATE_START_PX = 36
+const ELEVATE_END_PX = 168
 
 function elevateFromScrollY(scrollY: number): number {
     if (scrollY <= ELEVATE_START_PX) return 0
     if (scrollY >= ELEVATE_END_PX) return 1
     const t = (scrollY - ELEVATE_START_PX) / (ELEVATE_END_PX - ELEVATE_START_PX)
-    return 1 - (1 - t) ** 2.2
+    const s = t * t * (3 - 2 * t)
+    return 1 - (1 - s) ** 1.35
 }
 
 let elevateCache = 0
@@ -656,8 +687,8 @@ function subscribeElevate(onStoreChange: () => void) {
     const publish = () => {
         const next =
             Math.round(
-                elevateFromScrollY(window.scrollY || window.pageYOffset || 0) * 100,
-            ) / 100
+                elevateFromScrollY(window.scrollY || window.pageYOffset || 0) * 1000,
+            ) / 1000
         if (next === elevateCache) return
         elevateCache = next
         onStoreChange()
@@ -762,8 +793,8 @@ const css = `
   border: 1px solid rgba(255,255,255,calc(1 * var(--pn-elevate)));
   border-radius: 999px;
   box-shadow: 0 1px 0 rgba(255,255,255,calc(.8 * var(--pn-elevate))) inset, 0 -1px 0 rgba(255,255,255,calc(.22 * var(--pn-elevate))) inset, 0 0 0 .5px rgba(0,0,0,calc(.045 * var(--pn-elevate))), 0 10px 28px rgba(0,0,0,calc(.07 * var(--pn-elevate)));
-  backdrop-filter: blur(calc(var(--pn-elevate) * 132px)) saturate(calc(100% + (var(--pn-elevate) * 90%)));
-  -webkit-backdrop-filter: blur(calc(var(--pn-elevate) * 132px)) saturate(calc(100% + (var(--pn-elevate) * 90%)));
+  backdrop-filter: blur(calc((var(--pn-elevate) * var(--pn-elevate) * 48px) + (var(--pn-elevate) * 70px))) saturate(calc(100% + (var(--pn-elevate) * 80%)));
+  -webkit-backdrop-filter: blur(calc((var(--pn-elevate) * var(--pn-elevate) * 48px) + (var(--pn-elevate) * 70px))) saturate(calc(100% + (var(--pn-elevate) * 80%)));
   isolation: isolate; overflow: visible;
 }
 .bn-links {
@@ -784,8 +815,8 @@ const css = `
   border: 1px solid rgba(255,255,255,calc(1 * var(--pn-elevate)));
   border-radius: 999px; overflow: hidden;
   box-shadow: 0 1px 0 rgba(255,255,255,calc(.8 * var(--pn-elevate))) inset, 0 -1px 0 rgba(255,255,255,calc(.22 * var(--pn-elevate))) inset, 0 0 0 .5px rgba(0,0,0,calc(.045 * var(--pn-elevate))), 0 10px 28px rgba(0,0,0,calc(.07 * var(--pn-elevate)));
-  backdrop-filter: blur(calc(var(--pn-elevate) * 132px)) saturate(calc(100% + (var(--pn-elevate) * 90%)));
-  -webkit-backdrop-filter: blur(calc(var(--pn-elevate) * 132px)) saturate(calc(100% + (var(--pn-elevate) * 90%)));
+  backdrop-filter: blur(calc((var(--pn-elevate) * var(--pn-elevate) * 48px) + (var(--pn-elevate) * 70px))) saturate(calc(100% + (var(--pn-elevate) * 80%)));
+  -webkit-backdrop-filter: blur(calc((var(--pn-elevate) * var(--pn-elevate) * 48px) + (var(--pn-elevate) * 70px))) saturate(calc(100% + (var(--pn-elevate) * 80%)));
   transform-origin: top left; isolation: isolate;
   transition: width .42s var(--ease), min-height .42s var(--ease), border-radius .42s var(--ease), box-shadow .42s ease, background .3s ease;
 }
@@ -803,15 +834,13 @@ const css = `
 .bn-link, .bn-icon-btn {
   position: relative; display: inline-flex; align-items: center; justify-content: center;
   min-height: 2.45rem; padding: 0 .95rem; border: 0; border-radius: 999px;
-  background: transparent; color: var(--muted); font: inherit; font-size: .875rem;
+  background: transparent; color: rgba(33,35,36,calc(.72 + (.16 * var(--pn-elevate)))); font: inherit; font-size: .875rem; font-weight: 560;
   font-weight: 560; letter-spacing: normal; text-decoration: none; cursor: pointer;
   overflow: hidden; white-space: nowrap;
   transition: background .22s ease, color .22s ease, box-shadow .22s ease, transform .18s var(--ease);
 }
 .bn-shell[data-elevate="0"] .bn-link,
-.bn-shell[data-elevate="0"] .bn-icon-btn { color: rgba(33,35,36,.72); }
 .bn-shell[data-elevate="1"] .bn-link,
-.bn-shell[data-elevate="1"] .bn-icon-btn { color: rgba(33,35,36,.88); font-weight: 600; }
 .bn-shell[data-elevate="1"] .bn-link:hover,
 .bn-shell[data-elevate="1"] .bn-icon-btn:hover,
 .bn-shell[data-elevate="1"] .bn-link[data-active="true"] { color: #212324; }
@@ -833,7 +862,8 @@ const css = `
 .bn-link:not(:hover):not(:focus-visible) .bn-slot-reel {
   transition-duration: .32s; transition-delay: calc(var(--i, 0) * 14ms);
 }
-.bn-icon-btn { width: 2.45rem; padding: 0; color: rgba(33,35,36,.55); font-size: .72rem; font-weight: 650; }
+.bn-icon-btn { width: 2.45rem; padding: 0; color: rgba(33,35,36,calc(.58 + (.3 * var(--pn-elevate)))); font-size: .72rem; font-weight: 560; }
+.bn-icon-face svg { width:16px; height:16px; display:block; }
 .bn-icon-btn:hover { color: var(--ink); background: rgba(0,0,0,.055); }
 .bn-icon-face {
   display: inline-flex; align-items: center; justify-content: center;
@@ -863,15 +893,12 @@ const css = `
 }
 .bn-avatar {
   position: relative; display: inline-flex; align-items: center; justify-content: center;
-  width: 2.7rem; height: 2.7rem; flex-shrink: 0; border-radius: 50%; overflow: hidden;
+  width: 2.55rem; height: 2.55rem; flex-shrink: 0; border-radius: 50%; overflow: hidden;
   background: #e8e6e1; color: #fff; text-decoration: none;
   box-shadow: 0 0 0 1px rgba(255,255,255,calc(.18 * max(var(--pn-elevate), .35))) inset, 0 0 0 1.5px rgba(255,255,255,calc(.55 * max(var(--pn-elevate), .45))), 0 0 0 2.5px rgba(0,0,0,calc(.04 * max(var(--pn-elevate), .3)));
   transition: transform .28s var(--ease), box-shadow .28s ease;
 }
-.bn-avatar-img {
-  width: 100%; height: 100%; object-fit: cover; object-position: center 18%;
-  display: block; image-rendering: pixelated; image-rendering: crisp-edges;
-}
+.bn-avatar-img { width:100%; height:100%; object-fit:cover; object-position:center 28%; display:block; image-rendering:auto; transform:translateZ(0) scale(1.04); transform-origin:center 30%; }
 .bn-avatar-mark { font-size: .72rem; font-weight: 680; letter-spacing: .03em; }
 .bn-avatar:hover {
   transform: scale(1.06);
@@ -1129,7 +1156,7 @@ function BlakeNavBar(props: Props) {
                             rel="noreferrer"
                             aria-label="Open LinkedIn profile"
                         >
-                            <SlotIcon label="in" />
+                            <StrokeIcon><LinkedInIcon /></StrokeIcon>
                         </a>
                         <button
                             type="button"
@@ -1139,7 +1166,7 @@ function BlakeNavBar(props: Props) {
                                 void copyEmail()
                             }}
                         >
-                            <SlotIcon label="@" />
+                            <StrokeIcon><MailIcon /></StrokeIcon>
                         </button>
                         <a
                             className="bn-icon-btn bn-fx-nudge"
@@ -1147,7 +1174,7 @@ function BlakeNavBar(props: Props) {
                             download
                             aria-label="Download resume"
                         >
-                            <SlotIcon label="CV" />
+                            <StrokeIcon><FileDownIcon /></StrokeIcon>
                         </a>
                     </div>
                     <div className="bn-toast" data-open={Boolean(toast)} role="status" aria-live="polite">

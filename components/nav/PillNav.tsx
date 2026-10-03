@@ -7,6 +7,7 @@ import {
   useState,
   useSyncExternalStore,
   type CSSProperties,
+  type ReactNode,
 } from "react";
 import { MusicPlayer } from "@/components/music-player/MusicPlayer";
 import { usePlayerStore } from "@/components/music-player/store";
@@ -22,17 +23,20 @@ import {
 import "./pill-nav.css";
 
 const REEL_GLYPHS = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz";
+const ICON_SIZE = 16;
+const ICON_STROKE = 1.75;
 
-/** Scroll range where the glass shell materializes around the nav. */
-const ELEVATE_START_PX = 60;
-const ELEVATE_END_PX = 120;
+/** Longer range + smoother curve so text → glass doesn’t snap. */
+const ELEVATE_START_PX = 36;
+const ELEVATE_END_PX = 168;
 
 function elevateFromScrollY(scrollY: number): number {
   if (scrollY <= ELEVATE_START_PX) return 0;
   if (scrollY >= ELEVATE_END_PX) return 1;
   const t = (scrollY - ELEVATE_START_PX) / (ELEVATE_END_PX - ELEVATE_START_PX);
-  // Subtle ease-out so the glass settles in softly.
-  return 1 - (1 - t) ** 2.2;
+  // Smoothstep then gentle ease-out — glass fades in without a hard kick.
+  const s = t * t * (3 - 2 * t);
+  return 1 - (1 - s) ** 1.35;
 }
 
 let elevateCache = 0
@@ -42,8 +46,8 @@ function subscribeElevate(onStoreChange: () => void) {
   const publish = () => {
     const next =
       Math.round(
-        elevateFromScrollY(window.scrollY || window.pageYOffset || 0) * 100,
-      ) / 100;
+        elevateFromScrollY(window.scrollY || window.pageYOffset || 0) * 1000,
+      ) / 1000;
     if (next === elevateCache) return;
     elevateCache = next;
     onStoreChange();
@@ -87,11 +91,32 @@ function useNavElevate() {
   return { elevate, ready };
 }
 
+/** Lucide-style stroke mark — matches Mail / FileDown weight. */
 function LinkedInIcon() {
   return (
-    <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-      <path d="M4.98 3.5C4.98 4.88 3.88 6 2.5 6S0 4.88 0 3.5 1.12 1 2.5 1s2.48 1.12 2.48 2.5zM.5 8.5h4V23h-4V8.5zM8.5 8.5h3.8v2h.05c.53-1 1.84-2.05 3.8-2.05 4.06 0 4.8 2.67 4.8 6.15V23h-4v-6.6c0-1.57-.03-3.6-2.2-3.6-2.2 0-2.54 1.72-2.54 3.5V23h-4V8.5z" />
+    <svg
+      width={ICON_SIZE}
+      height={ICON_SIZE}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={ICON_STROKE}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6z" />
+      <rect width="4" height="12" x="2" y="9" rx="0.5" />
+      <circle cx="4" cy="4" r="2" />
     </svg>
+  );
+}
+
+function NavIcon({ children }: { children: ReactNode }) {
+  return (
+    <span className="pn-icon-face" aria-hidden="true">
+      {children}
+    </span>
   );
 }
 
@@ -186,7 +211,14 @@ export function PillNav({ current }: PillNavProps) {
           data-home={active === "/"}
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img className="pn-avatar-img" src={NAV_AVATAR_SRC} alt="" width={43} height={43} />
+          <img
+            className="pn-avatar-img"
+            src={NAV_AVATAR_SRC}
+            alt=""
+            width={64}
+            height={64}
+            decoding="async"
+          />
         </a>
 
         <div className="pn-links">
@@ -208,9 +240,9 @@ export function PillNav({ current }: PillNavProps) {
             rel="noreferrer"
             aria-label="Open LinkedIn profile"
           >
-            <span className="pn-icon-face" aria-hidden="true">
+            <NavIcon>
               <LinkedInIcon />
-            </span>
+            </NavIcon>
           </a>
           <button
             type="button"
@@ -220,9 +252,9 @@ export function PillNav({ current }: PillNavProps) {
               void copyEmail();
             }}
           >
-            <span className="pn-icon-face" aria-hidden="true">
-              <Mail size={16} strokeWidth={2} />
-            </span>
+            <NavIcon>
+              <Mail size={ICON_SIZE} strokeWidth={ICON_STROKE} absoluteStrokeWidth={false} />
+            </NavIcon>
           </button>
           <a
             className="pn-icon-btn pn-fx-nudge"
@@ -230,9 +262,9 @@ export function PillNav({ current }: PillNavProps) {
             download
             aria-label="Download resume"
           >
-            <span className="pn-icon-face" aria-hidden="true">
-              <FileDown size={16} strokeWidth={2} />
-            </span>
+            <NavIcon>
+              <FileDown size={ICON_SIZE} strokeWidth={ICON_STROKE} absoluteStrokeWidth={false} />
+            </NavIcon>
           </a>
         </div>
 
