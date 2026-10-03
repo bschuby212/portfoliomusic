@@ -1158,7 +1158,7 @@ const css = `
     calc(.48rem - (var(--pn-elevate) * .16rem))
     calc(.55rem - (var(--pn-elevate) * .23rem));
   color: var(--ink);
-  background-color: transparent;
+  background-color: rgba(250, 249, 246, calc(.45 * var(--pn-elevate)));
   background-image: linear-gradient(155deg, rgba(255,255,255,calc(1 * var(--pn-elevate))) 0%, rgba(255,255,255,calc(.54 * var(--pn-elevate))) 55%, rgba(255,255,255,calc(.76 * var(--pn-elevate))) 100%);
   border: 1px solid rgba(255,255,255,calc(1 * var(--pn-elevate)));
   border-radius: 999px;
@@ -1180,7 +1180,7 @@ const css = `
   width: 7.9rem; min-height: 3.4rem;
   display: flex; flex-direction: column; justify-content: center;
   color: #0f0f0f;
-  background-color: transparent;
+  background-color: rgba(250, 249, 246, calc(.45 * var(--pn-elevate)));
   background-image: linear-gradient(155deg, rgba(255,255,255,calc(1 * var(--pn-elevate))) 0%, rgba(255,255,255,calc(.54 * var(--pn-elevate))) 55%, rgba(255,255,255,calc(.76 * var(--pn-elevate))) 100%);
   border: 1px solid rgba(255,255,255,calc(1 * var(--pn-elevate)));
   border-radius: 999px; overflow: hidden;
@@ -1192,7 +1192,7 @@ const css = `
 }
 .bmp[data-embedded="true"][data-expanded="true"] {
   width: 21.25rem; max-width: 21.25rem; border-radius: 1.3rem;
-  background-color: transparent;
+  background-color: rgba(250, 249, 246, calc(.45 * max(var(--pn-elevate), .35)));
   background-image: linear-gradient(160deg, rgba(255,255,255,calc(1 * max(var(--pn-elevate), .35))) 0%, rgba(255,255,255,calc(.76 * max(var(--pn-elevate), .35))) 100%);
   border-color: rgba(255,255,255,calc(1 * max(var(--pn-elevate), .35)));
   box-shadow: 0 1px 0 rgba(255,255,255,calc(.78 * max(var(--pn-elevate), .35))) inset, 0 -1px 0 rgba(255,255,255,calc(.2 * max(var(--pn-elevate), .35))) inset, 0 0 0 .5px rgba(0,0,0,calc(.045 * max(var(--pn-elevate), .35))), 0 16px 40px rgba(0,0,0,calc(.09 * max(var(--pn-elevate), .35)));
