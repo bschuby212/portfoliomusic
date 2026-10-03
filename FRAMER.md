@@ -28,6 +28,16 @@ Docs: [framer.com/agents/external](https://www.framer.com/agents/external/)
 - Fixed embed shell, overflow visible, no scrollbars
 - Netlify API / logo / resume defaults
 
+## Alt: Netlify iframe (`/embed`)
+
+Nav-only transparent page for Framer / Netlify iframes (no code component):
+
+- **URL:** `https://blake-music-player.netlify.app/embed`
+- Renders only PillNav + music player
+- Transparent background, no scrollbars, overflow visible for the expanded player
+
+See [`framer/COPY_INTO_FRAMER.md`](framer/COPY_INTO_FRAMER.md) §5 for the iframe snippet.
+
 ## Alt: GitHub Link plugin
 
 Sync the `framer/` folder from this repo into Framer, then place `BlakeNavBar`.

@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { Geist } from "next/font/google";
-import { PillNav } from "@/components/nav/PillNav";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -15,11 +14,8 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" className={`${geistSans.variable} h-full antialiased`}>
-      <body className="min-h-full font-sans text-neutral-900">
-        <PillNav />
-        {children}
-      </body>
+    <html lang="en" className={`${geistSans.variable} antialiased`}>
+      <body className="font-sans text-neutral-900">{children}</body>
     </html>
   );
 }

@@ -14,3 +14,10 @@
   [headers.values]
     Access-Control-Allow-Origin = "*"
     Cache-Control = "public, max-age=31536000, immutable"
+
+# Allow Framer / Netlify parents to iframe the nav-only embed.
+[[headers]]
+  for = "/embed"
+  [headers.values]
+    Content-Security-Policy = "frame-ancestors *"
+    # Omit X-Frame-Options so CSP frame-ancestors controls embedding.

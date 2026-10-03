@@ -12,20 +12,29 @@
 }
 
 html {
-  background: var(--background);
   color-scheme: light;
   overflow-x: clip;
 }
 
 body {
   position: relative;
-  background: var(--background);
   color: var(--foreground);
   overflow-x: clip;
+  margin: 0;
 }
 
-/* Soft atmosphere so frosted glass has something to blur. */
-body::before {
+/* Marketing site atmosphere (not used on /embed). */
+html:has([data-site]) {
+  height: 100%;
+  background: var(--background);
+}
+
+html:has([data-site]) body {
+  min-height: 100%;
+  background: var(--background);
+}
+
+html:has([data-site]) body::before {
   content: "";
   position: fixed;
   inset: 0;
@@ -38,7 +47,7 @@ body::before {
     linear-gradient(180deg, #efece6 0%, #e5e2db 100%);
 }
 
-body > * {
+html:has([data-site]) body > * {
   position: relative;
   z-index: 1;
 }

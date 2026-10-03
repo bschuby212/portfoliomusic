@@ -152,3 +152,32 @@ Raw: https://raw.githubusercontent.com/bschuby212/portfoliomusic/cursor/collapse
 ## H) Expanded player
 
 Expanded panel is the official Spotify playlist embed (full tracks). Collapsed pill: note · disc · play · chevron. Do not show our playlist name in custom chrome.
+
+
+## 5) Netlify iframe embed (nav-only)
+
+If you prefer an iframe over a Framer code component, host the nav-only route:
+
+| | |
+| --- | --- |
+| **Route** | `/embed` |
+| **Production** | `https://blake-music-player.netlify.app/embed` |
+| **Local** | `http://localhost:3000/embed` |
+
+That page renders **only** PillNav + music player: transparent `html`/`body`, no marketing chrome, overflow visible for the expanded Spotify panel, scrollbars hidden.
+
+### Framer Embed / HTML embed
+
+```html
+<iframe
+  src="https://blake-music-player.netlify.app/embed"
+  title="Blake nav"
+  style="width:100%;height:420px;border:0;background:transparent;overflow:visible;"
+  allow="autoplay; encrypted-media; clipboard-write"
+  loading="lazy"
+></iframe>
+```
+
+- Frame height ~420px leaves room for the expanded Spotify iframe (~352px) under the 56px bar.
+- Keep the parent layer **Overflow = Visible** (same as BlakeNavBar).
+- Do not add a page background behind the iframe if you want glass blur against the Framer canvas.
