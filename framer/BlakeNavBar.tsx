@@ -289,14 +289,14 @@ const actions = {
         const prefs = readPrefs()
         const el = ensureAudio()
         if (el) {
-            el.volume = prefs?.volume ?? 0.8
+            el.volume = prefs?.volume ?? 0.25
             el.muted = Boolean(prefs?.muted)
         }
 
         setState({
             ...emptyState(),
             playlistName: props.playlistName || "Blake's Playlist",
-            volume: prefs?.volume ?? 0.8,
+            volume: prefs?.volume ?? 0.25,
             muted: Boolean(prefs?.muted),
             expanded: Boolean(prefs?.expanded),
             repeat: Boolean(prefs?.repeat),
@@ -1353,7 +1353,7 @@ BlakeNavBar.defaultProps = {
     aboutUrl: "https://blakeschubert.com/about",
     workUrl: "https://blakeschubert.com/#all-campus",
     lookingUrl: "https://blakeschubert.com/#why-im-looking",
-    linkedinUrl: "https://www.linkedin.com/in/",
+    linkedinUrl: "https://www.linkedin.com/in/blake-schubert/",
     email: "blakeschubertux@gmail.com",
     resumeUrl: "https://blake-music-player.netlify.app/Blake_Schubert_Product_Designer_Resume_2026.pdf",
     brandInitials: "BS",
