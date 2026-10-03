@@ -1159,12 +1159,12 @@ const css = `
     calc(.55rem - (var(--pn-elevate) * .23rem));
   color: var(--ink);
   background-color: transparent;
-  background-image: linear-gradient(155deg, rgba(255,255,255,calc(.68 * var(--pn-elevate))) 0%, rgba(255,255,255,calc(.27 * var(--pn-elevate))) 55%, rgba(255,255,255,calc(.38 * var(--pn-elevate))) 100%);
-  border: 1px solid rgba(255,255,255,calc(.86 * var(--pn-elevate)));
+  background-image: linear-gradient(155deg, rgba(255,255,255,calc(.94 * var(--pn-elevate))) 0%, rgba(255,255,255,calc(.37 * var(--pn-elevate))) 55%, rgba(255,255,255,calc(.52 * var(--pn-elevate))) 100%);
+  border: 1px solid rgba(255,255,255,calc(.95 * var(--pn-elevate)));
   border-radius: 999px;
   box-shadow: 0 1px 0 rgba(255,255,255,calc(.8 * var(--pn-elevate))) inset, 0 -1px 0 rgba(255,255,255,calc(.22 * var(--pn-elevate))) inset, 0 0 0 .5px rgba(0,0,0,calc(.045 * var(--pn-elevate))), 0 10px 28px rgba(0,0,0,calc(.07 * var(--pn-elevate)));
-  backdrop-filter: blur(calc(var(--pn-elevate) * 65px)) saturate(calc(100% + (var(--pn-elevate) * 90%)));
-  -webkit-backdrop-filter: blur(calc(var(--pn-elevate) * 65px)) saturate(calc(100% + (var(--pn-elevate) * 90%)));
+  backdrop-filter: blur(calc(var(--pn-elevate) * 90px)) saturate(calc(100% + (var(--pn-elevate) * 90%)));
+  -webkit-backdrop-filter: blur(calc(var(--pn-elevate) * 90px)) saturate(calc(100% + (var(--pn-elevate) * 90%)));
   isolation: isolate; overflow: visible;
 }
 .bn-links {
@@ -1181,20 +1181,20 @@ const css = `
   display: flex; flex-direction: column; justify-content: center;
   color: #0f0f0f;
   background-color: transparent;
-  background-image: linear-gradient(155deg, rgba(255,255,255,calc(.68 * var(--pn-elevate))) 0%, rgba(255,255,255,calc(.27 * var(--pn-elevate))) 55%, rgba(255,255,255,calc(.38 * var(--pn-elevate))) 100%);
-  border: 1px solid rgba(255,255,255,calc(.86 * var(--pn-elevate)));
+  background-image: linear-gradient(155deg, rgba(255,255,255,calc(.94 * var(--pn-elevate))) 0%, rgba(255,255,255,calc(.37 * var(--pn-elevate))) 55%, rgba(255,255,255,calc(.52 * var(--pn-elevate))) 100%);
+  border: 1px solid rgba(255,255,255,calc(.95 * var(--pn-elevate)));
   border-radius: 999px; overflow: hidden;
   box-shadow: 0 1px 0 rgba(255,255,255,calc(.8 * var(--pn-elevate))) inset, 0 -1px 0 rgba(255,255,255,calc(.22 * var(--pn-elevate))) inset, 0 0 0 .5px rgba(0,0,0,calc(.045 * var(--pn-elevate))), 0 10px 28px rgba(0,0,0,calc(.07 * var(--pn-elevate)));
-  backdrop-filter: blur(calc(var(--pn-elevate) * 65px)) saturate(calc(100% + (var(--pn-elevate) * 90%)));
-  -webkit-backdrop-filter: blur(calc(var(--pn-elevate) * 65px)) saturate(calc(100% + (var(--pn-elevate) * 90%)));
+  backdrop-filter: blur(calc(var(--pn-elevate) * 90px)) saturate(calc(100% + (var(--pn-elevate) * 90%)));
+  -webkit-backdrop-filter: blur(calc(var(--pn-elevate) * 90px)) saturate(calc(100% + (var(--pn-elevate) * 90%)));
   transform-origin: top left; isolation: isolate;
   transition: width .42s var(--ease), min-height .42s var(--ease), border-radius .42s var(--ease), box-shadow .42s ease, background .3s ease;
 }
 .bmp[data-embedded="true"][data-expanded="true"] {
   width: 21.25rem; max-width: 21.25rem; border-radius: 1.3rem;
   background-color: transparent;
-  background-image: linear-gradient(160deg, rgba(255,255,255,calc(.79 * max(var(--pn-elevate), .35))) 0%, rgba(255,255,255,calc(.38 * max(var(--pn-elevate), .35))) 100%);
-  border-color: rgba(255,255,255,calc(.9 * max(var(--pn-elevate), .35)));
+  background-image: linear-gradient(160deg, rgba(255,255,255,calc(.99 * max(var(--pn-elevate), .35))) 0%, rgba(255,255,255,calc(.52 * max(var(--pn-elevate), .35))) 100%);
+  border-color: rgba(255,255,255,calc(.95 * max(var(--pn-elevate), .35)));
   box-shadow: 0 1px 0 rgba(255,255,255,calc(.78 * max(var(--pn-elevate), .35))) inset, 0 -1px 0 rgba(255,255,255,calc(.2 * max(var(--pn-elevate), .35))) inset, 0 0 0 .5px rgba(0,0,0,calc(.045 * max(var(--pn-elevate), .35))), 0 16px 40px rgba(0,0,0,calc(.09 * max(var(--pn-elevate), .35)));
 }
 .bn-sr {
