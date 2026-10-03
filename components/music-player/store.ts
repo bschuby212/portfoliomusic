@@ -27,11 +27,11 @@ import type {
   TrackMetadata,
 } from "./types";
 
-const STORAGE_KEY = "portfolio-music-player-v2";
+const STORAGE_KEY = "portfolio-music-player-v3";
 const RESTART_THRESHOLD = 3;
 
 const DEFAULT_PREFS: PlayerPrefs = {
-  volume: 0.35,
+  volume: 0.25,
   muted: false,
   shuffle: true,
   repeat: false,

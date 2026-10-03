@@ -80,7 +80,7 @@ type Props = {
     logoUrl: string
 }
 
-const STORAGE_KEY = "blake-framer-music-player-v2"
+const STORAGE_KEY = "blake-framer-music-player-v3"
 const RESTART_THRESHOLD = 3
 const RICKROLL_ID = "4cOdK2wGLETKBW3PvgPWqT"
 
@@ -145,7 +145,7 @@ const emptyState = (): PlayerState => ({
     isPlaying: false,
     currentTime: 0,
     duration: 0,
-    volume: 0.35,
+    volume: 0.25,
     muted: false,
     shuffle: true,
     repeat: false,
