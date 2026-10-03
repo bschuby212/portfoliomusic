@@ -1,13 +1,13 @@
 # Glass Optic — Framer remake stats
 
-Frosted glass with a soft cream underfill for readability.
+Frosted glass with a subtle cream underfill for readability.
 Top-of-page state: **no fill / no blur / no border** (`elevate = 0`).
 
 ## Elevated pill (nav + music)
 
 | Token | Value | Framer |
 | --- | --- | --- |
-| Underfill | cream `#FAF9F6` @ **45%** | Fill opacity **45** (scales with elevate) |
+| Underfill | cream `#FAF9F6` @ **28%** | Fill opacity **28** (scales with elevate) |
 | Gradient | 155° over underfill | Linear gradient |
 | Stop 0% | white @ **100%** | opacity **100** |
 | Stop 55% | white @ **54%** | opacity **54** |
@@ -22,7 +22,7 @@ Top-of-page state: **no fill / no blur / no border** (`elevate = 0`).
 
 | Token | Value |
 | --- | --- |
-| Underfill | cream `#FAF9F6` @ **45%** |
+| Underfill | cream `#FAF9F6` @ **28%** |
 | Gradient | 160° · white **100% → 76%** |
 | Border | white **100%** |
 | Radius | **1.3rem** (~21px) |
@@ -31,7 +31,7 @@ Top-of-page state: **no fill / no blur / no border** (`elevate = 0`).
 
 | | Original | Now |
 | --- | --- | --- |
-| Underfill | none | **cream 45%** |
+| Underfill | none | **cream 28%** (subtle) |
 | Gradient | 42 / 14 / 22 | **100 / 54 / 76** |
 | Border | 55% | **100%** |
 | Blur | 40px | **132px** |
