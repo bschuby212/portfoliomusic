@@ -1,6 +1,6 @@
 # Glass Optic — Framer remake stats
 
-True frosted glass (not opaque). Original optic + ~22% denser fill (~15% then +7%).
+True frosted glass (not opaque). Original optic + denser fill (~15% + 7% + 27%).
 Top-of-page state: **no fill / no blur / no border**.
 
 ## Elevated pill (nav + music)
@@ -9,12 +9,12 @@ Top-of-page state: **no fill / no blur / no border**.
 | --- | --- | --- |
 | Base fill | **none / transparent** | No solid underfill |
 | Gradient | 155° | Linear gradient |
-| Stop 0% | white @ **53.5%** | `#FFFFFF` opacity **54** |
-| Stop 55% | white @ **21%** | opacity **21** |
-| Stop 100% | white @ **30%** | opacity **30** |
-| Border | white @ **68%**, **1px** | |
+| Stop 0% | white @ **68%** | `#FFFFFF` opacity **68** |
+| Stop 55% | white @ **27%** | opacity **27** |
+| Stop 100% | white @ **38%** | opacity **38** |
+| Border | white @ **86%**, **1px** | |
 | Radius | **999** (full pill) | |
-| Backdrop blur | **51px** | Background Blur **51** |
+| Backdrop blur | **65px** | Background Blur **65** |
 | Saturate | **190%** | if available |
 | Inset top | white **80%**, `0 1px 0` | |
 | Inset bottom | white **22%**, `0 -1px 0` | |
@@ -25,18 +25,18 @@ Top-of-page state: **no fill / no blur / no border**.
 
 | Token | Value |
 | --- | --- |
-| Gradient | 160° · white **62% → 30%** |
-| Border | white **71%** |
+| Gradient | 160° · white **79% → 38%** |
+| Border | white **90%** |
 | Radius | **1.3rem** (~21px) |
 | Drop shadow | black **9%**, `0 16px 40px` |
 
 ## Compared to original glass
 
-| | Original | Now (~+22%) |
+| | Original | Now |
 | --- | --- | --- |
-| Gradient | 42 / 14 / 22 | **53.5 / 21 / 30** |
-| Border | 55% | **68%** |
-| Blur | 40px | **51px** |
+| Gradient | 42 / 14 / 22 | **68 / 27 / 38** |
+| Border | 55% | **86%** |
+| Blur | 40px | **65px** |
 
 ## Type (elevated)
 
