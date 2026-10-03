@@ -304,7 +304,7 @@
 
 /* Spin the whole disc (not just the img) so playing state is obvious. */
 .mp[data-playing="true"] .mp-disc {
-  animation: mp-spin 2.8s linear infinite;
+  animation: mp-spin 3.2s linear infinite;
 }
 
 .mp-collapsed-play {
@@ -414,7 +414,7 @@
 
 .mp[data-expanded="true"][data-playing="true"] .mp-art img,
 .mp[data-expanded="true"][data-playing="true"] .mp-art-fallback {
-  animation: mp-spin 2.8s linear infinite;
+  animation: mp-spin 3.2s linear infinite;
 }
 
 .mp-art::after {

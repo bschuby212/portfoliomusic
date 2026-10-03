@@ -145,7 +145,7 @@ const emptyState = (): PlayerState => ({
     isPlaying: false,
     currentTime: 0,
     duration: 0,
-    volume: 0.8,
+    volume: 0.35,
     muted: false,
     shuffle: true,
     repeat: false,
@@ -931,7 +931,7 @@ const css = `
   font-size: .75rem; font-weight: 550; opacity: 0; pointer-events: none;
 }
 .bn-toast[data-open="true"] { opacity: 1; }
-.bmp[data-playing="true"] .bmp-disc { animation: bmp-spin 2.8s linear infinite; }
+.bmp[data-playing="true"] .bmp-disc { animation: bmp-spin 3.2s linear infinite; }
 .bmp-collapsed-chevron { color: rgba(33,35,36,.72); font-size: .85rem; line-height: 1; }
 .bmp-collapsed {
   display: flex; align-items: center; gap: .35rem;
@@ -971,7 +971,7 @@ const css = `
 }
 .bmp[data-expanded="true"][data-playing="true"] .bmp-art { border-radius: 50%; position: relative; }
 .bmp[data-expanded="true"][data-playing="true"] .bmp-art img,
-.bmp[data-expanded="true"][data-playing="true"] .bmp-art-fallback { animation: bmp-spin 2.8s linear infinite; }
+.bmp[data-expanded="true"][data-playing="true"] .bmp-art-fallback { animation: bmp-spin 3.2s linear infinite; }
 .bmp-art::after {
   content: ""; position: absolute; inset: 50%; width: .45rem; height: .45rem;
   margin: -.225rem 0 0 -.225rem; border-radius: 50%; background: #fff;
