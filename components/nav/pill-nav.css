@@ -1,5 +1,6 @@
 .pn-root {
-  --pn-elevate: 0;
+  /* Always glass — scroll morph archived on cursor/scroll-elevate-archive-653c */
+  --pn-elevate: 1;
   --pn-ink: #212324;
   --pn-muted: #6a6a6a;
   --pn-glass: rgba(255, 255, 255, 0.76);
@@ -15,16 +16,10 @@
   justify-content: center;
   width: 100%;
   box-sizing: border-box;
-  /* Wider inset at top (text bar); tighter when glass pill contracts. */
-  gap: calc(1.35rem - (var(--pn-elevate) * 0.35rem));
-  padding:
-    calc(1.2rem - (var(--pn-elevate) * 0.35rem))
-    calc(1.15rem + ((1 - var(--pn-elevate)) * 2.5vw))
-    0;
+  gap: 1rem;
+  padding: 0.85rem 1.15rem 0;
   pointer-events: none;
   overflow: visible;
-  transform: translate3d(0, calc((1 - var(--pn-elevate)) * 2px), 0);
-  will-change: transform, padding;
 }
 
 .pn,

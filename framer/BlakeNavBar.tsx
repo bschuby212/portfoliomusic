@@ -455,7 +455,10 @@ const actions = {
             return
         }
 
-        if (!el.src || el.src !== src) el.src = src
+        if (!el.getAttribute("src") || !el.src.includes(src.split("?")[0].slice(-24))) {
+            el.src = src
+            el.load()
+        }
         void el.play().catch(() => setState({ isPlaying: false }))
     },
 
@@ -666,8 +669,26 @@ function MailIcon() {
 function PauseBars() {
     return (
         <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-            <rect x="6" y="5" width="4.5" height="14" rx="1.25" />
-            <rect x="13.5" y="5" width="4.5" height="14" rx="1.25" />
+            <rect x="6.5" y="4.5" width="4" height="15" rx="0.75" />
+            <rect x="13.5" y="4.5" width="4" height="15" rx="0.75" />
+        </svg>
+    )
+}
+
+function PlayTriangle() {
+    return (
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M8 5.5v13l11-6.5L8 5.5z" />
+        </svg>
+    )
+}
+
+function NoteIcon() {
+    return (
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M9 18V5l12-2v13" />
+            <circle cx="6" cy="18" r="3" />
+            <circle cx="18" cy="16" r="3" />
         </svg>
     )
 }
@@ -683,96 +704,14 @@ function FileDownIcon() {
     )
 }
 
-const ELEVATE_START_PX = 36
-const ELEVATE_END_PX = 168
-
-function elevateFromScrollY(scrollY: number): number {
-    if (scrollY <= ELEVATE_START_PX) return 0
-    if (scrollY >= ELEVATE_END_PX) return 1
-    const t = (scrollY - ELEVATE_START_PX) / (ELEVATE_END_PX - ELEVATE_START_PX)
-    const s = t * t * (3 - 2 * t)
-    return 1 - (1 - s) ** 1.35
-}
-
-let elevateCache = 0
-
-/** Framer pages often scroll a nested viewport, not `window` — sample both. */
-function readScrollY(target: EventTarget | null = null): number {
-    let y = Math.max(
-        window.scrollY || window.pageYOffset || 0,
-        document.documentElement?.scrollTop || 0,
-        document.body?.scrollTop || 0,
-        document.scrollingElement instanceof HTMLElement
-            ? document.scrollingElement.scrollTop
-            : 0,
-    )
-
-    let node: Element | null =
-        target instanceof Element ? target : target instanceof Document ? target.documentElement : null
-    while (node) {
-        if (node instanceof HTMLElement && node.scrollTop > y) y = node.scrollTop
-        node = node.parentElement
-    }
-
-    return y
-}
-
-function subscribeElevate(onStoreChange: () => void) {
-    let frame = 0
-    let lastTarget: EventTarget | null = null
-    const publish = (target: EventTarget | null = lastTarget) => {
-        lastTarget = target
-        const next = Math.round(elevateFromScrollY(readScrollY(target)) * 1000) / 1000
-        if (next === elevateCache) return
-        elevateCache = next
-        onStoreChange()
-    }
-    const onScroll = (event?: Event) => {
-        if (frame) return
-        const target = event?.target ?? null
-        frame = window.requestAnimationFrame(() => {
-            frame = 0
-            publish(target)
-        })
-    }
-    publish()
-    // Capture phase so nested Framer scroll containers still drive the glass morph.
-    window.addEventListener("scroll", onScroll, { passive: true, capture: true })
-    document.addEventListener("scroll", onScroll, { passive: true, capture: true })
-    window.addEventListener("resize", onScroll, { passive: true })
-    return () => {
-        if (frame) window.cancelAnimationFrame(frame)
-        window.removeEventListener("scroll", onScroll, true)
-        document.removeEventListener("scroll", onScroll, true)
-        window.removeEventListener("resize", onScroll)
-    }
-}
-
-function getElevateSnapshot() {
-    return elevateCache
-}
-
-function getElevateServerSnapshot() {
-    return 0
-}
-
+/** Always-on glass — scroll morph archived on cursor/scroll-elevate-archive-653c */
 function useNavElevate() {
-    const elevate = useSyncExternalStore(
-        subscribeElevate,
-        getElevateSnapshot,
-        getElevateServerSnapshot,
-    )
-    const ready = useSyncExternalStore(
-        () => () => {},
-        () => true,
-        () => false,
-    )
-    return { elevate, ready }
+    return { elevate: 1, ready: true }
 }
 
 /**
  * Fixed embed chrome: collapsed pills only. Expanded player overflows visibly.
- * Top of page: responsive text-only nav. After scroll: glass optic pill.
+ * Always-on glass optic pill (scroll morph archived).
  * @framerSupportedLayoutWidth fixed
  * @framerSupportedLayoutHeight fixed
  * @framerIntrinsicWidth 720
@@ -780,7 +719,7 @@ function useNavElevate() {
  */
 const css = `
 .bn-shell {
-  --pn-elevate: 0;
+  --pn-elevate: 1;
   position: relative;
   box-sizing: border-box;
   width: 720px;
@@ -808,7 +747,7 @@ const css = `
   width: 720px; height: 56px; max-width: 720px; max-height: 56px;
   overflow: visible; overscroll-behavior: none;
   scrollbar-width: none; -ms-overflow-style: none; pointer-events: none;
-  transform: translate3d(0, calc((1 - var(--pn-elevate)) * 2px), 0);
+  transform: none;
 }
 .bn-root::-webkit-scrollbar { display: none; width: 0; height: 0; }
 .bn, .bn-music { --ink: #212324; --muted: #6a6a6a; --ease: cubic-bezier(.32,.72,0,1); }
@@ -1208,13 +1147,13 @@ function BlakeNavBar(props: Props) {
                     onClick={() => actions.setExpanded(true)}
                 >
                     <span className="bmp-icon" aria-hidden="true">
-                        ♪
+                        <NoteIcon />
                     </span>
                     <span className="bmp-disc" aria-hidden="true">
                         {track?.metadata?.artworkUrl ? (
                             <img src={track.metadata.artworkUrl} alt="" />
                         ) : (
-                            <span className="bmp-disc-fallback">♪</span>
+                            <span className="bmp-disc-fallback"><NoteIcon /></span>
                         )}
                     </span>
                     <button
@@ -1227,7 +1166,7 @@ function BlakeNavBar(props: Props) {
                             actions.togglePlay(props.apiBaseUrl)
                         }}
                     >
-                        {player.isPlaying ? <PauseBars /> : "▶"}
+                        {player.isPlaying ? <PauseBars /> : <PlayTriangle />}
                     </button>
                     <button
                         type="button"
@@ -1249,7 +1188,7 @@ function BlakeNavBar(props: Props) {
                                 {track?.metadata?.artworkUrl ? (
                                     <img src={track.metadata.artworkUrl} alt="" />
                                 ) : (
-                                    <div className="bmp-art-fallback">♪</div>
+                                    <div className="bmp-art-fallback"><NoteIcon /></div>
                                 )}
                             </div>
                             <div className="bmp-meta">
@@ -1280,7 +1219,7 @@ function BlakeNavBar(props: Props) {
                                 aria-label={player.isPlaying ? "Pause" : "Play"}
                                 onClick={() => actions.togglePlay(props.apiBaseUrl)}
                             >
-                                {player.isPlaying ? <PauseBars /> : "▶"}
+                                {player.isPlaying ? <PauseBars /> : <PlayTriangle />}
                             </button>
                             <button type="button" className="bmp-ctrl" aria-label="Next" onClick={() => actions.next(false, props.apiBaseUrl)}>
                                 ⏭
@@ -1355,9 +1294,9 @@ BlakeNavBar.defaultProps = {
     lookingUrl: "https://blakeschubert.com/#why-im-looking",
     linkedinUrl: "https://www.linkedin.com/in/blake-schubert/",
     email: "blakeschubertux@gmail.com",
-    resumeUrl: "https://blake-music-player.netlify.app/Blake_Schubert_Product_Designer_Resume_2026.pdf",
+    resumeUrl: "https://raw.githubusercontent.com/bschuby212/portfoliomusic/main/public/Blake_Schubert_Product_Designer_Resume_2026.pdf",
     brandInitials: "BS",
-    logoUrl: "https://blake-music-player.netlify.app/avatar.png",
+    logoUrl: "https://raw.githubusercontent.com/bschuby212/portfoliomusic/main/public/avatar.png",
 }
 
 addPropertyControls(BlakeNavBar, {
@@ -1407,7 +1346,7 @@ addPropertyControls(BlakeNavBar, {
     resumeUrl: {
         type: ControlType.String,
         title: "Resume URL",
-        defaultValue: "https://blake-music-player.netlify.app/Blake_Schubert_Product_Designer_Resume_2026.pdf",
+        defaultValue: "https://raw.githubusercontent.com/bschuby212/portfoliomusic/main/public/Blake_Schubert_Product_Designer_Resume_2026.pdf",
     },
     brandInitials: {
         type: ControlType.String,
@@ -1417,7 +1356,7 @@ addPropertyControls(BlakeNavBar, {
     logoUrl: {
         type: ControlType.String,
         title: "Logo URL",
-        defaultValue: "https://blake-music-player.netlify.app/avatar.png",
+        defaultValue: "https://raw.githubusercontent.com/bschuby212/portfoliomusic/main/public/avatar.png",
     },
     playlistUrl: {
         type: ControlType.String,

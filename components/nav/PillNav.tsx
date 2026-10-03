@@ -2,11 +2,7 @@
 
 import { FileDown, Mail } from "lucide-react";
 import { usePathname } from "next/navigation";
-import {
-  useSyncExternalStore,
-  type CSSProperties,
-  type ReactNode,
-} from "react";
+import { type CSSProperties, type ReactNode } from "react";
 import { MusicPlayer } from "@/components/music-player/MusicPlayer";
 import { usePlayerStore } from "@/components/music-player/store";
 import {
@@ -25,97 +21,6 @@ import "./pill-nav.css";
 const REEL_GLYPHS = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz";
 const ICON_SIZE = 16;
 const ICON_STROKE = 1.75;
-
-/** Longer range + smoother curve so text → glass doesn’t snap. */
-const ELEVATE_START_PX = 36;
-const ELEVATE_END_PX = 168;
-
-function elevateFromScrollY(scrollY: number): number {
-  if (scrollY <= ELEVATE_START_PX) return 0;
-  if (scrollY >= ELEVATE_END_PX) return 1;
-  const t = (scrollY - ELEVATE_START_PX) / (ELEVATE_END_PX - ELEVATE_START_PX);
-  // Smoothstep then gentle ease-out — glass fades in without a hard kick.
-  const s = t * t * (3 - 2 * t);
-  return 1 - (1 - s) ** 1.35;
-}
-
-let elevateCache = 0;
-
-function readScrollY(target: EventTarget | null = null): number {
-  let y = Math.max(
-    window.scrollY || window.pageYOffset || 0,
-    document.documentElement?.scrollTop || 0,
-    document.body?.scrollTop || 0,
-    document.scrollingElement instanceof HTMLElement
-      ? document.scrollingElement.scrollTop
-      : 0,
-  );
-
-  let node: Element | null =
-    target instanceof Element
-      ? target
-      : target instanceof Document
-        ? target.documentElement
-        : null;
-  while (node) {
-    if (node instanceof HTMLElement && node.scrollTop > y) y = node.scrollTop;
-    node = node.parentElement;
-  }
-
-  return y;
-}
-
-function subscribeElevate(onStoreChange: () => void) {
-  let frame = 0;
-  let lastTarget: EventTarget | null = null;
-  const publish = (target: EventTarget | null = lastTarget) => {
-    lastTarget = target;
-    const next = Math.round(elevateFromScrollY(readScrollY(target)) * 1000) / 1000;
-    if (next === elevateCache) return;
-    elevateCache = next;
-    onStoreChange();
-  };
-  const onScroll = (event?: Event) => {
-    if (frame) return;
-    const target = event?.target ?? null;
-    frame = window.requestAnimationFrame(() => {
-      frame = 0;
-      publish(target);
-    });
-  };
-  publish();
-  window.addEventListener("scroll", onScroll, { passive: true, capture: true });
-  document.addEventListener("scroll", onScroll, { passive: true, capture: true });
-  window.addEventListener("resize", onScroll, { passive: true });
-  return () => {
-    if (frame) window.cancelAnimationFrame(frame);
-    window.removeEventListener("scroll", onScroll, true);
-    document.removeEventListener("scroll", onScroll, true);
-    window.removeEventListener("resize", onScroll);
-  };
-}
-
-function getElevateSnapshot() {
-  return elevateCache;
-}
-
-function getElevateServerSnapshot() {
-  return 0;
-}
-
-function useNavElevate() {
-  const elevate = useSyncExternalStore(
-    subscribeElevate,
-    getElevateSnapshot,
-    getElevateServerSnapshot,
-  );
-  const ready = useSyncExternalStore(
-    () => () => {},
-    () => true,
-    () => false,
-  );
-  return { elevate, ready };
-}
 
 /** Lucide-style stroke mark — matches Mail / FileDown weight. */
 function LinkedInIcon() {
@@ -185,20 +90,18 @@ type PillNavProps = {
   current?: string;
 };
 
+/** Always-on glass pill nav — no scroll morph. */
 export function PillNav({ current }: PillNavProps) {
   const pathname = usePathname();
   const active = current ?? pathname;
   const player = usePlayerStore();
-  const { elevate, ready } = useNavElevate();
-
-  const elevated = elevate >= 0.5;
 
   return (
     <div
       className="pn-root"
-      data-elevate={elevated ? "1" : "0"}
-      data-elevate-ready={ready ? "true" : "false"}
-      style={{ "--pn-elevate": String(elevate) } as CSSProperties}
+      data-elevate="1"
+      data-elevate-ready="true"
+      style={{ "--pn-elevate": "1" } as CSSProperties}
     >
       <nav className="pn" aria-label={`${NAV_BRAND} primary`}>
         <a

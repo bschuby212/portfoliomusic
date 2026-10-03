@@ -42,13 +42,11 @@ VISUAL TOKENS (already baked into the file — do not change):
 - Radius: 999 (pill)
 - Backdrop blur: 132px, saturate 190%
 - Shadow: black 7%, Y 10, Blur 28
-- Scroll morph: 36px → 168px (plain text nav → glass pill)
-- Top of page (scroll 0): no fill / no blur / no border
+- Always-on glass pill (no scroll morph — archived on cursor/scroll-elevate-archive-653c)
 
 DONE WHEN:
 - Code file exists in the Framer project
 - One instance is on the canvas at 720×56, Overflow Visible
-- Scrolling the Framer page morphs plain nav → glass pill
 - Confirm with a screenshot if you can
 ```
 
@@ -99,7 +97,7 @@ Controls:        note · disc · play/pause · expand chevron
 Frame:           720 × 56
 Overflow:        Visible
 Gap nav↔music:   16px
-Scroll morph:    36 → 168px
+Glass:           always on
 ```
 
 ### Links

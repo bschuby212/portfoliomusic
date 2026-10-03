@@ -78,16 +78,13 @@ export async function GET(request: Request) {
     }
   }
 
-  // Spotify playlist/metadata stay on Spotify. Many tracks have null preview_url,
-  // so we resolve a 30s clip via Deezer (same as before). Never cache dead HMAC links.
+  // Spotify often returns null preview_url. Prefer iTunes (stable CORS URLs);
+  // Deezer HMAC links frequently 403 from serverless / after cache.
   if (!metadata.previewUrl || !(await isReachableAudio(metadata.previewUrl))) {
-    const deezer = await fetchDeezerPreview(metadata.title, metadata.artist);
-    if (deezer && (await isReachableAudio(deezer))) {
-      metadata.previewUrl = deezer;
-    } else {
-      // Last resort only if Deezer is down — still Spotify track list/UI.
-      metadata.previewUrl = await fetchItunesPreview(metadata.title, metadata.artist);
-    }
+    metadata.previewUrl =
+      (await fetchItunesPreview(metadata.title, metadata.artist)) ||
+      (await fetchDeezerPreview(metadata.title, metadata.artist)) ||
+      null;
   }
 
   return jsonWithCors(request, metadata, {
