@@ -85,11 +85,11 @@ const RESTART_THRESHOLD = 3
 const RICKROLL_ID = "4cOdK2wGLETKBW3PvgPWqT"
 
 /**
- * Temporary filler playlist with local audio on the Netlify host.
- * Flip to false when Blake sends the real Spotify playlist URL.
+ * Local filler was for early demos. Real playlist is live — keep false.
  */
 const USE_FILLER_PLAYLIST = false
-const SPOTIFY_EMBED_URL = "https://open.spotify.com/embed/playlist/5zXp8gIyEeJteiSZj1RTqJ?utm_source=generator"
+const SPOTIFY_EMBED_URL =
+    "https://open.spotify.com/embed/playlist/5zXp8gIyEeJteiSZj1RTqJ?utm_source=generator"
 const FILLER_TRACKS = [
     {
         id: "4sebUbjqbcgDSwG6PbSGI0",
@@ -165,6 +165,7 @@ let audio: HTMLAudioElement | null = null
 let initializedKey = ""
 let pendingAutoplay = false
 let endedLock = false
+let lastApiBase = ""
 
 function emit() {
     listeners.forEach((listener) => listener())
@@ -237,6 +238,19 @@ function loadCurrent(autoplay: boolean) {
         el.pause()
         el.removeAttribute("src")
         setState({ hasAudio: false, currentTime: 0, duration: 0, isPlaying: false })
+        if (autoplay && track && track.metadataStatus !== "ready") {
+            if (typeof trackIndex === "number") {
+                void actions.ensureTrackMetadata(lastApiBase, trackIndex).then(() => {
+                    if (playableSrc(currentTrack())) {
+                        loadCurrent(true)
+                        return
+                    }
+                    actions.skipUnplayableForward()
+                })
+            }
+        } else if (autoplay) {
+            actions.skipUnplayableForward()
+        }
         return
     }
     el.src = src
@@ -248,6 +262,12 @@ function loadCurrent(autoplay: boolean) {
         el.pause()
         setState({ isPlaying: false })
     }
+}
+
+function currentTrack() {
+    const trackIndex = state.queue[state.queueIndex]
+    if (typeof trackIndex !== "number") return undefined
+    return state.tracks[trackIndex]
 }
 
 function persist() {
@@ -305,6 +325,7 @@ const actions = {
         })
 
         const base = props.apiBaseUrl.replace(/\/$/, "")
+        lastApiBase = base
 
         try {
             const tracks = USE_FILLER_PLAYLIST
@@ -410,6 +431,16 @@ const actions = {
                 const shouldPlay = pendingAutoplay || state.isPlaying
                 pendingAutoplay = false
                 loadCurrent(shouldPlay)
+            } else {
+                const isCurrent = state.queue[state.queueIndex] === trackIndex
+                if (
+                    isCurrent &&
+                    !playableSrc(state.tracks[trackIndex]) &&
+                    (pendingAutoplay || state.isPlaying)
+                ) {
+                    pendingAutoplay = false
+                    actions.skipUnplayableForward()
+                }
             }
         } catch {
             setState((current) => {
@@ -419,6 +450,13 @@ const actions = {
                 tracks[trackIndex] = { ...existing, metadataStatus: "error" }
                 return { ...current, tracks }
             })
+            if (
+                state.queue[state.queueIndex] === trackIndex &&
+                (pendingAutoplay || state.isPlaying)
+            ) {
+                pendingAutoplay = false
+                actions.skipUnplayableForward()
+            }
         }
     },
 
@@ -459,17 +497,47 @@ const actions = {
             return
         }
         const nextIndex = state.queueIndex + 1
+        // Always wrap so collapsed preview keeps looping.
         if (nextIndex >= state.queue.length) {
             pendingAutoplay = true
             setState({ queueIndex: 0 })
             loadCurrent(true)
-            if (apiBaseUrl) void actions.ensureNearbyMetadata(apiBaseUrl)
+            if (apiBaseUrl || lastApiBase) {
+                void actions.ensureNearbyMetadata(apiBaseUrl || lastApiBase)
+            }
             return
         }
         pendingAutoplay = true
         setState({ queueIndex: nextIndex })
         loadCurrent(true)
-        if (apiBaseUrl) void actions.ensureNearbyMetadata(apiBaseUrl)
+        if (apiBaseUrl || lastApiBase) {
+            void actions.ensureNearbyMetadata(apiBaseUrl || lastApiBase)
+        }
+    },
+
+    /** Advance past tracks with no preview / audioSrc (wraps once through the queue). */
+    skipUnplayableForward() {
+        const len = state.queue.length
+        if (len <= 1) return
+        const start = state.queueIndex
+        for (let step = 1; step < len; step += 1) {
+            const qi = (start + step) % len
+            const track = state.tracks[state.queue[qi] ?? -1]
+            if (playableSrc(track)) {
+                pendingAutoplay = true
+                setState({ queueIndex: qi })
+                loadCurrent(true)
+                if (lastApiBase) void actions.ensureNearbyMetadata(lastApiBase)
+                return
+            }
+            if (track && track.metadataStatus !== "ready" && track.metadataStatus !== "error") {
+                pendingAutoplay = true
+                setState({ queueIndex: qi })
+                loadCurrent(true)
+                if (lastApiBase) void actions.ensureNearbyMetadata(lastApiBase)
+                return
+            }
+        }
     },
 
     previous(apiBaseUrl: string) {
@@ -539,6 +607,7 @@ const actions = {
     },
 
     setExpanded(expanded: boolean) {
+        // Pause HTML preview when opening the Spotify embed so audio doesn’t double up.
         if (expanded && state.isPlaying) {
             audio?.pause()
             setState({ expanded, volumeOpen: false, isPlaying: false })
@@ -924,10 +993,11 @@ const css = `
   100% { box-shadow: inset 0 0 0 1px rgba(0,0,0,.06), 0 0 0 0 rgba(33,35,36,0); }
 }
 .bmp-collapsed-chevron { color: rgba(33,35,36,.72); font-size: .85rem; line-height: 1; }
-.bmp-embed-bar { display:flex; justify-content:flex-end; margin-bottom:.45rem; }
-.bmp-expanded-embed { padding-top:.65rem !important; }
-.bmp-embed-frame { width:100%; border-radius:12px; overflow:hidden; background:#000; line-height:0; }
-.bmp-embed-frame iframe { display:block; width:100%; border:0; border-radius:12px; }
+.bmp-collapsed-chevron:hover { color: #212324; }
+.bmp-embed-bar { display:flex; align-items:center; justify-content:flex-end; min-height:1.75rem; margin-bottom:.25rem; }
+.bmp-expanded-embed { padding: .45rem .55rem .6rem !important; }
+.bmp-embed-frame { width:100%; max-width:352px; margin:0 auto; border-radius:.75rem; overflow:hidden; background:#000; line-height:0; }
+.bmp-embed-frame iframe { display:block; width:100%; height:352px; border:0; }
 .bmp-collapsed {
   display: flex; align-items: center; gap: .35rem;
   height: 2.5rem; padding: 0 .3rem 0 .55rem; cursor: pointer;
@@ -1067,16 +1137,6 @@ function BlakeNavBar(props: Props) {
         return () => window.clearTimeout(timer)
     }, [toast])
 
-    const title = track?.metadata?.title
-        ? track.metadata.title
-        : !player.ready
-          ? "Loading playlist"
-          : track?.metadataStatus === "loading"
-            ? "Loading track"
-            : "Untitled track"
-    const artist = track?.metadata?.artist || ""
-    const progressMax = player.duration > 0 ? player.duration : 0
-    const progressValue = progressMax > 0 ? Math.min(player.currentTime, progressMax) : 0
     const elevated = elevate >= 0.5
 
     async function copyEmail() {
@@ -1258,7 +1318,7 @@ function BlakeNavBar(props: Props) {
                         <div className="bmp-embed-frame">
                             <iframe
                                 title="Spotify playlist"
-                                src="https://open.spotify.com/embed/playlist/5zXp8gIyEeJteiSZj1RTqJ?utm_source=generator"
+                                src={SPOTIFY_EMBED_URL}
                                 width="100%"
                                 height={352}
                                 frameBorder={0}
