@@ -1,73 +1,105 @@
-# Copy into Framer
+# FULL COPY-PASTE FOR FRAMER
 
-## A) Paste this to Framer Agent
-
-```
-Create a Framer code component from this repo. Do not redesign it.
-
-Source file (use verbatim): framer/BlakeMusicPlayer.tsx
-Component name: BlakeNavBar
-Default export: BlakeNavBar
-
-1. Read framer/BlakeMusicPlayer.tsx in full.
-2. Create/overwrite Framer code file BlakeNavBar with exactly that source.
-3. Place ONE instance on a site-wide desktop overlay / template.
-4. Pin near top, horizontally centered, high z-index.
-5. Frame: fixed 720 × 56 (not fill, not hug).
-6. Overflow = Visible. Scroll = off. No clipping parent.
-7. Keep default link props (blakeschubert.com).
-8. Music player expands outside the 720×56 shell on purpose — must stay visible.
-
-Done when: code file exists, one instance on canvas at 720×56 overflow visible.
-```
-
-If the agent can’t read the repo, also paste the full contents of `framer/BlakeMusicPlayer.tsx`.
-
-
-## B) Manual glass values (elevated pill)
-
-Use these on the elevated / scrolled glass state:
+## 1) Paste this entire block to Framer Agent
 
 ```
-Underfill:     #FAF9F6 @ 35% opacity
-Gradient:      155°
-  0%:          #FFFFFF @ 100%
-  55%:         #FFFFFF @ 54%
-  100%:        #FFFFFF @ 76%
-Border:        #FFFFFF @ 100%, 1px
-Radius:        999 (full pill)
+Create a Framer CODE COMPONENT from this repo. Do not redesign it.
+
+SOURCE OF TRUTH (use verbatim):
+- File: framer/BlakeMusicPlayer.tsx
+- Component name: BlakeNavBar
+- Default export: BlakeNavBar
+
+STEPS:
+1. Read framer/BlakeMusicPlayer.tsx in full from the repo.
+2. Create or overwrite a Framer code file named BlakeNavBar with EXACTLY that source.
+3. Do not rewrite, simplify, restyle, or split the file.
+4. Place ONE BlakeNavBar instance on a site-wide desktop overlay / template (or every primary page if no overlay exists).
+5. Pin near the top, horizontally centered, high z-index above page content.
+6. Frame size: FIXED 720 × 56 (not fill, not hug).
+7. Layer Overflow = Visible. Scroll = off. No clipping parent.
+8. Music player expands outside the 720×56 shell on purpose — must stay visible (no scrollbars).
+9. Keep these default link props:
+   - Home: https://blakeschubert.com/
+   - About: https://blakeschubert.com/about
+   - Work: https://blakeschubert.com/#all-campus
+   - Why I'm looking: https://blakeschubert.com/#why-im-looking
+
+VISUAL TOKENS (already baked into the file — do not change):
+- Ink / text: #212324
+- Muted: #6a6a6a
+- Elevated underfill: #FAF9F6 @ 35%
+- Elevated gradient 155°: white 100% → 54% → 76%
+- Border: white 100%, 1px
+- Radius: 999 (pill)
+- Backdrop blur: 132px, saturate 190%
+- Shadow: black 7%, Y 10, Blur 28
+- Scroll morph: 60px → 120px (plain text nav → glass pill)
+- Top of page (scroll 0): no fill / no blur / no border
+
+DONE WHEN:
+- Code file exists in the Framer project
+- One instance is on the canvas at 720×56, Overflow Visible
+- Confirm with a screenshot if you can
+```
+
+If the agent cannot read the repo, paste the full contents of `framer/BlakeMusicPlayer.tsx` after the prompt and say: “Use this exact file contents as the code component.”
+
+
+## 2) Manual remake values (if not using the code component)
+
+### Text
+```
+Ink / body text: #212324
+Muted:           #6a6a6a
+Elevated links:  #212324 @ 88%
+Top links:       #212324 @ 72%
+Icons:           #212324 @ 55% → 88% elevated
+```
+
+### Elevated glass pill
+```
+Underfill:       #FAF9F6 @ 35%
+Gradient:        155°
+  0%:            #FFFFFF @ 100%
+  55%:           #FFFFFF @ 54%
+  100%:          #FFFFFF @ 76%
+Border:          #FFFFFF @ 100%, 1px
+Radius:          999
 Background Blur: 132
-Saturate:      190% (if available)
-Shadow:        black 7%, X 0, Y 10, Blur 28, Spread 0
+Saturate:        190%
+Shadow:          black 7%, X 0, Y 10, Blur 28, Spread 0
 ```
 
-Top-of-page (scroll 0): no underfill, no gradient, no border, no blur.
-
-
-## C) Expanded music panel
-
+### Expanded music panel
 ```
-Underfill:     #FAF9F6 @ 35%
-Gradient:      160° · #FFFFFF 100% → 76%
-Border:        #FFFFFF @ 100%
-Radius:        21px (1.3rem)
+Underfill:       #FAF9F6 @ 35%
+Gradient:        160° · #FFFFFF 100% → 76%
+Border:          #FFFFFF @ 100%
+Radius:          21px
 ```
 
-
-## D) Layout shell
-
+### Layout
 ```
-Frame:         720 × 56
-Overflow:      Visible
-Gap nav↔music: 16px
-Scroll morph:  60px → 120px (text bar → glass pill)
+Frame:           720 × 56
+Overflow:        Visible
+Gap nav↔music:   16px
+Scroll morph:    60 → 120px
 ```
 
+### Links
+```
+Home:            https://blakeschubert.com/
+About:           https://blakeschubert.com/about
+Work:            https://blakeschubert.com/#all-campus
+Why I'm looking: https://blakeschubert.com/#why-im-looking
+```
 
-## E) CSS you can paste into a code component / style block
+
+## 3) CSS paste (elevated state)
 
 ```css
-/* Elevated glass (when --pn-elevate: 1) */
+color: #212324;
 background-color: rgba(250, 249, 246, 0.35);
 background-image: linear-gradient(
   155deg,
@@ -86,9 +118,10 @@ backdrop-filter: blur(132px) saturate(190%);
 -webkit-backdrop-filter: blur(132px) saturate(190%);
 ```
 
-Scroll-driven version (0 → 1):
+### Scroll-driven (0 → 1)
 
 ```css
+color: #212324;
 background-color: rgba(250, 249, 246, calc(0.35 * var(--pn-elevate)));
 background-image: linear-gradient(
   155deg,
@@ -102,19 +135,8 @@ backdrop-filter: blur(calc(var(--pn-elevate) * 132px)) saturate(calc(100% + (var
 ```
 
 
-## F) Link defaults
+## 4) Full component source
 
-```
-Home:            https://blakeschubert.com/
-About:           https://blakeschubert.com/about
-Work:            https://blakeschubert.com/#all-campus
-Why I'm looking: https://blakeschubert.com/#why-im-looking
-```
-
-
-## G) Text / ink
-
-```
-Ink / body text: #212324
-Muted:           #6a6a6a
-```
+Repo path: `framer/BlakeMusicPlayer.tsx`  
+Branch: `cursor/collapsed-album-spin-653c`  
+Raw: https://raw.githubusercontent.com/bschuby212/portfoliomusic/cursor/collapsed-album-spin-653c/framer/BlakeMusicPlayer.tsx
