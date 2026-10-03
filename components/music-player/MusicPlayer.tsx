@@ -108,9 +108,9 @@ export function MusicPlayer({ embedded = false }: MusicPlayerProps) {
           }}
         >
           {state.isPlaying ? (
-            <PauseIcon size={14} />
+            <PauseIcon size={12} />
           ) : (
-            <Play size={14} strokeWidth={0} fill="currentColor" absoluteStrokeWidth />
+            <Play size={13} strokeWidth={0} fill="currentColor" absoluteStrokeWidth />
           )}
         </button>
         <button
@@ -291,7 +291,7 @@ export function MusicPlayer({ embedded = false }: MusicPlayerProps) {
   );
 }
 
-/** Crisp filled pause bars — Lucide's stroked Pause looks soft at 14px. */
+/** Crisp filled pause bars — avoid Lucide stroke+fill mush under glass blur. */
 function PauseIcon({ size }: { size: number }) {
   return (
     <svg
@@ -301,10 +301,11 @@ function PauseIcon({ size }: { size: number }) {
       fill="currentColor"
       aria-hidden="true"
       focusable="false"
-      style={{ display: "block" }}
+      shapeRendering="crispEdges"
+      style={{ display: "block", transform: "translateZ(0)" }}
     >
-      <rect x="6" y="5" width="4.5" height="14" rx="1.25" />
-      <rect x="13.5" y="5" width="4.5" height="14" rx="1.25" />
+      <rect x="6.5" y="4.5" width="4" height="15" rx="0.75" />
+      <rect x="13.5" y="4.5" width="4" height="15" rx="0.75" />
     </svg>
   );
 }

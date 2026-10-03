@@ -308,11 +308,18 @@
 }
 
 .mp-collapsed-play {
+  /* Own compositor layer so backdrop-filter on the glass pill doesn’t soft-blur the glyph. */
+  transform: translateZ(0);
+  backface-visibility: hidden;
   transition:
     background 0.18s ease,
-    transform 0.16s ease,
     opacity 0.18s ease,
     box-shadow 0.3s ease;
+}
+
+.mp-collapsed-play svg {
+  display: block;
+  transform: translateZ(0);
 }
 
 .mp-collapsed-chevron {
