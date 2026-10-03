@@ -1,6 +1,6 @@
 .pn-root {
   --pn-elevate: 0;
-  --pn-ink: #0f0f0f;
+  --pn-ink: #212324;
   --pn-muted: #6a6a6a;
   --pn-glass: rgba(255, 255, 255, 0.76);
   --pn-glass-border: rgba(255, 255, 255, 1);
@@ -29,7 +29,7 @@
 
 .pn,
 .pn-music {
-  --pn-ink: #0f0f0f;
+  --pn-ink: #212324;
   --pn-muted: #6a6a6a;
   --pn-glass: rgba(255, 255, 255, 0.72);
   --pn-glass-border: rgba(255, 255, 255, 1);

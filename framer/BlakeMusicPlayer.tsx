@@ -1143,7 +1143,7 @@ const css = `
   transform: translate3d(0, calc((1 - var(--pn-elevate)) * 2px), 0);
 }
 .bn-root::-webkit-scrollbar { display: none; width: 0; height: 0; }
-.bn, .bn-music { --ink: #0f0f0f; --muted: #6a6a6a; --ease: cubic-bezier(.32,.72,0,1); }
+.bn, .bn-music { --ink: #212324; --muted: #6a6a6a; --ease: cubic-bezier(.32,.72,0,1); }
 .bn {
   pointer-events: auto; position: relative;
   display: flex; align-items: center;
@@ -1179,7 +1179,7 @@ const css = `
   position: absolute; top: 0; left: 0; z-index: 2;
   width: 7.9rem; min-height: 3.4rem;
   display: flex; flex-direction: column; justify-content: center;
-  color: #0f0f0f;
+  color: #212324;
   background-color: rgba(250, 249, 246, calc(.35 * var(--pn-elevate)));
   background-image: linear-gradient(155deg, rgba(255,255,255,calc(1 * var(--pn-elevate))) 0%, rgba(255,255,255,calc(.54 * var(--pn-elevate))) 55%, rgba(255,255,255,calc(.76 * var(--pn-elevate))) 100%);
   border: 1px solid rgba(255,255,255,calc(1 * var(--pn-elevate)));

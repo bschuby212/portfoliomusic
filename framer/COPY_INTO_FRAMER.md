@@ -110,3 +110,11 @@ About:           https://blakeschubert.com/about
 Work:            https://blakeschubert.com/#all-campus
 Why I'm looking: https://blakeschubert.com/#why-im-looking
 ```
+
+
+## G) Text / ink
+
+```
+Ink / body text: #212324
+Muted:           #6a6a6a
+```
