@@ -23,6 +23,16 @@ body {
   margin: 0;
 }
 
+/* /embed must paint outside the collapsed nav footprint when iframed. */
+html:has([data-embed]),
+html[data-embed],
+html:has([data-embed]) body,
+body[data-embed] {
+  overflow: visible;
+  overflow-x: visible;
+  overflow-y: visible;
+}
+
 /* Marketing site atmosphere (not used on /embed). */
 html:has([data-site]) {
   height: 100%;
