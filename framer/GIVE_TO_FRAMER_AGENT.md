@@ -1,6 +1,6 @@
 # Give this to your Framer agent
 
-Do **not** use a Netlify iframe for the nav. Iframes can’t see Framer scroll, so the glass morph never runs. Install the **code component** below. Keep Netlify only as the API host (`apiBaseUrl`).
+Install the **code component** below (always-on glass pill — no scroll morph). Keep Netlify as the API host (`apiBaseUrl`).
 
 ## Before you paste (once)
 
@@ -37,12 +37,12 @@ Create a Framer **code component** from this repo and put it on the site. Do not
    - Why I'm looking → `https://blakeschubert.com/#why-im-looking`
    - Email → `blakeschubertux@gmail.com`
 6. Music player expands outside the 720×56 shell on purpose — that must stay visible (no scrollbars).
-7. Confirm scrolling the **Framer page** morphs plain text nav → glass pill.
+7. Confirm the nav renders as a glass pill immediately (no scroll needed).
 
 ### Done when
 - Code file exists in the Framer project
 - One instance is on the canvas at 720×56, overflow visible
-- Scroll morph works on the live/preview page
+- Glass pill is visible without scrolling
 - Brief confirm with a screenshot if you can
 
 ---
