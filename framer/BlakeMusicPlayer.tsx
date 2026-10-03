@@ -1159,7 +1159,7 @@ const css = `
     calc(.55rem - (var(--pn-elevate) * .23rem));
   color: var(--ink);
   background-color: transparent;
-  background-image: linear-gradient(155deg, rgba(255,255,255,calc(.86 * var(--pn-elevate))) 0%, rgba(255,255,255,calc(.27 * var(--pn-elevate))) 55%, rgba(255,255,255,calc(.38 * var(--pn-elevate))) 100%);
+  background-image: linear-gradient(155deg, rgba(255,255,255,calc(.68 * var(--pn-elevate))) 0%, rgba(255,255,255,calc(.27 * var(--pn-elevate))) 55%, rgba(255,255,255,calc(.38 * var(--pn-elevate))) 100%);
   border: 1px solid rgba(255,255,255,calc(.86 * var(--pn-elevate)));
   border-radius: 999px;
   box-shadow: 0 1px 0 rgba(255,255,255,calc(.8 * var(--pn-elevate))) inset, 0 -1px 0 rgba(255,255,255,calc(.22 * var(--pn-elevate))) inset, 0 0 0 .5px rgba(0,0,0,calc(.045 * var(--pn-elevate))), 0 10px 28px rgba(0,0,0,calc(.07 * var(--pn-elevate)));
@@ -1181,7 +1181,7 @@ const css = `
   display: flex; flex-direction: column; justify-content: center;
   color: #0f0f0f;
   background-color: transparent;
-  background-image: linear-gradient(155deg, rgba(255,255,255,calc(.86 * var(--pn-elevate))) 0%, rgba(255,255,255,calc(.27 * var(--pn-elevate))) 55%, rgba(255,255,255,calc(.38 * var(--pn-elevate))) 100%);
+  background-image: linear-gradient(155deg, rgba(255,255,255,calc(.68 * var(--pn-elevate))) 0%, rgba(255,255,255,calc(.27 * var(--pn-elevate))) 55%, rgba(255,255,255,calc(.38 * var(--pn-elevate))) 100%);
   border: 1px solid rgba(255,255,255,calc(.86 * var(--pn-elevate)));
   border-radius: 999px; overflow: hidden;
   box-shadow: 0 1px 0 rgba(255,255,255,calc(.8 * var(--pn-elevate))) inset, 0 -1px 0 rgba(255,255,255,calc(.22 * var(--pn-elevate))) inset, 0 0 0 .5px rgba(0,0,0,calc(.045 * var(--pn-elevate))), 0 10px 28px rgba(0,0,0,calc(.07 * var(--pn-elevate)));
