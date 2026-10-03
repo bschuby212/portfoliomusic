@@ -199,19 +199,19 @@
 
 .pn-root[data-elevate="0"] .pn-link,
 .pn-root[data-elevate="0"] .pn-icon-btn {
-  color: rgba(15, 15, 15, 0.72);
+  color: rgba(33, 35, 36, 0.72);
 }
 
 .pn-root[data-elevate="1"] .pn-link,
 .pn-root[data-elevate="1"] .pn-icon-btn {
-  color: rgba(15, 15, 15, 0.88);
+  color: rgba(33, 35, 36, 0.88);
   font-weight: 600;
 }
 
 .pn-root[data-elevate="1"] .pn-link:hover,
 .pn-root[data-elevate="1"] .pn-icon-btn:hover,
 .pn-root[data-elevate="1"] .pn-link[data-active="true"] {
-  color: #0a0a0a;
+  color: #212324;
 }
 
 .pn-link:hover,
@@ -234,7 +234,7 @@
 .pn-link:focus-visible,
 .pn-icon-btn:focus-visible,
 .pn-avatar:focus-visible {
-  outline: 2px solid #141414;
+  outline: 2px solid #212324;
   outline-offset: 2px;
 }
 
@@ -296,7 +296,7 @@
 .pn-icon-btn {
   width: 2.45rem;
   padding: 0;
-  color: rgba(15, 15, 15, 0.55);
+  color: rgba(33, 35, 36, 0.55);
 }
 
 .pn-icon-btn:hover {
