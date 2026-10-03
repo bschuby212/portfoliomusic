@@ -27,6 +27,9 @@ export function EmbedDocument() {
     body.style.overflowY = "visible";
     html.style.clipPath = "none";
     body.style.clipPath = "none";
+    // Framer URL embeds clip to the iframe box — keep a tall canvas ready.
+    html.style.minHeight = "420px";
+    body.style.minHeight = "420px";
 
     return () => {
       delete html.dataset.embed;
