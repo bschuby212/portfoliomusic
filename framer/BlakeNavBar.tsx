@@ -80,7 +80,7 @@ type Props = {
     logoUrl: string
 }
 
-const STORAGE_KEY = "blake-framer-music-player"
+const STORAGE_KEY = "blake-framer-music-player-v2"
 const RESTART_THRESHOLD = 3
 const RICKROLL_ID = "4cOdK2wGLETKBW3PvgPWqT"
 
