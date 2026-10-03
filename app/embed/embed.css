@@ -49,11 +49,13 @@ body[data-embed] > * {
 
 .embed-shell {
   display: block;
+  box-sizing: border-box;
   width: 100%;
-  height: auto;
-  min-height: 0;
+  /* Framer Website embed is URL-only — reserve room so expand fits in the iframe. */
+  min-height: 420px;
+  height: 420px;
   margin: 0;
-  padding: 0;
+  padding: 0.75rem 0.75rem 0;
   background: transparent;
   overflow: visible !important;
   overflow-x: visible !important;
@@ -74,7 +76,15 @@ html[data-embed] .pn {
   contain: none !important;
 }
 
-/* Expanded player paints outside the collapsed footprint. */
+/* Inside a Framer iframe, sticky is useless — keep the bar in normal flow. */
+html:has([data-embed]) .pn-root,
+html[data-embed] .pn-root {
+  position: relative !important;
+  top: auto !important;
+  padding-top: 0 !important;
+}
+
+/* Expanded player paints inside the 420px embed canvas. */
 html:has([data-embed]) .mp[data-expanded="true"],
 html[data-embed] .mp[data-expanded="true"] {
   overflow: visible !important;
