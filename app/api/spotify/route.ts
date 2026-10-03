@@ -2,7 +2,8 @@ import { jsonWithCors, optionsWithCors } from "@/lib/cors";
 import { parseSpotifyTrackId } from "@/components/music-player/parse-spotify-url";
 import type { TrackMetadata } from "@/components/music-player/types";
 
-export const revalidate = 3600;
+/** Artwork/title can be cached; preview URLs are resolved fresh (signed CDNs expire). */
+export const revalidate = 0;
 
 type SpotifyToken = {
   access_token: string;
@@ -25,6 +26,14 @@ type DeezerSearchResult = {
     preview?: string;
     artist?: { name?: string };
     album?: { title?: string };
+  }[];
+};
+
+type ItunesSearchResult = {
+  results?: {
+    trackName?: string;
+    artistName?: string;
+    previewUrl?: string;
   }[];
 };
 
@@ -69,11 +78,23 @@ export async function GET(request: Request) {
     }
   }
 
-  if (!metadata.previewUrl) {
-    metadata.previewUrl = await fetchDeezerPreview(metadata.title, metadata.artist);
+  // Spotify playlist/metadata stay on Spotify. Many tracks have null preview_url,
+  // so we resolve a 30s clip via Deezer (same as before). Never cache dead HMAC links.
+  if (!metadata.previewUrl || !(await isReachableAudio(metadata.previewUrl))) {
+    const deezer = await fetchDeezerPreview(metadata.title, metadata.artist);
+    if (deezer && (await isReachableAudio(deezer))) {
+      metadata.previewUrl = deezer;
+    } else {
+      // Last resort only if Deezer is down — still Spotify track list/UI.
+      metadata.previewUrl = await fetchItunesPreview(metadata.title, metadata.artist);
+    }
   }
 
-  return jsonWithCors(request, metadata);
+  return jsonWithCors(request, metadata, {
+    headers: {
+      "Cache-Control": "private, no-store",
+    },
+  });
 }
 
 async function fetchFromWebApi(trackId: string, spotifyUrl: string): Promise<TrackMetadata | null> {
@@ -140,6 +161,35 @@ async function fetchArtistFromPage(spotifyUrl: string): Promise<string | null> {
   }
 }
 
+async function fetchItunesPreview(title: string, artist: string | null): Promise<string | null> {
+  try {
+    const queries = [
+      artist ? `${artist} ${title}` : title,
+      title,
+    ].filter((value, index, all) => value && all.indexOf(value) === index);
+
+    for (const query of queries) {
+      const endpoint = `https://itunes.apple.com/search?term=${encodeURIComponent(query)}&entity=song&limit=8`;
+      const response = await fetch(endpoint, { cache: "no-store" });
+      if (!response.ok) continue;
+      const data = (await response.json()) as ItunesSearchResult;
+      const results = data.results ?? [];
+      if (results.length === 0) continue;
+
+      const match = pickBestPreviewMatch(results, title, artist, (item) => ({
+        title: item.trackName ?? "",
+        artist: item.artistName ?? "",
+        preview: item.previewUrl,
+      }));
+      if (match) return match;
+    }
+
+    return null;
+  } catch {
+    return null;
+  }
+}
+
 async function fetchDeezerPreview(title: string, artist: string | null): Promise<string | null> {
   try {
     // Plain text search matches more reliably than quoted artist:/track: filters.
@@ -150,39 +200,72 @@ async function fetchDeezerPreview(title: string, artist: string | null): Promise
 
     for (const query of queries) {
       const endpoint = `https://api.deezer.com/search/track?q=${encodeURIComponent(query)}&limit=8`;
-      const response = await fetch(endpoint, { next: { revalidate: 3600 } });
+      const response = await fetch(endpoint, { cache: "no-store" });
       if (!response.ok) continue;
       const data = (await response.json()) as DeezerSearchResult;
       const results = data.data ?? [];
       if (results.length === 0) continue;
 
-      const normalizedTitle = normalize(title);
-      const normalizedArtist = artist ? normalize(artist) : "";
-
-      const exact = results.find((item) => {
-        const itemTitle = normalize(item.title ?? "");
-        const itemArtist = normalize(item.artist?.name ?? "");
-        const titleMatch = itemTitle === normalizedTitle;
-        const artistMatch =
-          !normalizedArtist ||
-          itemArtist.includes(normalizedArtist) ||
-          normalizedArtist.includes(itemArtist);
-        return titleMatch && artistMatch && item.preview;
-      });
-
-      if (exact?.preview) return exact.preview;
-
-      const titleOnly = results.find(
-        (item) => normalize(item.title ?? "") === normalizedTitle && item.preview,
-      );
-      if (titleOnly?.preview) return titleOnly.preview;
-
-      if (results[0]?.preview) return results[0].preview;
+      const match = pickBestPreviewMatch(results, title, artist, (item) => ({
+        title: item.title ?? "",
+        artist: item.artist?.name ?? "",
+        preview: item.preview,
+      }));
+      if (match) return match;
     }
 
     return null;
   } catch {
     return null;
+  }
+}
+
+function pickBestPreviewMatch<T>(
+  results: T[],
+  title: string,
+  artist: string | null,
+  map: (item: T) => { title: string; artist: string; preview?: string | null },
+): string | null {
+  const normalizedTitle = normalize(title);
+  const normalizedArtist = artist ? normalize(artist) : "";
+  const mapped = results.map(map).filter((item) => item.preview);
+
+  const exact = mapped.find((item) => {
+    const itemTitle = normalize(item.title);
+    const itemArtist = normalize(item.artist);
+    const titleMatch = itemTitle === normalizedTitle;
+    const artistMatch =
+      !normalizedArtist ||
+      itemArtist.includes(normalizedArtist) ||
+      normalizedArtist.includes(itemArtist);
+    return titleMatch && artistMatch;
+  });
+  if (exact?.preview) return exact.preview;
+
+  const titleOnly = mapped.find((item) => normalize(item.title) === normalizedTitle);
+  if (titleOnly?.preview) return titleOnly.preview;
+
+  return mapped[0]?.preview ?? null;
+}
+
+async function isReachableAudio(url: string): Promise<boolean> {
+  try {
+    const head = await fetch(url, {
+      method: "HEAD",
+      cache: "no-store",
+      headers: { Range: "bytes=0-1" },
+    });
+    if (head.ok || head.status === 206) return true;
+
+    // Some CDNs reject HEAD — try a tiny ranged GET.
+    const get = await fetch(url, {
+      method: "GET",
+      cache: "no-store",
+      headers: { Range: "bytes=0-1" },
+    });
+    return get.ok || get.status === 206;
+  } catch {
+    return false;
   }
 }
 

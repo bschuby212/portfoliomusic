@@ -53,7 +53,9 @@ export function MusicPlayer({ embedded = false }: MusicPlayerProps) {
   }, [state.ready, state.tracks.length]);
 
   const displayTime = scrubbing ? scrubTime : state.currentTime;
-  const progressMax = state.duration > 0 ? state.duration : 0;
+  // Previews are ~30s; use that until the audio element reports a real duration.
+  const progressMax =
+    state.duration > 0 ? state.duration : state.hasAudio ? 30 : 0;
   const progressValue = progressMax > 0 ? Math.min(displayTime, progressMax) : 0;
   const title = trackTitle(track);
   const artist = trackArtist(track);
@@ -225,7 +227,7 @@ export function MusicPlayer({ embedded = false }: MusicPlayerProps) {
               max={progressMax || 0}
               step={0.01}
               value={progressValue}
-              disabled={!state.hasAudio || progressMax === 0}
+              disabled={!state.hasAudio}
               aria-label="Track progress"
               style={rangeFill(progressMax > 0 ? progressValue / progressMax : 0)}
               onPointerDown={() => {
@@ -241,8 +243,9 @@ export function MusicPlayer({ embedded = false }: MusicPlayerProps) {
                 playerActions.seek(Number(event.currentTarget.value));
                 setScrubbing(false);
               }}
+              onPointerCancel={() => setScrubbing(false)}
             />
-            <span className="mp-time">{formatTime(state.duration)}</span>
+            <span className="mp-time">{formatTime(progressMax)}</span>
           </div>
 
           <div className="mp-footer">

@@ -8,7 +8,7 @@ export class HtmlAudioAdapter implements PlaybackAdapter {
 
   constructor(listeners: PlaybackListeners) {
     this.audio = new Audio();
-    this.audio.preload = "metadata";
+    this.audio.preload = "auto";
     this.audio.addEventListener("timeupdate", () => {
       listeners.onTimeUpdate(this.audio.currentTime);
     });

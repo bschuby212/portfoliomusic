@@ -88,6 +88,7 @@ let initialized = false;
 let playlistLoading = false;
 let endedLock = false;
 let pendingAutoplay = false;
+let previewRefreshAttempts = 0;
 
 function playableSrc(track: ResolvedTrack | undefined): string | null {
   if (!track) return null;
@@ -195,15 +196,27 @@ function loadCurrent(options: { autoplay: boolean; from: PlayerState }) {
   }
 }
 
+function noteSuccessfulPlay() {
+  previewRefreshAttempts = 0;
+}
+
 function applyQueueIndex(queueIndex: number, autoplay: boolean) {
   pendingAutoplay = autoplay;
+  previewRefreshAttempts = 0;
   const next = { ...state, queueIndex };
   loadCurrent({ autoplay, from: next });
   void playerActions.ensureNearbyMetadata();
 }
 
-async function fetchTrackMetadata(spotifyUrl: string): Promise<TrackMetadata> {
-  const response = await fetch(`/api/spotify?url=${encodeURIComponent(spotifyUrl)}`);
+async function fetchTrackMetadata(
+  spotifyUrl: string,
+  options?: { fresh?: boolean },
+): Promise<TrackMetadata> {
+  const params = new URLSearchParams({ url: spotifyUrl });
+  if (options?.fresh) params.set("fresh", String(Date.now()));
+  const response = await fetch(`/api/spotify?${params.toString()}`, {
+    cache: "no-store",
+  });
   if (!response.ok) throw new Error("metadata failed");
   return (await response.json()) as TrackMetadata;
 }
@@ -243,6 +256,7 @@ export const playerActions = {
           setState({ duration });
         },
         onPlay() {
+          noteSuccessfulPlay();
           setState({ isPlaying: true, playbackError: false });
         },
         onPause() {
@@ -258,6 +272,10 @@ export const playerActions = {
         },
         onError() {
           setState({ isPlaying: false, playbackError: true, duration: 0 });
+          if (previewRefreshAttempts < 1) {
+            previewRefreshAttempts += 1;
+            void playerActions.refreshCurrentPreview();
+          }
         },
         onVolumeChange(volume, muted) {
           setState({ volume, muted });
@@ -375,10 +393,15 @@ export const playerActions = {
     await Promise.all(indexes.map((trackIndex) => playerActions.ensureTrackMetadata(trackIndex)));
   },
 
-  async ensureTrackMetadata(trackIndex: number) {
+  async ensureTrackMetadata(trackIndex: number, options?: { fresh?: boolean }) {
     const track = state.tracks[trackIndex];
     if (!track) return;
-    if (track.metadataStatus === "ready" || track.metadataStatus === "loading") return;
+    if (
+      !options?.fresh &&
+      (track.metadataStatus === "ready" || track.metadataStatus === "loading")
+    ) {
+      return;
+    }
 
     setState((current) => {
       const tracks = current.tracks.slice();
@@ -389,7 +412,7 @@ export const playerActions = {
     });
 
     try {
-      const metadata = await fetchTrackMetadata(track.spotifyUrl);
+      const metadata = await fetchTrackMetadata(track.spotifyUrl, options);
       let shouldReload = false;
 
       setState((current) => {
@@ -406,7 +429,8 @@ export const playerActions = {
         const currentIndex = current.queue[current.queueIndex];
         const isCurrent = currentIndex === trackIndex;
         const src = playableSrc(updated);
-        if (isCurrent && src && !playableSrc(existing)) {
+        const previousSrc = playableSrc(existing);
+        if (isCurrent && src && (options?.fresh || src !== previousSrc || !previousSrc)) {
           shouldReload = true;
         }
 
@@ -414,6 +438,7 @@ export const playerActions = {
           ...current,
           tracks,
           hasAudio: isCurrent ? Boolean(src) : current.hasAudio,
+          playbackError: isCurrent && !src ? true : current.playbackError,
         };
       });
 
@@ -452,31 +477,52 @@ export const playerActions = {
     }
   },
 
+  /** Re-resolve a dead/expired preview URL once, then resume if we were trying to play. */
+  async refreshCurrentPreview() {
+    const trackIndex = state.queue[state.queueIndex];
+    if (typeof trackIndex !== "number") return;
+    const track = state.tracks[trackIndex];
+    if (!track || track.audioSrc) return;
+
+    const shouldPlay = pendingAutoplay || state.isPlaying || state.playbackError;
+    pendingAutoplay = shouldPlay;
+    await playerActions.ensureTrackMetadata(trackIndex, { fresh: true });
+  },
+
   togglePlay() {
     const track = currentTrack();
     if (!adapter) return;
+
+    if (state.isPlaying) {
+      adapter.pause();
+      return;
+    }
 
     const src = playableSrc(track);
     if (!src) {
       void (async () => {
         const trackIndex = state.queue[state.queueIndex];
         if (typeof trackIndex !== "number") return;
-        await playerActions.ensureTrackMetadata(trackIndex);
-        const readySrc = playableSrc(currentTrack());
-        if (!readySrc || !adapter) return;
-        void adapter.play().catch(() => {
-          setState({ isPlaying: false, playbackError: true });
-        });
+        pendingAutoplay = true;
+        await playerActions.ensureTrackMetadata(trackIndex, { fresh: true });
+        if (!playableSrc(currentTrack())) {
+          pendingAutoplay = false;
+          setState({ playbackError: true });
+          return;
+        }
+        loadCurrent({ autoplay: true, from: state });
       })();
       return;
     }
 
-    if (state.isPlaying) {
-      adapter.pause();
-      return;
+    // Reload when prior play failed or the element never got a duration.
+    if (state.playbackError || adapter.getDuration() === 0) {
+      adapter.load(src);
     }
+
     void adapter.play().catch(() => {
       setState({ isPlaying: false, playbackError: true });
+      void playerActions.refreshCurrentPreview();
     });
   },
 
