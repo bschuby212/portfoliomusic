@@ -89,6 +89,8 @@ let playlistLoading = false;
 let endedLock = false;
 let pendingAutoplay = false;
 let previewRefreshAttempts = 0;
+/** Ignore HTMLAudio pause events while swapping src (load always pauses). */
+let suppressPause = false;
 
 function playableSrc(track: ResolvedTrack | undefined): string | null {
   if (!track) return null;
@@ -163,13 +165,18 @@ function loadCurrent(options: { autoplay: boolean; from: PlayerState }) {
   const track = currentTrack(options.from);
   const src = playableSrc(track);
   const hasAudio = Boolean(src);
+  suppressPause = true;
   adapter?.load(src);
+  window.setTimeout(() => {
+    suppressPause = false;
+  }, 120);
   setState({
     ...options.from,
     hasAudio,
     playbackError: false,
     currentTime: 0,
     duration: 0,
+    isPlaying: options.autoplay && hasAudio ? true : false,
   });
   if (options.autoplay && hasAudio) {
     void adapter?.play().catch(() => {
@@ -260,6 +267,7 @@ export const playerActions = {
           setState({ isPlaying: true, playbackError: false });
         },
         onPause() {
+          if (suppressPause || pendingAutoplay) return;
           setState({ isPlaying: false });
         },
         onEnded() {
@@ -495,8 +503,12 @@ export const playerActions = {
 
     if (state.isPlaying) {
       adapter.pause();
+      setState({ isPlaying: false });
       return;
     }
+
+    // Optimistic UI so pause icon + disc spin flip immediately on click.
+    setState({ isPlaying: true, playbackError: false });
 
     const src = playableSrc(track);
     if (!src) {
@@ -507,7 +519,7 @@ export const playerActions = {
         await playerActions.ensureTrackMetadata(trackIndex, { fresh: true });
         if (!playableSrc(currentTrack())) {
           pendingAutoplay = false;
-          setState({ playbackError: true });
+          setState({ isPlaying: false, playbackError: true });
           return;
         }
         loadCurrent({ autoplay: true, from: state });

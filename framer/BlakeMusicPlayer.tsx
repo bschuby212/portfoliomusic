@@ -428,23 +428,34 @@ const actions = {
         const track = typeof trackIndex === "number" ? state.tracks[trackIndex] : undefined
         const src = playableSrc(track)
 
+        if (state.isPlaying) {
+            el.pause()
+            setState({ isPlaying: false })
+            return
+        }
+
+        setState({ isPlaying: true })
+
         if (!src) {
             void (async () => {
                 if (typeof trackIndex !== "number") return
+                pendingAutoplay = true
                 await actions.ensureTrackMetadata(apiBaseUrl, trackIndex)
                 const ready = playableSrc(
                     state.tracks[state.queue[state.queueIndex] as number],
                 )
-                if (!ready || !audio) return
+                if (!ready || !audio) {
+                    pendingAutoplay = false
+                    setState({ isPlaying: false })
+                    return
+                }
+                audio.src = ready
                 void audio.play().catch(() => setState({ isPlaying: false }))
             })()
             return
         }
 
-        if (state.isPlaying) {
-            el.pause()
-            return
-        }
+        if (!el.src || el.src !== src) el.src = src
         void el.play().catch(() => setState({ isPlaying: false }))
     },
 
@@ -648,6 +659,15 @@ function MailIcon() {
         <svg width={ICON_SIZE} height={ICON_SIZE} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={ICON_STROKE} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
             <path d="m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7" />
             <rect x="2" y="4" width="20" height="16" rx="2" />
+        </svg>
+    )
+}
+
+function PauseBars() {
+    return (
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <rect x="6" y="5" width="4.5" height="14" rx="1.25" />
+            <rect x="13.5" y="5" width="4.5" height="14" rx="1.25" />
         </svg>
     )
 }
@@ -911,12 +931,7 @@ const css = `
   font-size: .75rem; font-weight: 550; opacity: 0; pointer-events: none;
 }
 .bn-toast[data-open="true"] { opacity: 1; }
-.bmp[data-playing="true"] .bmp-disc { animation: bmp-disc-live 1.8s ease-out infinite; }
-@keyframes bmp-disc-live {
-  0% { box-shadow: inset 0 0 0 1px rgba(0,0,0,.06), 0 0 0 0 rgba(33,35,36,.16); }
-  70% { box-shadow: inset 0 0 0 1px rgba(0,0,0,.06), 0 0 0 6px rgba(33,35,36,0); }
-  100% { box-shadow: inset 0 0 0 1px rgba(0,0,0,.06), 0 0 0 0 rgba(33,35,36,0); }
-}
+.bmp[data-playing="true"] .bmp-disc { animation: bmp-spin 2.8s linear infinite; }
 .bmp-collapsed-chevron { color: rgba(33,35,36,.72); font-size: .85rem; line-height: 1; }
 .bmp-collapsed {
   display: flex; align-items: center; gap: .35rem;
@@ -947,14 +962,12 @@ const css = `
   width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;
   color: #a1a1a1; font-size: 10px;
 }
-.bmp[data-playing="true"] .bmp-disc img,
-.bmp[data-playing="true"] .bmp-disc-fallback { animation: bmp-spin 2.8s linear infinite; }
-.bmp-collapsed-play { transition: transform .16s ease, box-shadow .3s ease; }
+.bmp-collapsed-play { transition: box-shadow .3s ease; }
 .bmp[data-playing="true"] .bmp-collapsed-play { animation: bmp-play-pulse 1.8s ease-in-out infinite; }
 @keyframes bmp-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 @keyframes bmp-play-pulse {
-  0%,100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(17,17,17,0); }
-  50% { transform: scale(1.06); box-shadow: 0 0 0 3px rgba(17,17,17,.06); }
+  0%,100% { box-shadow: 0 0 0 0 rgba(17,17,17,0); }
+  50% { box-shadow: 0 0 0 3px rgba(17,17,17,.08); }
 }
 .bmp[data-expanded="true"][data-playing="true"] .bmp-art { border-radius: 50%; position: relative; }
 .bmp[data-expanded="true"][data-playing="true"] .bmp-art img,
@@ -1033,7 +1046,6 @@ function BlakeNavBar(props: Props) {
     const player = usePlayer()
     const trackIndex = player.queue[player.queueIndex] ?? 0
     const track = player.tracks[trackIndex]
-    const [toast, setToast] = useState<string | null>(null)
     const { elevate, ready } = useNavElevate()
 
     useEffect(() => {
@@ -1051,11 +1063,6 @@ function BlakeNavBar(props: Props) {
         actions.setExpandDirection("down")
     }, [])
 
-    useEffect(() => {
-        if (!toast) return
-        const timer = window.setTimeout(() => setToast(null), 1800)
-        return () => window.clearTimeout(timer)
-    }, [toast])
 
     const title = track?.metadata?.title
         ? track.metadata.title
@@ -1068,27 +1075,6 @@ function BlakeNavBar(props: Props) {
     const progressMax = player.duration > 0 ? player.duration : 0
     const progressValue = progressMax > 0 ? Math.min(player.currentTime, progressMax) : 0
     const elevated = elevate >= 0.5
-
-    async function copyEmail() {
-        try {
-            if (navigator.clipboard?.writeText) {
-                await navigator.clipboard.writeText(props.email)
-            } else {
-                const field = document.createElement("textarea")
-                field.value = props.email
-                field.setAttribute("readonly", "")
-                field.style.position = "fixed"
-                field.style.opacity = "0"
-                document.body.appendChild(field)
-                field.select()
-                document.execCommand("copy")
-                field.remove()
-            }
-            setToast("Email copied")
-        } catch {
-            setToast(props.email)
-        }
-    }
 
     return (
         <div
@@ -1153,27 +1139,21 @@ function BlakeNavBar(props: Props) {
                         >
                             <StrokeIcon><LinkedInIcon /></StrokeIcon>
                         </a>
-                        <button
-                            type="button"
+                        <a
                             className="bn-icon-btn bn-fx-lift"
-                            aria-label={`Copy email ${props.email}`}
-                            onClick={() => {
-                                void copyEmail()
-                            }}
+                            href={`mailto:${props.email}`}
+                            aria-label={`Email ${props.email}`}
                         >
                             <StrokeIcon><MailIcon /></StrokeIcon>
-                        </button>
+                        </a>
                         <a
                             className="bn-icon-btn bn-fx-nudge"
                             href={props.resumeUrl}
-                            download
-                            aria-label="Download resume"
+                            download="Blake Schubert Product Designer Resume 2026.pdf"
+                            aria-label="Download Blake Schubert Product Designer Resume 2026.pdf"
                         >
                             <StrokeIcon><FileDownIcon /></StrokeIcon>
                         </a>
-                    </div>
-                    <div className="bn-toast" data-open={Boolean(toast)} role="status" aria-live="polite">
-                        {toast}
                     </div>
                 </nav>
 
@@ -1218,7 +1198,7 @@ function BlakeNavBar(props: Props) {
                             actions.togglePlay(props.apiBaseUrl)
                         }}
                     >
-                        {player.isPlaying ? "❚❚" : "▶"}
+                        {player.isPlaying ? <PauseBars /> : "▶"}
                     </button>
                     <button
                         type="button"
@@ -1271,7 +1251,7 @@ function BlakeNavBar(props: Props) {
                                 aria-label={player.isPlaying ? "Pause" : "Play"}
                                 onClick={() => actions.togglePlay(props.apiBaseUrl)}
                             >
-                                {player.isPlaying ? "❚❚" : "▶"}
+                                {player.isPlaying ? <PauseBars /> : "▶"}
                             </button>
                             <button type="button" className="bmp-ctrl" aria-label="Next" onClick={() => actions.next(false, props.apiBaseUrl)}>
                                 ⏭
@@ -1345,8 +1325,8 @@ BlakeNavBar.defaultProps = {
     workUrl: "https://blakeschubert.com/#all-campus",
     lookingUrl: "https://blakeschubert.com/#why-im-looking",
     linkedinUrl: "https://www.linkedin.com/in/",
-    email: "hello@blakeschubert.com",
-    resumeUrl: "https://blake-music-player.netlify.app/resume.pdf",
+    email: "blakeschubertux@gmail.com",
+    resumeUrl: "https://blake-music-player.netlify.app/Blake_Schubert_Product_Designer_Resume_2026.pdf",
     brandInitials: "BS",
     logoUrl: "https://blake-music-player.netlify.app/avatar.png",
 }
@@ -1393,12 +1373,12 @@ addPropertyControls(BlakeNavBar, {
     email: {
         type: ControlType.String,
         title: "Email",
-        defaultValue: "hello@blakeschubert.com",
+        defaultValue: "blakeschubertux@gmail.com",
     },
     resumeUrl: {
         type: ControlType.String,
         title: "Resume URL",
-        defaultValue: "https://blake-music-player.netlify.app/resume.pdf",
+        defaultValue: "https://blake-music-player.netlify.app/Blake_Schubert_Product_Designer_Resume_2026.pdf",
     },
     brandInitials: {
         type: ControlType.String,

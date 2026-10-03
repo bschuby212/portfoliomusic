@@ -13,7 +13,10 @@ export const NAV_LINKS = [
 /** Nav logo — pixel avatar in the far-left mark. */
 export const NAV_AVATAR_SRC = "/avatar.png";
 
-/** Placeholder contact actions — swap in Framer / later config. */
+/** Contact actions in the glass pill. */
 export const NAV_LINKEDIN_URL = "https://www.linkedin.com/in/blake-schubert/";
-export const NAV_EMAIL = "hello@blakeschubert.com";
-export const NAV_RESUME_HREF = "/resume.pdf";
+export const NAV_EMAIL = "blakeschubertux@gmail.com";
+export const NAV_EMAIL_HREF = `mailto:${NAV_EMAIL}`;
+export const NAV_RESUME_HREF = "/Blake_Schubert_Product_Designer_Resume_2026.pdf";
+/** Browser download filename (spaces OK in the download attribute). */
+export const NAV_RESUME_DOWNLOAD = "Blake Schubert Product Designer Resume 2026.pdf";

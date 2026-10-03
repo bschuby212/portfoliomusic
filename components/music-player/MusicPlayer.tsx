@@ -4,7 +4,6 @@ import {
   ChevronDown,
   ChevronUp,
   Music2,
-  Pause,
   Play,
   Repeat,
   Shuffle,
@@ -109,9 +108,9 @@ export function MusicPlayer({ embedded = false }: MusicPlayerProps) {
           }}
         >
           {state.isPlaying ? (
-            <Pause size={14} strokeWidth={2.2} fill="currentColor" />
+            <PauseIcon size={14} />
           ) : (
-            <Play size={14} strokeWidth={2.2} fill="currentColor" />
+            <Play size={14} strokeWidth={0} fill="currentColor" absoluteStrokeWidth />
           )}
         </button>
         <button
@@ -193,9 +192,9 @@ export function MusicPlayer({ embedded = false }: MusicPlayerProps) {
               onClick={playerActions.togglePlay}
             >
               {state.isPlaying ? (
-                <Pause size={16} strokeWidth={2} fill="currentColor" color="currentColor" />
+                <PauseIcon size={15} />
               ) : (
-                <Play size={16} strokeWidth={2} fill="currentColor" color="currentColor" />
+                <Play size={15} strokeWidth={0} fill="currentColor" absoluteStrokeWidth />
               )}
             </button>
             <button
@@ -289,6 +288,24 @@ export function MusicPlayer({ embedded = false }: MusicPlayerProps) {
         </div>
       </div>
     </aside>
+  );
+}
+
+/** Crisp filled pause bars — Lucide's stroked Pause looks soft at 14px. */
+function PauseIcon({ size }: { size: number }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      aria-hidden="true"
+      focusable="false"
+      style={{ display: "block" }}
+    >
+      <rect x="6" y="5" width="4.5" height="14" rx="1.25" />
+      <rect x="13.5" y="5" width="4.5" height="14" rx="1.25" />
+    </svg>
   );
 }
 

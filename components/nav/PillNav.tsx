@@ -3,8 +3,6 @@
 import { FileDown, Mail } from "lucide-react";
 import { usePathname } from "next/navigation";
 import {
-  useEffect,
-  useState,
   useSyncExternalStore,
   type CSSProperties,
   type ReactNode,
@@ -15,9 +13,11 @@ import {
   NAV_AVATAR_SRC,
   NAV_BRAND,
   NAV_EMAIL,
+  NAV_EMAIL_HREF,
   NAV_HOME_URL,
   NAV_LINKEDIN_URL,
   NAV_LINKS,
+  NAV_RESUME_DOWNLOAD,
   NAV_RESUME_HREF,
 } from "./nav-config";
 import "./pill-nav.css";
@@ -163,35 +163,7 @@ export function PillNav({ current }: PillNavProps) {
   const pathname = usePathname();
   const active = current ?? pathname;
   const player = usePlayerStore();
-  const [toast, setToast] = useState<string | null>(null);
   const { elevate, ready } = useNavElevate();
-
-  useEffect(() => {
-    if (!toast) return;
-    const timer = window.setTimeout(() => setToast(null), 1800);
-    return () => window.clearTimeout(timer);
-  }, [toast]);
-
-  async function copyEmail() {
-    try {
-      if (navigator.clipboard?.writeText) {
-        await navigator.clipboard.writeText(NAV_EMAIL);
-      } else {
-        const field = document.createElement("textarea");
-        field.value = NAV_EMAIL;
-        field.setAttribute("readonly", "");
-        field.style.position = "fixed";
-        field.style.opacity = "0";
-        document.body.appendChild(field);
-        field.select();
-        document.execCommand("copy");
-        field.remove();
-      }
-      setToast("Email copied");
-    } catch {
-      setToast(NAV_EMAIL);
-    }
-  }
 
   const elevated = elevate >= 0.5;
 
@@ -244,32 +216,25 @@ export function PillNav({ current }: PillNavProps) {
               <LinkedInIcon />
             </NavIcon>
           </a>
-          <button
-            type="button"
+          <a
             className="pn-icon-btn pn-fx-lift"
-            aria-label={`Copy email ${NAV_EMAIL}`}
-            onClick={() => {
-              void copyEmail();
-            }}
+            href={NAV_EMAIL_HREF}
+            aria-label={`Email ${NAV_EMAIL}`}
           >
             <NavIcon>
               <Mail size={ICON_SIZE} strokeWidth={ICON_STROKE} absoluteStrokeWidth={false} />
             </NavIcon>
-          </button>
+          </a>
           <a
             className="pn-icon-btn pn-fx-nudge"
             href={NAV_RESUME_HREF}
-            download
-            aria-label="Download resume"
+            download={NAV_RESUME_DOWNLOAD}
+            aria-label={`Download ${NAV_RESUME_DOWNLOAD}`}
           >
             <NavIcon>
               <FileDown size={ICON_SIZE} strokeWidth={ICON_STROKE} absoluteStrokeWidth={false} />
             </NavIcon>
           </a>
-        </div>
-
-        <div className="pn-toast" data-open={Boolean(toast)} role="status" aria-live="polite">
-          {toast}
         </div>
       </nav>
 
