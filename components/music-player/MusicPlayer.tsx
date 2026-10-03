@@ -3,7 +3,7 @@
 import { ChevronDown, ChevronUp, Music2, Pause, Play } from "lucide-react";
 import { useEffect } from "react";
 import "./music-player.css";
-import { SPOTIFY_EMBED_URL, SPOTIFY_PLAYLIST_URL } from "./playlist";
+import { SPOTIFY_PLAYLIST_URL } from "./playlist";
 import { playerActions, usePlayerStore } from "./store";
 
 type MusicPlayerProps = {
@@ -13,16 +13,11 @@ type MusicPlayerProps = {
 
 const ICON_STROKE = 1.75;
 
-/** Prefer exported embed URL; fall back from playlist URL if needed. */
-function spotifyEmbedSrc(): string {
-  if (typeof SPOTIFY_EMBED_URL === "string" && SPOTIFY_EMBED_URL.length > 0) {
-    return SPOTIFY_EMBED_URL;
-  }
-  const id = SPOTIFY_PLAYLIST_URL.split("/playlist/")[1]?.split("?")[0];
-  return id
-    ? `https://open.spotify.com/embed/playlist/${id}?utm_source=generator`
-    : "https://open.spotify.com/embed/playlist/5zXp8gIyEeJteiSZj1RTqJ?utm_source=generator";
-}
+const SPOTIFY_EMBED_SRC =
+  "https://open.spotify.com/embed/playlist/" +
+  (SPOTIFY_PLAYLIST_URL.split("/playlist/")[1]?.split("?")[0] ??
+    "5zXp8gIyEeJteiSZj1RTqJ") +
+  "?utm_source=generator";
 
 export function MusicPlayer({ embedded = false }: MusicPlayerProps) {
   const state = usePlayerStore();
@@ -137,7 +132,7 @@ export function MusicPlayer({ embedded = false }: MusicPlayerProps) {
           <div className="mp-embed-frame">
             <iframe
               title="Spotify playlist"
-              src={spotifyEmbedSrc()}
+              src={SPOTIFY_EMBED_SRC}
               width="100%"
               height={352}
               frameBorder={0}
