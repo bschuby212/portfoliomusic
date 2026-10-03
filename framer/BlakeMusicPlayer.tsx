@@ -651,21 +651,6 @@ function usePlayer() {
     )
 }
 
-function formatTime(seconds: number) {
-    if (!Number.isFinite(seconds) || seconds < 0) return "0:00"
-    const total = Math.floor(seconds)
-    const minutes = Math.floor(total / 60)
-    const remainder = total % 60
-    return `${minutes}:${remainder.toString().padStart(2, "0")}`
-}
-
-function rangeFill(percent: number): CSSProperties {
-    const clamped = Math.min(1, Math.max(0, percent)) * 100
-    return {
-        background: `linear-gradient(to right, #111 ${clamped}%, rgba(17,17,17,0.08) ${clamped}%)`,
-    }
-}
-
 const REEL_GLYPHS = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz"
 
 function reelForChar(char: string, index: number): string[] {
@@ -993,10 +978,11 @@ const css = `
   100% { box-shadow: inset 0 0 0 1px rgba(0,0,0,.06), 0 0 0 0 rgba(33,35,36,0); }
 }
 .bmp-collapsed-chevron { color: rgba(33,35,36,.72); font-size: .85rem; line-height: 1; }
-.bmp-embed-bar { display:flex; justify-content:flex-end; margin-bottom:.45rem; }
-.bmp-expanded-embed { padding-top:.65rem !important; }
-.bmp-embed-frame { width:100%; border-radius:12px; overflow:hidden; background:#000; line-height:0; }
-.bmp-embed-frame iframe { display:block; width:100%; border:0; border-radius:12px; }
+.bmp-collapsed-chevron:hover { color: #212324; }
+.bmp-embed-bar { display:flex; align-items:center; justify-content:flex-end; min-height:1.75rem; margin-bottom:.25rem; }
+.bmp-expanded-embed { padding: .45rem .55rem .6rem !important; }
+.bmp-embed-frame { width:100%; max-width:352px; margin:0 auto; border-radius:.75rem; overflow:hidden; background:#000; line-height:0; }
+.bmp-embed-frame iframe { display:block; width:100%; height:352px; border:0; }
 .bmp-collapsed {
   display: flex; align-items: center; gap: .35rem;
   height: 2.5rem; padding: 0 .3rem 0 .55rem; cursor: pointer;

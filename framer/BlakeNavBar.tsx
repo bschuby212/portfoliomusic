@@ -651,21 +651,6 @@ function usePlayer() {
     )
 }
 
-function formatTime(seconds: number) {
-    if (!Number.isFinite(seconds) || seconds < 0) return "0:00"
-    const total = Math.floor(seconds)
-    const minutes = Math.floor(total / 60)
-    const remainder = total % 60
-    return `${minutes}:${remainder.toString().padStart(2, "0")}`
-}
-
-function rangeFill(percent: number): CSSProperties {
-    const clamped = Math.min(1, Math.max(0, percent)) * 100
-    return {
-        background: `linear-gradient(to right, #111 ${clamped}%, rgba(17,17,17,0.08) ${clamped}%)`,
-    }
-}
-
 const REEL_GLYPHS = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz"
 
 function reelForChar(char: string, index: number): string[] {

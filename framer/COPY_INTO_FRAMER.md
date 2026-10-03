@@ -19,7 +19,8 @@ STEPS:
 6. Frame size: FIXED 720 × 56 (not fill, not hug).
 7. Layer Overflow = Visible. Scroll = off. No clipping parent.
 8. Music player expands outside the 720×56 shell on purpose — must stay visible (no scrollbars).
-9. Keep these default link props:
+9. Collapsed music pill (~9.2rem): note · spinning disc · play · chevron. Expanded: Spotify playlist iframe (5zXp8gIyEeJteiSZj1RTqJ) + collapse chevron — no playlist name chrome.
+10. Keep these default link props:
    - Home: https://blakeschubert.com/
    - About: https://blakeschubert.com/about
    - Work: https://blakeschubert.com/#all-campus
@@ -77,6 +78,13 @@ Underfill:       #FAF9F6 @ 35%
 Gradient:        160° · #FFFFFF 100% → 76%
 Border:          #FFFFFF @ 100%
 Radius:          21px
+Content:         Spotify embed iframe 352px tall (playlist 5zXp8gIyEeJteiSZj1RTqJ)
+```
+
+### Collapsed music pill
+```
+Width:           ~9.2rem
+Controls:        note · disc · play/pause · expand chevron
 ```
 
 ### Layout
