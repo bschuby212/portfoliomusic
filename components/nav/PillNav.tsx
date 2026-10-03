@@ -39,32 +39,58 @@ function elevateFromScrollY(scrollY: number): number {
   return 1 - (1 - s) ** 1.35;
 }
 
-let elevateCache = 0
+let elevateCache = 0;
+
+function readScrollY(target: EventTarget | null = null): number {
+  let y = Math.max(
+    window.scrollY || window.pageYOffset || 0,
+    document.documentElement?.scrollTop || 0,
+    document.body?.scrollTop || 0,
+    document.scrollingElement instanceof HTMLElement
+      ? document.scrollingElement.scrollTop
+      : 0,
+  );
+
+  let node: Element | null =
+    target instanceof Element
+      ? target
+      : target instanceof Document
+        ? target.documentElement
+        : null;
+  while (node) {
+    if (node instanceof HTMLElement && node.scrollTop > y) y = node.scrollTop;
+    node = node.parentElement;
+  }
+
+  return y;
+}
 
 function subscribeElevate(onStoreChange: () => void) {
   let frame = 0;
-  const publish = () => {
-    const next =
-      Math.round(
-        elevateFromScrollY(window.scrollY || window.pageYOffset || 0) * 1000,
-      ) / 1000;
+  let lastTarget: EventTarget | null = null;
+  const publish = (target: EventTarget | null = lastTarget) => {
+    lastTarget = target;
+    const next = Math.round(elevateFromScrollY(readScrollY(target)) * 1000) / 1000;
     if (next === elevateCache) return;
     elevateCache = next;
     onStoreChange();
   };
-  const onScroll = () => {
+  const onScroll = (event?: Event) => {
     if (frame) return;
+    const target = event?.target ?? null;
     frame = window.requestAnimationFrame(() => {
       frame = 0;
-      publish();
+      publish(target);
     });
   };
   publish();
-  window.addEventListener("scroll", onScroll, { passive: true });
+  window.addEventListener("scroll", onScroll, { passive: true, capture: true });
+  document.addEventListener("scroll", onScroll, { passive: true, capture: true });
   window.addEventListener("resize", onScroll, { passive: true });
   return () => {
     if (frame) window.cancelAnimationFrame(frame);
-    window.removeEventListener("scroll", onScroll);
+    window.removeEventListener("scroll", onScroll, true);
+    document.removeEventListener("scroll", onScroll, true);
     window.removeEventListener("resize", onScroll);
   };
 }
