@@ -797,8 +797,10 @@ const css = `
 }
 .bn-music {
   pointer-events: auto; position: relative; display: block;
-  flex-shrink: 0; width: 9.2rem; height: 3.4rem; overflow: visible;
+  flex: 0 0 9.2rem; width: 9.2rem; min-width: 9.2rem; max-width: 9.2rem;
+  height: 3.4rem; overflow: visible;
 }
+.bn-music[data-expanded="true"] { z-index: 3; }
 .bmp {
   position: absolute; top: 0; left: 0; z-index: 2;
   width: 9.2rem; min-height: 3.4rem;
@@ -815,11 +817,15 @@ const css = `
   transition: width .42s var(--ease), min-height .42s var(--ease), border-radius .42s var(--ease), box-shadow .42s ease, background .3s ease;
 }
 .bmp[data-embedded="true"][data-expanded="true"] {
+  /* Overlay only — never reflows / morphs the nav bar. */
+  position: absolute; top: 0; left: 0; z-index: 5;
   width: 21.25rem; max-width: 21.25rem; border-radius: 1.3rem;
-  background-color: rgba(250, 249, 246, calc(.35 * max(var(--pn-elevate), .35)));
-  background-image: linear-gradient(160deg, rgba(255,255,255,calc(1 * max(var(--pn-elevate), .35))) 0%, rgba(255,255,255,calc(.76 * max(var(--pn-elevate), .35))) 100%);
-  border-color: rgba(255,255,255,calc(1 * max(var(--pn-elevate), .35)));
-  box-shadow: 0 1px 0 rgba(255,255,255,calc(.78 * max(var(--pn-elevate), .35))) inset, 0 -1px 0 rgba(255,255,255,calc(.2 * max(var(--pn-elevate), .35))) inset, 0 0 0 .5px rgba(0,0,0,calc(.045 * max(var(--pn-elevate), .35))), 0 16px 40px rgba(0,0,0,calc(.09 * max(var(--pn-elevate), .35)));
+  background-color: rgba(250, 249, 246, .92);
+  background-image: linear-gradient(160deg, rgba(255,255,255,.98) 0%, rgba(255,255,255,.88) 100%);
+  border-color: rgba(255,255,255,1);
+  box-shadow: 0 1px 0 rgba(255,255,255,.78) inset, 0 -1px 0 rgba(255,255,255,.2) inset, 0 0 0 .5px rgba(0,0,0,.045), 0 16px 40px rgba(0,0,0,.09);
+  backdrop-filter: blur(24px) saturate(160%);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
 }
 .bn-sr {
   position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;

@@ -60,14 +60,18 @@
 }
 
 .mp[data-embedded="true"][data-expanded="true"] {
+  /* Overlay from the music slot — must not widen flex and squeeze the nav. */
+  position: absolute;
+  top: 0;
+  left: 0;
   width: min(21.25rem, calc(100vw - 2rem));
   min-height: 0;
   border-radius: 1.3rem;
-  background-color: rgba(250, 249, 246, 0.35);
+  background-color: rgba(250, 249, 246, 0.92);
   background-image: linear-gradient(
     160deg,
-    rgba(255, 255, 255, 1) 0%,
-    rgba(255, 255, 255, 0.76) 100%
+    rgba(255, 255, 255, 0.98) 0%,
+    rgba(255, 255, 255, 0.88) 100%
   );
   border-color: rgba(255, 255, 255, 1);
   box-shadow:
@@ -76,6 +80,7 @@
     0 0 0 0.5px rgba(0, 0, 0, 0.045),
     0 16px 40px rgba(0, 0, 0, 0.09);
   padding: 0;
+  z-index: 5;
 }
 
 .mp[data-embedded="true"][data-playing="true"]:not([data-expanded="true"]) {
@@ -138,12 +143,22 @@
   transform-origin: top right;
 }
 
-/* Embedded beside-nav player: stay in flow; grow right + down. */
-.mp[data-embedded="true"][data-expand="down"],
-.mp[data-embedded="true"][data-expand="up"] {
+/* Embedded beside-nav player: collapsed in-flow; expanded overlays from slot. */
+.mp[data-embedded="true"][data-expand="down"]:not([data-expanded="true"]),
+.mp[data-embedded="true"][data-expand="up"]:not([data-expanded="true"]) {
   top: auto;
   bottom: auto;
   right: auto;
+  transform-origin: top left;
+}
+
+.mp[data-embedded="true"][data-expanded="true"][data-expand="down"],
+.mp[data-embedded="true"][data-expanded="true"][data-expand="up"] {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: auto;
+  bottom: auto;
   transform-origin: top left;
 }
 
