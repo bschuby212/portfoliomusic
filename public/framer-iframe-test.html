@@ -14,30 +14,36 @@
           radial-gradient(900px 500px at 90% 10%, #ffe7d6 0%, transparent 50%),
           linear-gradient(180deg, #f7f4ef 0%, #ebe4d8 100%);
       }
+      /* Fixed 240px sticky embed — never resizes, so page content never jumps. */
       #blake-embed-wrap {
         position: sticky;
         top: 0;
         z-index: 50;
         width: 100%;
-        height: 72px;
-        overflow: visible;
+        height: 240px;
+        margin: 0;
+        pointer-events: none;
       }
       #blake-embed {
         display: block;
         width: 100%;
-        height: 72px;
+        height: 240px;
         border: 0;
         background: transparent;
+        pointer-events: auto;
       }
       main {
         max-width: 42rem;
-        margin: 0 auto;
-        padding: 4rem 1.25rem 8rem;
+        margin: -168px auto 0; /* pull content up under transparent iframe area */
+        padding: 0 1.25rem 8rem;
+        position: relative;
+        z-index: 0;
       }
       h1 {
         font-size: 3rem;
         letter-spacing: -0.04em;
         line-height: 0.95;
+        margin-top: 5.5rem; /* clear the visible pill row */
       }
       .block {
         height: 70vh;
@@ -48,6 +54,17 @@
         display: grid;
         place-items: end start;
         padding: 1.5rem;
+      }
+      #probe {
+        position: fixed;
+        right: 1rem;
+        bottom: 1rem;
+        z-index: 60;
+        background: #111;
+        color: #fff;
+        padding: 0.5rem 0.75rem;
+        border-radius: 0.5rem;
+        font: 12px/1.3 ui-monospace, monospace;
       }
     </style>
   </head>
@@ -63,23 +80,25 @@
     <main>
       <h1>Scroll under sticky embed</h1>
       <p>
-        Sticky iframe starts at 72px and resizes from
-        <code>blake-embed-height</code> postMessage so expand can overfill.
+        Fixed 240px iframe — expand must not change wrap height or shift this
+        page. Soft shadows only (no clipped drop shadow).
       </p>
       <div class="block">Section A</div>
       <div class="block">Section B</div>
       <div class="block">Section C</div>
     </main>
+    <div id="probe">wrap: —</div>
     <script>
-      window.addEventListener("message", (event) => {
-        const data = event.data;
-        if (!data || data.type !== "blake-embed-height") return;
-        const h = Math.max(72, Number(data.height) || 72);
-        const iframe = document.getElementById("blake-embed");
-        const wrap = document.getElementById("blake-embed-wrap");
-        if (iframe) iframe.style.height = h + "px";
-        if (wrap) wrap.style.height = h + "px";
-      });
+      const wrap = document.getElementById("blake-embed-wrap");
+      const probe = document.getElementById("probe");
+      const startH = wrap.getBoundingClientRect().height;
+      const tick = () => {
+        const h = wrap.getBoundingClientRect().height;
+        probe.textContent =
+          "wrap: " + Math.round(h) + "px" + (h === startH ? " (stable)" : " MOVED");
+      };
+      tick();
+      setInterval(tick, 200);
     </script>
   </body>
 </html>

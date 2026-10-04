@@ -1,4 +1,8 @@
-/* Framer URL embed: fixed top nav, overflow visible so expand can overfill. */
+/*
+ * Framer sticky embed: fixed 240px transparent canvas.
+ * Expand overlays inside the iframe — parent page never moves.
+ * Soft/no drop shadows so nothing looks chopped at the iframe edge.
+ */
 
 html:has([data-embed]),
 html[data-embed],
@@ -8,20 +12,20 @@ body[data-embed] {
   background-color: transparent !important;
   background-image: none !important;
   width: 100% !important;
-  height: auto !important;
-  /* Short bar footprint only — expand may overfill past this. */
-  min-height: 72px !important;
-  max-height: none !important;
+  height: 240px !important;
+  min-height: 240px !important;
+  max-height: 240px !important;
   margin: 0 !important;
   padding: 0 !important;
-  overflow: visible !important;
-  overflow-x: visible !important;
-  overflow-y: visible !important;
+  overflow: hidden !important;
+  overflow-x: hidden !important;
+  overflow-y: hidden !important;
   clip-path: none !important;
   contain: none !important;
   scrollbar-width: none !important;
   -ms-overflow-style: none !important;
   color-scheme: normal;
+  overscroll-behavior: none !important;
 }
 
 html:has([data-embed])::-webkit-scrollbar,
@@ -44,17 +48,17 @@ body[data-embed]::before {
   display: block;
   box-sizing: border-box;
   width: 100%;
-  height: auto;
-  min-height: 72px;
+  height: 240px;
+  min-height: 240px;
+  max-height: 240px;
   margin: 0;
   padding: 0;
   background: transparent;
-  overflow: visible !important;
-  clip-path: none !important;
-  contain: none !important;
+  overflow: hidden !important;
+  pointer-events: none;
 }
 
-/* Snap the whole nav cluster to the top of the iframe viewport. */
+/* Nav pinned to top of the fixed iframe — expand grows downward inside. */
 html:has([data-embed]) .pn-root,
 html[data-embed] .pn-root {
   position: fixed !important;
@@ -65,7 +69,7 @@ html[data-embed] .pn-root {
   z-index: 9999 !important;
   width: 100% !important;
   margin: 0 !important;
-  padding: 0.65rem 0.75rem 0 !important;
+  padding: 0.55rem 0.75rem 0 !important;
   gap: 0.85rem !important;
   transform: none !important;
   will-change: auto !important;
@@ -73,26 +77,38 @@ html[data-embed] .pn-root {
   clip-path: none !important;
   contain: none !important;
   pointer-events: none;
+  align-items: flex-start !important;
 }
 
-html:has([data-embed]) .pn-music,
-html[data-embed] .pn-music,
 html:has([data-embed]) .pn,
-html[data-embed] .pn {
+html[data-embed] .pn,
+html:has([data-embed]) .pn-music,
+html[data-embed] .pn-music {
+  pointer-events: auto;
   overflow: visible !important;
   clip-path: none !important;
   contain: none !important;
 }
 
-/* Expand grows downward from the music slot — may overfill the iframe. */
+/* Kill heavy drop shadows that clip ugly at the iframe edge. */
+html:has([data-embed]) .pn,
+html[data-embed] .pn,
+html:has([data-embed]) .pn-root .mp[data-embedded="true"],
+html[data-embed] .pn-root .mp[data-embedded="true"],
+html:has([data-embed]) .pn-root .mp[data-embedded="true"][data-expanded="true"],
+html[data-embed] .pn-root .mp[data-embedded="true"][data-expanded="true"],
+html:has([data-embed]) .pn-root .mp[data-embedded="true"][data-playing="true"],
+html[data-embed] .pn-root .mp[data-embedded="true"][data-playing="true"] {
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.8) inset,
+    0 -1px 0 rgba(255, 255, 255, 0.2) inset,
+    0 0 0 1px rgba(0, 0, 0, 0.06) !important;
+  filter: none !important;
+}
+
 html:has([data-embed]) .mp[data-embedded="true"],
 html[data-embed] .mp[data-embedded="true"] {
   top: 0 !important;
   bottom: auto !important;
   transform-origin: top left !important;
-}
-
-html:has([data-embed]) .mp[data-expanded="true"],
-html[data-embed] .mp[data-expanded="true"] {
-  overflow: visible !important;
 }
