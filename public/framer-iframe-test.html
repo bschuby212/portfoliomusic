@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Short fixed-overlay embed test</title>
+    <style>
+      body {
+        margin: 0;
+        font-family: "Avenir Next", "Segoe UI", sans-serif;
+        color: #1c1c1c;
+        background:
+          radial-gradient(1200px 600px at 20% -10%, #d9e7ff 0%, transparent 55%),
+          radial-gradient(900px 500px at 90% 10%, #ffe7d6 0%, transparent 50%),
+          linear-gradient(180deg, #f7f4ef 0%, #ebe4d8 100%);
+      }
+      /* Only the spacer affects page layout — always 72px. */
+      #blake-spacer {
+        height: 72px;
+        width: 100%;
+        pointer-events: none;
+      }
+      #blake-embed-wrap {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 72px;
+        z-index: 9999;
+      }
+      #blake-embed {
+        display: block;
+        width: 100%;
+        height: 72px;
+        border: 0;
+        background: transparent;
+      }
+      main {
+        max-width: 42rem;
+        margin: 0 auto;
+        padding: 1.5rem 1.25rem 8rem;
+      }
+      h1 {
+        font-size: 3rem;
+        letter-spacing: -0.04em;
+        line-height: 0.95;
+        margin: 0 0 0.75rem;
+      }
+      .block {
+        height: 70vh;
+        margin: 2rem 0;
+        border-radius: 1.25rem;
+        background: linear-gradient(135deg, #2b2f36, #6b5b4b);
+        color: #f6f1ea;
+        display: grid;
+        place-items: end start;
+        padding: 1.5rem;
+      }
+      #probe {
+        position: fixed;
+        right: 1rem;
+        bottom: 1rem;
+        z-index: 10000;
+        background: #111;
+        color: #fff;
+        padding: 0.5rem 0.75rem;
+        border-radius: 0.5rem;
+        font: 12px/1.35 ui-monospace, monospace;
+        white-space: pre;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="blake-spacer"></div>
+    <div id="blake-embed-wrap">
+      <iframe
+        id="blake-embed"
+        title="Blake nav embed"
+        src="/embed"
+        allow="autoplay"
+      ></iframe>
+    </div>
+    <main>
+      <h1 id="headline">Page must not jump</h1>
+      <p>
+        Spacer stays 72px. Fixed overlay grows on expand — layout / headline
+        must not move.
+      </p>
+      <div class="block">Section A</div>
+      <div class="block">Section B</div>
+      <div class="block">Section C</div>
+    </main>
+    <div id="probe">…</div>
+    <script>
+      const spacer = document.getElementById("blake-spacer");
+      const wrap = document.getElementById("blake-embed-wrap");
+      const iframe = document.getElementById("blake-embed");
+      const probe = document.getElementById("probe");
+      const headline = document.getElementById("headline");
+      const startSpacer = spacer.getBoundingClientRect().height;
+      const startHeadline = headline.getBoundingClientRect().top;
+
+      window.addEventListener("message", (event) => {
+        const data = event.data;
+        if (!data || data.type !== "blake-embed-height") return;
+        const h = Math.max(72, Number(data.height) || 72);
+        iframe.style.height = h + "px";
+        wrap.style.height = h + "px";
+      });
+
+      setInterval(() => {
+        const spacerH = spacer.getBoundingClientRect().height;
+        const wrapH = wrap.getBoundingClientRect().height;
+        const hTop = headline.getBoundingClientRect().top + window.scrollY;
+        const pageMoved =
+          spacerH !== startSpacer ||
+          Math.abs(headline.getBoundingClientRect().top - startHeadline) > 1;
+        probe.textContent =
+          "spacer: " +
+          Math.round(spacerH) +
+          "px\n" +
+          "overlay: " +
+          Math.round(wrapH) +
+          "px\n" +
+          "page: " +
+          (pageMoved ? "MOVED" : "stable");
+      }, 150);
+    </script>
+  </body>
+</html>

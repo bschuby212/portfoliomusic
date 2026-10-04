@@ -2,9 +2,21 @@
 
 import { useEffect } from "react";
 
+const COLLAPSED = 72;
+const MSG = "blake-embed-height";
+
+function measureHeight() {
+  const bottoms = [COLLAPSED];
+  for (const el of document.querySelectorAll(".pn-root, .pn, .pn-music, .mp")) {
+    bottoms.push(el.getBoundingClientRect().bottom);
+  }
+  return Math.ceil(Math.max(...bottoms) + 8);
+}
+
 /**
- * Pin the embed document for Framer URL embeds:
- * fixed 420px canvas, no internal scroll, nav stays snapped to top.
+ * Short sticky Framer embed (~72px collapsed).
+ * Reports needed height to parent so a FIXED overlay iframe can grow
+ * over the page (no document reflow / page jump).
  */
 export function EmbedDocument() {
   useEffect(() => {
@@ -14,53 +26,80 @@ export function EmbedDocument() {
     html.dataset.embed = "";
     body.dataset.embed = "";
 
-    const prev = {
-      htmlOverflow: html.style.overflow,
-      bodyOverflow: body.style.overflow,
-      htmlHeight: html.style.height,
-      bodyHeight: body.style.height,
+    let last = 0;
+    let timer = 0;
+
+    const applyChrome = () => {
+      html.style.overflow = "hidden";
+      body.style.overflow = "hidden";
+      html.style.margin = "0";
+      body.style.margin = "0";
+      html.style.background = "transparent";
+      body.style.background = "transparent";
+      html.style.clipPath = "none";
+      body.style.clipPath = "none";
     };
 
-    html.style.overflow = "hidden";
-    body.style.overflow = "hidden";
-    html.style.overflowX = "hidden";
-    body.style.overflowX = "hidden";
-    html.style.overflowY = "hidden";
-    body.style.overflowY = "hidden";
-    html.style.height = "420px";
-    body.style.height = "420px";
-    html.style.minHeight = "420px";
-    body.style.minHeight = "420px";
-    html.style.maxHeight = "420px";
-    body.style.maxHeight = "420px";
-    html.style.clipPath = "none";
-    body.style.clipPath = "none";
-    html.style.overscrollBehavior = "none";
-    body.style.overscrollBehavior = "none";
-
-    // Kill any residual scroll so sticky/fixed never fight the iframe.
-    window.scrollTo(0, 0);
-    const lockScroll = () => {
-      if (window.scrollY !== 0 || window.scrollX !== 0) window.scrollTo(0, 0);
+    const publish = () => {
+      applyChrome();
+      const height = measureHeight();
+      html.style.height = `${height}px`;
+      body.style.height = `${height}px`;
+      html.style.minHeight = `${height}px`;
+      body.style.minHeight = `${height}px`;
+      html.style.maxHeight = `${height}px`;
+      body.style.maxHeight = `${height}px`;
+      if (height === last || window.parent === window) return;
+      last = height;
+      window.parent.postMessage({ type: MSG, height }, "*");
     };
-    window.addEventListener("scroll", lockScroll, { passive: true, capture: true });
+
+    const schedule = () => {
+      if (timer) return;
+      timer = window.setTimeout(() => {
+        timer = 0;
+        requestAnimationFrame(publish);
+      }, 40);
+    };
+
+    applyChrome();
+    publish();
+
+    const watched = new Set<Element>();
+    const ro = new ResizeObserver(schedule);
+    const watch = (el: Element | null) => {
+      if (!el || watched.has(el)) return;
+      watched.add(el);
+      ro.observe(el);
+    };
+    const sync = () => {
+      watch(document.querySelector(".pn-root"));
+      watch(document.querySelector(".pn-music"));
+      watch(document.querySelector(".mp"));
+      schedule();
+    };
+    sync();
+
+    const mo = new MutationObserver(sync);
+    mo.observe(body, {
+      subtree: true,
+      childList: true,
+      attributes: true,
+      attributeFilter: ["data-expanded", "class", "style"],
+    });
+    body.addEventListener("click", schedule, true);
+    window.addEventListener("resize", schedule);
 
     return () => {
+      ro.disconnect();
+      mo.disconnect();
+      body.removeEventListener("click", schedule, true);
+      window.removeEventListener("resize", schedule);
+      if (timer) window.clearTimeout(timer);
       delete html.dataset.embed;
       delete body.dataset.embed;
-      html.style.overflow = prev.htmlOverflow;
-      body.style.overflow = prev.bodyOverflow;
-      html.style.height = prev.htmlHeight;
-      body.style.height = prev.bodyHeight;
-      html.style.minHeight = "";
-      body.style.minHeight = "";
-      html.style.maxHeight = "";
-      body.style.maxHeight = "";
-      html.style.clipPath = "";
-      body.style.clipPath = "";
-      html.style.overscrollBehavior = "";
-      body.style.overscrollBehavior = "";
-      window.removeEventListener("scroll", lockScroll, true);
+      html.style.cssText = "";
+      body.style.cssText = "";
     };
   }, []);
 

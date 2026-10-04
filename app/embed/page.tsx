@@ -1,9 +1,8 @@
 import { PillNav } from "@/components/nav/PillNav";
 
 /**
- * Netlify / Framer iframe embed: only the nav bar (PillNav + music player).
- * Transparent document, no page chrome, overflow visible for the expanded
- * custom music panel, scrollbars suppressed.
+ * Netlify / Framer iframe embed: short ~72px bar.
+ * Parent uses a FIXED overlay that grows on expand — page does not reflow.
  */
 export default function EmbedPage() {
   return <PillNav />;
