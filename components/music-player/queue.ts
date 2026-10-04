@@ -43,7 +43,42 @@ export function restoreSequentialQueue(
   };
 }
 
-/** Shuffle playlist tracks, then insert surprise track after `afterCount` songs. */
+/**
+ * Playback queue over tracks laid out as `[...playlist, surprise?]`.
+ * Optionally shuffles playlist indices, then pins the surprise after `surpriseAfter` songs.
+ */
+export function buildPlaybackQueue(
+  playlistLength: number,
+  options: {
+    shuffle: boolean;
+    surpriseAfter: number;
+    includeSurprise: boolean;
+  },
+): number[] {
+  const playlistIndices = createSequentialQueue(playlistLength);
+  const ordered = options.shuffle ? shuffleArray(playlistIndices) : playlistIndices;
+  if (!options.includeSurprise) return ordered;
+
+  const surpriseIndex = playlistLength;
+  const after = Math.min(Math.max(options.surpriseAfter, 0), ordered.length);
+  return [...ordered.slice(0, after), surpriseIndex, ...ordered.slice(after)];
+}
+
+/** Keep the current track, reshuffle every other track after it. */
+export function reshuffleFromCurrent(
+  trackCount: number,
+  currentTrackIndex: number,
+): { queue: number[]; queueIndex: number } {
+  if (trackCount <= 0) return { queue: [], queueIndex: 0 };
+  const current = Math.min(Math.max(currentTrackIndex, 0), trackCount - 1);
+  const rest = createSequentialQueue(trackCount).filter((index) => index !== current);
+  return {
+    queue: [current, ...shuffleArray(rest)],
+    queueIndex: 0,
+  };
+}
+
+/** @deprecated Prefer buildPlaybackQueue — kept for tests/legacy call sites. */
 export function buildSurprisePlaylistOrder<T>(
   items: T[],
   surprise: T,

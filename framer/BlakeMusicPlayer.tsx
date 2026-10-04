@@ -231,10 +231,17 @@ function shuffleArray<T>(items: T[]) {
     return next
 }
 
-function buildOrder(items: ResolvedTrack[], surprise: ResolvedTrack, after: number) {
-    const shuffled = shuffleArray(items)
-    if (shuffled.length === 0) return [surprise]
-    return [...shuffled.slice(0, after), surprise, ...shuffled.slice(after)]
+/** Tracks stay [...playlist, surprise]; queue owns shuffle + surprise pin. */
+function buildPlaybackQueue(
+    playlistLength: number,
+    options: { shuffle: boolean; surpriseAfter: number; includeSurprise: boolean },
+) {
+    const playlistIndices = Array.from({ length: playlistLength }, (_, index) => index)
+    const ordered = options.shuffle ? shuffleArray(playlistIndices) : playlistIndices
+    if (!options.includeSurprise) return ordered
+    const surpriseIndex = playlistLength
+    const after = Math.min(Math.max(options.surpriseAfter, 0), ordered.length)
+    return [...ordered.slice(0, after), surpriseIndex, ...ordered.slice(after)]
 }
 
 function loadCurrent(autoplay: boolean) {
@@ -336,13 +343,19 @@ const actions = {
                 metadataStatus: "idle",
             }
 
-            const ordered = buildOrder(tracks, surprise, Math.max(1, props.surpriseAfter || 4))
+            const ordered = [...tracks, surprise]
+            const queue = buildPlaybackQueue(tracks.length, {
+                shuffle: true,
+                surpriseAfter: Math.max(1, props.surpriseAfter || 4),
+                includeSurprise: true,
+            })
             setState({
                 tracks: ordered,
-                queue: ordered.map((_, index) => index),
+                queue,
                 queueIndex: 0,
+                shuffle: true,
                 ready: true,
-                hasAudio: Boolean(playableSrc(ordered[0])),
+                hasAudio: Boolean(playableSrc(ordered[queue[0] ?? 0])),
             })
             loadCurrent(false)
             await actions.ensureNearbyMetadata(base)
@@ -361,13 +374,19 @@ const actions = {
                 metadata: null,
                 metadataStatus: "idle",
             }
-            const ordered = buildOrder(tracks, surprise, Math.max(1, props.surpriseAfter || 4))
+            const ordered = [...tracks, surprise]
+            const queue = buildPlaybackQueue(tracks.length, {
+                shuffle: true,
+                surpriseAfter: Math.max(1, props.surpriseAfter || 4),
+                includeSurprise: true,
+            })
             setState({
                 tracks: ordered,
-                queue: ordered.map((_, index) => index),
+                queue,
                 queueIndex: 0,
+                shuffle: true,
                 ready: true,
-                hasAudio: Boolean(playableSrc(ordered[0])),
+                hasAudio: Boolean(playableSrc(ordered[queue[0] ?? 0])),
             })
             loadCurrent(false)
             await actions.ensureNearbyMetadata(base)
@@ -567,21 +586,27 @@ const actions = {
 
     toggleShuffle() {
         const currentTrackIndex = state.queue[state.queueIndex] ?? 0
+        const playlistLength = Math.max(state.tracks.length - 1, 0)
         if (!state.shuffle) {
-            const sequential = state.tracks.map((_, index) => index)
-            const upcoming = shuffleArray(
-                sequential.filter((index) => index !== currentTrackIndex),
-            )
+            const rest = state.tracks
+                .map((_, index) => index)
+                .filter((index) => index !== currentTrackIndex)
             setState({
                 shuffle: true,
-                queue: [currentTrackIndex, ...upcoming],
+                queue: [currentTrackIndex, ...shuffleArray(rest)],
                 queueIndex: 0,
             })
         } else {
+            const queue = buildPlaybackQueue(playlistLength, {
+                shuffle: false,
+                surpriseAfter: 4,
+                includeSurprise: state.tracks.length > playlistLength,
+            })
+            const queueIndex = Math.max(0, queue.indexOf(currentTrackIndex))
             setState({
                 shuffle: false,
-                queue: state.tracks.map((_, index) => index),
-                queueIndex: currentTrackIndex,
+                queue,
+                queueIndex: queueIndex === -1 ? 0 : queueIndex,
             })
         }
         persist()

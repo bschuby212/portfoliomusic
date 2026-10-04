@@ -13,11 +13,8 @@ import {
   USE_FILLER_PLAYLIST,
 } from "./playlist";
 import {
-  buildSurprisePlaylistOrder,
-  createSequentialQueue,
-  restoreSequentialQueue,
-  shuffleArray,
-  shuffleUpcoming,
+  buildPlaybackQueue,
+  reshuffleFromCurrent,
 } from "./queue";
 import type {
   ExpandDirection,
@@ -191,8 +188,12 @@ function loadCurrent(options: { autoplay: boolean; from: PlayerState }) {
     // No preview yet — fetch metadata, then skip if still unplayable.
     if (options.autoplay && track && track.metadataStatus !== "ready") {
       const trackIndex = options.from.queue[options.from.queueIndex];
+      const queueIndexAtRequest = options.from.queueIndex;
       if (typeof trackIndex === "number") {
         void playerActions.ensureTrackMetadata(trackIndex).then(() => {
+          // Ignore stale resolves if the user/queue already moved on.
+          if (state.queueIndex !== queueIndexAtRequest) return;
+          if (state.queue[state.queueIndex] !== trackIndex) return;
           if (playableSrc(currentTrack())) {
             loadCurrent({ autoplay: true, from: state });
             return;
@@ -346,18 +347,16 @@ export const playerActions = {
         : await fetchRemotePlaylistTracks();
 
       const surprise = toResolvedTrack(SURPRISE_TRACK);
-      const ordered = buildSurprisePlaylistOrder(
-        playlistTracks,
-        surprise,
-        SURPRISE_AFTER,
-      );
+      // Stable track list: Spotify order + surprise appended. Queue owns shuffle.
+      const ordered = [...playlistTracks, surprise];
 
       const prefs = readPrefs();
-      // Shuffle flag must match a real shuffled queue — sequential + shuffle:true
-      // made the control look on while playback stayed in fixed order.
       const wantShuffle = prefs.shuffle ?? true;
-      const sequential = createSequentialQueue(ordered.length);
-      const queue = wantShuffle ? shuffleArray(sequential) : sequential;
+      const queue = buildPlaybackQueue(playlistTracks.length, {
+        shuffle: wantShuffle,
+        surpriseAfter: SURPRISE_AFTER,
+        includeSurprise: true,
+      });
       const firstTrack = ordered[queue[0] ?? 0];
       const next: PlayerState = {
         ...state,
@@ -383,15 +382,17 @@ export const playerActions = {
       initialized = true;
       const fallbackTracks = FILLER_TRACKS.length
         ? FILLER_TRACKS.map((entry) => toResolvedTrack(entry))
-        : [toResolvedTrack(SURPRISE_TRACK)];
+        : [];
       const surprise = toResolvedTrack(SURPRISE_TRACK);
-      const ordered = buildSurprisePlaylistOrder(
-        fallbackTracks,
-        surprise,
-        Math.min(SURPRISE_AFTER, fallbackTracks.length),
-      );
-      const sequential = createSequentialQueue(ordered.length);
-      const queue = shuffleArray(sequential);
+      const ordered = fallbackTracks.length
+        ? [...fallbackTracks, surprise]
+        : [surprise];
+      const playlistLength = fallbackTracks.length;
+      const queue = buildPlaybackQueue(playlistLength, {
+        shuffle: true,
+        surpriseAfter: Math.min(SURPRISE_AFTER, playlistLength),
+        includeSurprise: true,
+      });
       setState({
         ready: true,
         shuffle: true,
@@ -644,25 +645,30 @@ export const playerActions = {
   toggleShuffle() {
     const shuffle = !state.shuffle;
     const currentTrackIndex = state.queue[state.queueIndex] ?? 0;
+    // Tracks are [...playlist, surprise]; surprise is always last when present.
+    const playlistLength = Math.max(state.tracks.length - 1, 0);
     if (shuffle) {
-      // Keep the current song, reshuffle everything after it.
-      const sequential = createSequentialQueue(state.tracks.length);
-      const currentQueueIndex = sequential.indexOf(currentTrackIndex);
-      const at = Math.max(currentQueueIndex, 0);
-      setState({
-        shuffle: true,
-        queue: shuffleUpcoming(sequential, at),
-        queueIndex: at,
-      });
-    } else {
-      const restored = restoreSequentialQueue(
+      // Keep the current song first, reshuffle everything else after it.
+      const reshuffled = reshuffleFromCurrent(
         state.tracks.length,
         currentTrackIndex,
       );
       setState({
+        shuffle: true,
+        queue: reshuffled.queue,
+        queueIndex: reshuffled.queueIndex,
+      });
+    } else {
+      const queue = buildPlaybackQueue(playlistLength, {
         shuffle: false,
-        queue: restored.queue,
-        queueIndex: restored.queueIndex,
+        surpriseAfter: SURPRISE_AFTER,
+        includeSurprise: state.tracks.length > playlistLength,
+      });
+      const queueIndex = Math.max(0, queue.indexOf(currentTrackIndex));
+      setState({
+        shuffle: false,
+        queue,
+        queueIndex: queueIndex === -1 ? 0 : queueIndex,
       });
     }
     persistPrefs();

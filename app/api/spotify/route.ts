@@ -80,6 +80,11 @@ export async function GET(request: Request) {
     }
   }
 
+  // oEmbed / og-tags often HTML-encode names (Her&#x27;s). Decode before search
+  // or iTunes returns unrelated first hits (e.g. Mr. Blue Sky).
+  metadata.title = decodeHtmlEntities(metadata.title);
+  metadata.artist = metadata.artist ? decodeHtmlEntities(metadata.artist) : null;
+
   // Spotify often returns null preview_url. Prefer iTunes (stable CORS URLs);
   // Deezer HMAC links frequently 403 from serverless / after cache.
   if (!metadata.previewUrl || !(await isReachableAudio(metadata.previewUrl))) {
@@ -147,7 +152,7 @@ async function fetchFromOEmbed(spotifyUrl: string): Promise<TrackMetadata> {
   };
 
   return {
-    title: data.title?.trim() || "Unknown track",
+    title: decodeHtmlEntities(data.title?.trim() || "Unknown track"),
     artist: null,
     artworkUrl: data.thumbnail_url ?? null,
     durationMs: null,
@@ -169,7 +174,7 @@ async function fetchArtistFromPage(spotifyUrl: string): Promise<string | null> {
     );
     const description = og?.[1] ?? og?.[2];
     if (!description) return null;
-    const artist = description.split("·")[0]?.trim();
+    const artist = decodeHtmlEntities(description.split("·")[0]?.trim() || "");
     return artist || null;
   } catch {
     return null;
@@ -254,46 +259,64 @@ function pickBestPreviewMatch<T>(
   artist: string | null,
   map: (item: T) => { title: string; artist: string; preview?: string | null },
 ): string | null {
-  const normalizedTitle = normalize(title);
-  const normalizedArtist = artist ? normalize(artist) : "";
-  const mapped = results.map(map).filter((item) => item.preview);
+  const wantTitle = normalize(title);
+  const wantCore = coreTitle(title);
+  const wantArtist = artist ? normalize(artist) : "";
+  const mapped = results
+    .map(map)
+    .filter((item) => item.preview)
+    .map((item) => ({
+      ...item,
+      nTitle: normalize(item.title),
+      nCore: coreTitle(item.title),
+      nArtist: normalize(item.artist),
+    }));
 
-  const exact = mapped.find((item) => {
-    const itemTitle = normalize(item.title);
-    const itemArtist = normalize(item.artist);
-    const titleMatch =
-      itemTitle === normalizedTitle ||
-      itemTitle.includes(normalizedTitle) ||
-      normalizedTitle.includes(itemTitle);
-    const artistMatch =
-      !normalizedArtist ||
-      itemArtist.includes(normalizedArtist) ||
-      normalizedArtist.includes(itemArtist);
-    return titleMatch && artistMatch;
-  });
-  if (exact?.preview) return exact.preview;
+  let best: { preview: string; score: number } | null = null;
 
-  // Prefer title+artist. Never fall back to an unrelated first hit —
-  // that was playing the wrong song under the right artwork/title.
-  if (normalizedArtist) {
-    const loose = mapped.find((item) => {
-      const itemTitle = normalize(item.title);
-      const itemArtist = normalize(item.artist);
-      const titleClose =
-        itemTitle.includes(normalizedTitle) ||
-        normalizedTitle.includes(itemTitle);
-      const artistClose =
-        itemArtist.includes(normalizedArtist) ||
-        normalizedArtist.includes(itemArtist);
-      return titleClose && artistClose;
-    });
-    return loose?.preview ?? null;
+  for (const item of mapped) {
+    if (!item.preview) continue;
+
+    const titleExact =
+      item.nTitle === wantTitle || item.nCore === wantCore;
+    const titleClose =
+      titleExact ||
+      (wantCore.length >= 4 &&
+        (item.nCore.includes(wantCore) || wantCore.includes(item.nCore)));
+    if (!titleClose) continue;
+
+    const artistExact = Boolean(wantArtist) && item.nArtist === wantArtist;
+    const artistClose =
+      !wantArtist ||
+      artistExact ||
+      item.nArtist.includes(wantArtist) ||
+      wantArtist.includes(item.nArtist);
+    if (!artistClose) continue;
+
+    // Require a real artist signal whenever we know one — never accept a
+    // title-only collision from another artist.
+    if (wantArtist && !(artistExact || artistClose)) continue;
+
+    let score = 0;
+    if (titleExact) score += 4;
+    else score += 2;
+    if (wantArtist) {
+      if (artistExact) score += 4;
+      else score += 2;
+    } else if (titleExact) {
+      score += 1;
+    }
+
+    if (!best || score > best.score) {
+      best = { preview: item.preview, score };
+    }
   }
 
-  const titleOnly = mapped.find(
-    (item) => normalize(item.title) === normalizedTitle,
-  );
-  return titleOnly?.preview ?? null;
+  // Need title+artist agreement (score >= 4) when artist is known.
+  if (!best) return null;
+  if (wantArtist && best.score < 4) return null;
+  if (!wantArtist && best.score < 4) return null;
+  return best.preview;
 }
 
 async function isReachableAudio(url: string): Promise<boolean> {
@@ -317,8 +340,45 @@ async function isReachableAudio(url: string): Promise<boolean> {
   }
 }
 
+function decodeHtmlEntities(value: string) {
+  return value
+    .replace(/&(#x[0-9a-f]+|#\d+|apos|quot|amp|lt|gt);/gi, (entity) => {
+      const lower = entity.toLowerCase();
+      if (lower === "&amp;") return "&";
+      if (lower === "&lt;") return "<";
+      if (lower === "&gt;") return ">";
+      if (lower === "&quot;") return '"';
+      if (lower === "&apos;") return "'";
+      if (lower.startsWith("&#x")) {
+        const code = Number.parseInt(lower.slice(3, -1), 16);
+        return Number.isFinite(code) ? String.fromCodePoint(code) : entity;
+      }
+      if (lower.startsWith("&#")) {
+        const code = Number.parseInt(lower.slice(2, -1), 10);
+        return Number.isFinite(code) ? String.fromCodePoint(code) : entity;
+      }
+      return entity;
+    })
+    .replace(/\u00a0/g, " ")
+    .trim();
+}
+
 function normalize(value: string) {
-  return value.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
+  return decodeHtmlEntities(value)
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim();
+}
+
+/** Strip remaster / feat / parenthetical noise for looser-but-safe title compare. */
+function coreTitle(value: string) {
+  return normalize(value)
+    .replace(
+      /\b(remaster(ed)?|remix|bonus( track)?|radio edit|feat|ft|with)\b.*$/g,
+      "",
+    )
+    .replace(/\s+/g, " ")
+    .trim();
 }
 
 async function getAccessToken(): Promise<string | null> {
