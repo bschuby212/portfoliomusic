@@ -32,22 +32,22 @@
   flex-direction: column;
   justify-content: center;
   color: #212324;
-  background-color: rgba(250, 249, 246, 0.35);
+  background-color: rgba(250, 249, 246, 0.52);
   background-image: linear-gradient(
     155deg,
-    rgba(255, 255, 255, 1) 0%,
-    rgba(255, 255, 255, 0.54) 55%,
-    rgba(255, 255, 255, 0.76) 100%
+    rgba(255, 255, 255, 0.82) 0%,
+    rgba(255, 255, 255, 0.48) 55%,
+    rgba(255, 255, 255, 0.64) 100%
   );
-  border: 1px solid rgba(255, 255, 255, 1);
+  border: 1px solid rgba(0, 0, 0, 0.08);
   border-radius: 999px;
   box-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.8) inset,
-    0 -1px 0 rgba(255, 255, 255, 0.22) inset,
-    0 0 0 0.5px rgba(0, 0, 0, 0.045),
-    0 10px 28px rgba(0, 0, 0, 0.07);
-  backdrop-filter: blur(118px) saturate(180%);
-  -webkit-backdrop-filter: blur(118px) saturate(180%);
+    0 1px 0 rgba(255, 255, 255, 0.75) inset,
+    0 -1px 0 rgba(255, 255, 255, 0.2) inset,
+    0 0 0 0.5px rgba(0, 0, 0, 0.04),
+    0 8px 24px rgba(0, 0, 0, 0.08);
+  backdrop-filter: blur(64px) saturate(150%);
+  -webkit-backdrop-filter: blur(64px) saturate(150%);
   transform-origin: top left;
   isolation: isolate;
   transition:
@@ -60,27 +60,30 @@
 }
 
 .mp[data-embedded="true"][data-expanded="true"] {
-  /* Overlay from the music slot — must not widen flex and squeeze the nav. */
+  /* Match nav bar height; +24px wider than prior compact row. */
   position: absolute;
   top: 0;
   left: 0;
-  width: min(21.25rem, calc(100vw - 2rem));
-  min-height: 0;
-  border-radius: 1.3rem;
-  background-color: rgba(250, 249, 246, 0.92);
+  width: min(calc(15.5rem + 24px), calc(100vw - 2rem));
+  height: 60px;
+  min-height: 60px;
+  max-height: 60px;
+  border-radius: 1.15rem;
+  background-color: rgba(250, 249, 246, 0.82);
   background-image: linear-gradient(
     160deg,
-    rgba(255, 255, 255, 0.98) 0%,
-    rgba(255, 255, 255, 0.88) 100%
+    rgba(255, 255, 255, 0.9) 0%,
+    rgba(255, 255, 255, 0.72) 100%
   );
-  border-color: rgba(255, 255, 255, 1);
+  border-color: rgba(0, 0, 0, 0.08);
   box-shadow:
     0 1px 0 rgba(255, 255, 255, 0.78) inset,
-    0 -1px 0 rgba(255, 255, 255, 0.2) inset,
-    0 0 0 0.5px rgba(0, 0, 0, 0.045),
-    0 16px 40px rgba(0, 0, 0, 0.09);
+    0 -1px 0 rgba(255, 255, 255, 0.18) inset,
+    0 0 0 0.5px rgba(0, 0, 0, 0.04),
+    0 10px 28px rgba(0, 0, 0, 0.1);
   padding: 0;
   z-index: 5;
+  overflow: hidden;
 }
 
 .mp[data-embedded="true"][data-playing="true"]:not([data-expanded="true"]) {
@@ -88,7 +91,7 @@
     0 1px 0 rgba(255, 255, 255, 0.75) inset,
     0 -1px 0 rgba(255, 255, 255, 0.18) inset,
     0 0 0 0.5px rgba(0, 0, 0, 0.04),
-    0 10px 28px rgba(0, 0, 0, 0.06);
+    0 8px 24px rgba(0, 0, 0, 0.08);
 }
 
 .mp[data-embedded="true"][data-playing="true"] .mp-disc {
@@ -380,11 +383,119 @@
 }
 
 .mp[data-expanded="true"] .mp-expanded-inner.mp-expanded-embed {
-  padding: 0.45rem 0.55rem 0.6rem;
+  padding: 0.55rem 0.65rem 0.6rem;
 }
 
+/* Single-row embed: art · title/artist · equal shuffle/play · collapse */
+.mp[data-embedded="true"][data-expanded="true"] .mp-expanded {
+  display: block;
+  opacity: 1;
+  grid-template-rows: none;
+  height: 100%;
+}
 
+.mp[data-embedded="true"][data-expanded="true"] .mp-expanded-inner,
+.mp[data-embedded="true"][data-expanded="true"] .mp-expanded-inner.mp-expanded-embed {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.22rem;
+  height: 100%;
+  min-height: 60px;
+  max-height: 60px;
+  padding: 0 6px 0 8px;
+  overflow: hidden;
+  box-sizing: border-box;
+}
 
+.mp[data-embedded="true"][data-expanded="true"] .mp-top {
+  display: flex;
+  align-items: center;
+  gap: 0.38rem;
+  flex: 1 1 auto;
+  min-width: 0;
+  margin: 0;
+}
+
+.mp[data-embedded="true"][data-expanded="true"] .mp-art {
+  width: 1.9rem;
+  height: 1.9rem;
+  border-radius: 0.4rem;
+  flex-shrink: 0;
+}
+
+.mp[data-embedded="true"][data-expanded="true"] .mp-art::after {
+  width: 0.3rem;
+  height: 0.3rem;
+  margin: -0.15rem 0 0 -0.15rem;
+}
+
+.mp[data-embedded="true"][data-expanded="true"] .mp-meta {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding-top: 0;
+}
+
+.mp[data-embedded="true"][data-expanded="true"] .mp-title {
+  font-size: 13px;
+  line-height: 1.15;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mp[data-embedded="true"][data-expanded="true"] .mp-artist {
+  margin-top: 0.06rem;
+  font-size: 11px;
+  line-height: 1.15;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mp[data-embedded="true"][data-expanded="true"] .mp-progress,
+.mp[data-embedded="true"][data-expanded="true"] .mp-footer,
+.mp[data-embedded="true"][data-expanded="true"] .mp-ctrl-prev,
+.mp[data-embedded="true"][data-expanded="true"] .mp-ctrl-next,
+.mp[data-embedded="true"][data-expanded="true"] .mp-ctrl-repeat {
+  display: none !important;
+}
+
+.mp[data-embedded="true"][data-expanded="true"] .mp-transport {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  flex: 0 0 auto;
+}
+
+.mp[data-embedded="true"][data-expanded="true"] .mp-transport .mp-ctrl,
+.mp[data-embedded="true"][data-expanded="true"] .mp-transport .mp-ctrl-play {
+  box-sizing: border-box;
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  min-height: 32px;
+  max-width: 32px;
+  max-height: 32px;
+  padding: 0;
+  flex: 0 0 32px;
+}
+
+.mp[data-embedded="true"][data-expanded="true"] .mp-transport .mp-ctrl svg,
+.mp[data-embedded="true"][data-expanded="true"] .mp-transport .mp-ctrl-play svg {
+  width: 16px;
+  height: 16px;
+}
+
+.mp[data-embedded="true"][data-expanded="true"] .mp-collapse {
+  width: 1.65rem;
+  height: 1.65rem;
+  margin: 0;
+  flex: 0 0 auto;
+}
 
 .mp-top {
   display: flex;

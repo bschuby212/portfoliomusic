@@ -267,7 +267,8 @@ function persist() {
             JSON.stringify({
                 volume: state.volume,
                 muted: state.muted,
-                expanded: state.expanded,
+                // Never persist expand — always boot collapsed.
+                expanded: false,
                 repeat: state.repeat,
             }),
         )
@@ -309,7 +310,7 @@ const actions = {
             playlistName: props.playlistName || "Blake's Playlist",
             volume: prefs?.volume ?? 0.25,
             muted: Boolean(prefs?.muted),
-            expanded: Boolean(prefs?.expanded),
+            expanded: false,
             repeat: Boolean(prefs?.repeat),
             ready: false,
         })
@@ -707,7 +708,7 @@ function MailIcon() {
 
 function PauseBars() {
     return (
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
             <rect x="6.5" y="4.5" width="4" height="15" rx="0.75" />
             <rect x="13.5" y="4.5" width="4" height="15" rx="0.75" />
         </svg>
@@ -716,7 +717,7 @@ function PauseBars() {
 
 function PlayTriangle() {
     return (
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
             <path d="M8 5.5v13l11-6.5L8 5.5z" />
         </svg>
     )
@@ -751,17 +752,25 @@ function ChevronDownIcon({ size = 15 }: { size?: number }) {
     )
 }
 
-function ChevronUpIcon({ size = 16 }: { size?: number }) {
+function ChevronRightIcon({ size = 15 }: { size?: number }) {
     return (
         <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-            <path d="m18 15-6-6-6 6" />
+            <path d="m9 18 6-6-6-6" />
+        </svg>
+    )
+}
+
+function ChevronLeftIcon({ size = 16 }: { size?: number }) {
+    return (
+        <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="m15 18-6-6 6-6" />
         </svg>
     )
 }
 
 function ShuffleIcon() {
     return (
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
             <path d="m16 3 4 4-4 4" />
             <path d="M20 7H4" />
             <path d="m8 21-4-4 4-4" />
@@ -877,7 +886,7 @@ const css = `
   pointer-events: auto; position: relative;
   display: flex; align-items: center;
   gap: calc(.55rem - (var(--pn-elevate) * .2rem));
-  min-height: calc(3.15rem + (var(--pn-elevate) * .25rem));
+  min-height: calc(56px + (var(--pn-elevate) * .25rem));
   flex: 0 1 auto; width: max-content;
   min-width: calc((1 - var(--pn-elevate)) * 560px);
   max-width: 560px;
@@ -887,13 +896,13 @@ const css = `
     calc(.48rem - (var(--pn-elevate) * .16rem))
     calc(.55rem - (var(--pn-elevate) * .23rem));
   color: var(--ink);
-  background-color: rgba(250, 249, 246, calc(.35 * var(--pn-elevate)));
-  background-image: linear-gradient(155deg, rgba(255,255,255,calc(1 * var(--pn-elevate))) 0%, rgba(255,255,255,calc(.54 * var(--pn-elevate))) 55%, rgba(255,255,255,calc(.76 * var(--pn-elevate))) 100%);
-  border: 1px solid rgba(255,255,255,calc(1 * var(--pn-elevate)));
+  background-color: rgba(250, 249, 246, calc(.52 * var(--pn-elevate)));
+  background-image: linear-gradient(155deg, rgba(255,255,255,calc(.82 * var(--pn-elevate))) 0%, rgba(255,255,255,calc(.48 * var(--pn-elevate))) 55%, rgba(255,255,255,calc(.64 * var(--pn-elevate))) 100%);
+  border: 1px solid rgba(0,0,0,calc(.08 * var(--pn-elevate)));
   border-radius: 999px;
-  box-shadow: 0 1px 0 rgba(255,255,255,calc(.8 * var(--pn-elevate))) inset, 0 -1px 0 rgba(255,255,255,calc(.22 * var(--pn-elevate))) inset, 0 0 0 .5px rgba(0,0,0,calc(.045 * var(--pn-elevate))), 0 10px 28px rgba(0,0,0,calc(.07 * var(--pn-elevate)));
-  backdrop-filter: blur(calc((var(--pn-elevate) * var(--pn-elevate) * 48px) + (var(--pn-elevate) * 70px))) saturate(calc(100% + (var(--pn-elevate) * 80%)));
-  -webkit-backdrop-filter: blur(calc((var(--pn-elevate) * var(--pn-elevate) * 48px) + (var(--pn-elevate) * 70px))) saturate(calc(100% + (var(--pn-elevate) * 80%)));
+  box-shadow: 0 1px 0 rgba(255,255,255,calc(.75 * var(--pn-elevate))) inset, 0 -1px 0 rgba(255,255,255,calc(.2 * var(--pn-elevate))) inset, 0 0 0 .5px rgba(0,0,0,calc(.04 * var(--pn-elevate))), 0 8px 24px rgba(0,0,0,calc(.08 * var(--pn-elevate)));
+  backdrop-filter: blur(calc(var(--pn-elevate) * 64px)) saturate(calc(100% + (var(--pn-elevate) * 50%)));
+  -webkit-backdrop-filter: blur(calc(var(--pn-elevate) * 64px)) saturate(calc(100% + (var(--pn-elevate) * 50%)));
   isolation: isolate; overflow: visible;
 }
 .bn-links {
@@ -911,26 +920,74 @@ const css = `
   width: 9.2rem; min-height: 3.4rem;
   display: flex; flex-direction: column; justify-content: center;
   color: #212324;
-  background-color: rgba(250, 249, 246, calc(.35 * var(--pn-elevate)));
-  background-image: linear-gradient(155deg, rgba(255,255,255,calc(1 * var(--pn-elevate))) 0%, rgba(255,255,255,calc(.54 * var(--pn-elevate))) 55%, rgba(255,255,255,calc(.76 * var(--pn-elevate))) 100%);
-  border: 1px solid rgba(255,255,255,calc(1 * var(--pn-elevate)));
+  background-color: rgba(250, 249, 246, calc(.52 * var(--pn-elevate)));
+  background-image: linear-gradient(155deg, rgba(255,255,255,calc(.82 * var(--pn-elevate))) 0%, rgba(255,255,255,calc(.48 * var(--pn-elevate))) 55%, rgba(255,255,255,calc(.64 * var(--pn-elevate))) 100%);
+  border: 1px solid rgba(0,0,0,calc(.08 * var(--pn-elevate)));
   border-radius: 999px; overflow: hidden;
-  box-shadow: 0 1px 0 rgba(255,255,255,calc(.8 * var(--pn-elevate))) inset, 0 -1px 0 rgba(255,255,255,calc(.22 * var(--pn-elevate))) inset, 0 0 0 .5px rgba(0,0,0,calc(.045 * var(--pn-elevate))), 0 10px 28px rgba(0,0,0,calc(.07 * var(--pn-elevate)));
-  backdrop-filter: blur(calc((var(--pn-elevate) * var(--pn-elevate) * 48px) + (var(--pn-elevate) * 70px))) saturate(calc(100% + (var(--pn-elevate) * 80%)));
-  -webkit-backdrop-filter: blur(calc((var(--pn-elevate) * var(--pn-elevate) * 48px) + (var(--pn-elevate) * 70px))) saturate(calc(100% + (var(--pn-elevate) * 80%)));
+  box-shadow: 0 1px 0 rgba(255,255,255,calc(.75 * var(--pn-elevate))) inset, 0 -1px 0 rgba(255,255,255,calc(.2 * var(--pn-elevate))) inset, 0 0 0 .5px rgba(0,0,0,calc(.04 * var(--pn-elevate))), 0 8px 24px rgba(0,0,0,calc(.08 * var(--pn-elevate)));
+  backdrop-filter: blur(calc(var(--pn-elevate) * 64px)) saturate(calc(100% + (var(--pn-elevate) * 50%)));
+  -webkit-backdrop-filter: blur(calc(var(--pn-elevate) * 64px)) saturate(calc(100% + (var(--pn-elevate) * 50%)));
   transform-origin: top left; isolation: isolate;
   transition: width .42s var(--ease), min-height .42s var(--ease), border-radius .42s var(--ease), box-shadow .42s ease, background .3s ease;
 }
 .bmp[data-embedded="true"][data-expanded="true"] {
-  /* Overlay only — never reflows / morphs the nav bar. */
+  /* Match nav bar height; +24px wider than prior compact row. */
   position: absolute; top: 0; left: 0; z-index: 5;
-  width: 21.25rem; max-width: 21.25rem; border-radius: 1.3rem;
-  background-color: rgba(250, 249, 246, .92);
-  background-image: linear-gradient(160deg, rgba(255,255,255,.98) 0%, rgba(255,255,255,.88) 100%);
-  border-color: rgba(255,255,255,1);
-  box-shadow: 0 1px 0 rgba(255,255,255,.78) inset, 0 -1px 0 rgba(255,255,255,.2) inset, 0 0 0 .5px rgba(0,0,0,.045), 0 16px 40px rgba(0,0,0,.09);
-  backdrop-filter: blur(24px) saturate(160%);
-  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  width: min(calc(15.5rem + 24px), calc(100vw - 2rem)); max-width: calc(15.5rem + 24px);
+  height: 60px; min-height: 60px; max-height: 60px;
+  border-radius: 1.15rem; overflow: hidden;
+  background-color: rgba(250, 249, 246, .82);
+  background-image: linear-gradient(160deg, rgba(255,255,255,.9) 0%, rgba(255,255,255,.72) 100%);
+  border-color: rgba(0,0,0,.08);
+  box-shadow: 0 1px 0 rgba(255,255,255,.78) inset, 0 -1px 0 rgba(255,255,255,.18) inset, 0 0 0 .5px rgba(0,0,0,.04), 0 10px 28px rgba(0,0,0,.1);
+  backdrop-filter: blur(64px) saturate(150%);
+  -webkit-backdrop-filter: blur(64px) saturate(150%);
+}
+.bmp[data-embedded="true"][data-expanded="true"] .bmp-expanded {
+  display: block; height: 100%;
+}
+.bmp[data-embedded="true"][data-expanded="true"] .bmp-inner {
+  display: flex; flex-direction: row; align-items: center; gap: .22rem;
+  height: 100%; min-height: 60px; max-height: 60px;
+  padding: 0 6px 0 8px; overflow: hidden; box-sizing: border-box;
+}
+.bmp[data-embedded="true"][data-expanded="true"] .bmp-top {
+  display: flex; align-items: center; gap: .38rem;
+  flex: 1 1 auto; min-width: 0; margin: 0;
+}
+.bmp[data-embedded="true"][data-expanded="true"] .bmp-art {
+  width: 1.9rem; height: 1.9rem; border-radius: .4rem; flex-shrink: 0;
+}
+.bmp[data-embedded="true"][data-expanded="true"] .bmp-meta {
+  flex: 1 1 auto; min-width: 0; padding: 0;
+}
+.bmp[data-embedded="true"][data-expanded="true"] .bmp-title {
+  font-size: 13px; line-height: 1.15;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.bmp[data-embedded="true"][data-expanded="true"] .bmp-artist {
+  margin-top: .06rem; font-size: 11px; line-height: 1.15; color: #737373;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.bmp[data-embedded="true"][data-expanded="true"] .bmp-transport {
+  display: flex; align-items: center; justify-content: flex-end; gap: 12px;
+  margin: 0; padding: 0; flex: 0 0 auto;
+}
+.bmp[data-embedded="true"][data-expanded="true"] .bmp-ctrl,
+.bmp[data-embedded="true"][data-expanded="true"] .bmp-play {
+  box-sizing: border-box;
+  width: 32px; height: 32px; min-width: 32px; min-height: 32px;
+  max-width: 32px; max-height: 32px; padding: 0; flex: 0 0 32px;
+}
+.bmp[data-embedded="true"][data-expanded="true"] .bmp-ctrl svg,
+.bmp[data-embedded="true"][data-expanded="true"] .bmp-play svg {
+  width: 16px; height: 16px;
+}
+.bmp[data-embedded="true"][data-expanded="true"] .bmp-collapse {
+  width: 1.65rem; height: 1.65rem; margin: 0; flex: 0 0 auto;
+}
+.bmp[data-embedded="true"][data-expanded="true"] .bmp-footer {
+  display: none !important;
 }
 .bn-sr {
   position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
@@ -989,6 +1046,7 @@ const css = `
   58% { transform: translateY(-2px) rotate(5deg); }
   100% { transform: translateY(-3px) rotate(0deg); }
 }
+.bn-fx-nudge { padding-right: 16px; box-sizing: content-box; }
 .bn-fx-nudge:hover .bn-icon-face, .bn-fx-nudge:focus-visible .bn-icon-face { animation: bn-fx-nudge .52s var(--ease) both; }
 @keyframes bn-fx-nudge {
   0% { transform: translateY(0) scale(1); }
@@ -998,12 +1056,12 @@ const css = `
 }
 .bn-avatar {
   position: relative; display: inline-flex; align-items: center; justify-content: center;
-  width: 2.55rem; height: 2.55rem; flex-shrink: 0; border-radius: 50%; overflow: hidden;
+  width: 48px; height: 48px; flex-shrink: 0; border-radius: 50%; overflow: hidden;
   background: #e8e6e1; color: #fff; text-decoration: none;
   box-shadow: 0 0 0 1px rgba(255,255,255,calc(.18 * max(var(--pn-elevate), .35))) inset, 0 0 0 1.5px rgba(255,255,255,calc(.55 * max(var(--pn-elevate), .45))), 0 0 0 2.5px rgba(0,0,0,calc(.04 * max(var(--pn-elevate), .3)));
   transition: transform .28s var(--ease), box-shadow .28s ease;
 }
-.bn-avatar-img { width:100%; height:100%; object-fit:cover; object-position:center 28%; display:block; image-rendering:auto; transform:translateZ(0) scale(1.04); transform-origin:center 30%; }
+.bn-avatar-img { width:100%; height:100%; object-fit:cover; object-position:center center; display:block; image-rendering:auto; }
 .bn-avatar-mark { font-size: .72rem; font-weight: 680; letter-spacing: .03em; }
 .bn-avatar:hover {
   transform: scale(1.06);
@@ -1299,7 +1357,7 @@ function BlakeNavBar(props: Props) {
                             actions.setExpanded(true)
                         }}
                     >
-                        <ChevronDownIcon />
+                        <ChevronRightIcon />
                     </button>
                 </div>
 
@@ -1317,22 +1375,11 @@ function BlakeNavBar(props: Props) {
                                 <span className="bmp-title">{title}</span>
                                 {artist ? <span className="bmp-artist">{artist}</span> : null}
                             </div>
-                            <button
-                                type="button"
-                                className="bmp-icon-btn"
-                                aria-label="Collapse"
-                                onClick={() => actions.setExpanded(false)}
-                            >
-                                <ChevronUpIcon />
-                            </button>
                         </div>
 
                         <div className="bmp-transport">
                             <button type="button" className="bmp-ctrl" aria-label="Shuffle" data-active={player.shuffle} onClick={actions.toggleShuffle}>
                                 <ShuffleIcon />
-                            </button>
-                            <button type="button" className="bmp-ctrl" aria-label="Previous" onClick={() => actions.previous(props.apiBaseUrl)}>
-                                <SkipBackIcon />
                             </button>
                             <button
                                 type="button"
@@ -1343,65 +1390,16 @@ function BlakeNavBar(props: Props) {
                             >
                                 {player.isPlaying ? <PauseBars /> : <PlayTriangle />}
                             </button>
-                            <button type="button" className="bmp-ctrl" aria-label="Next" onClick={() => actions.next(false, props.apiBaseUrl)}>
-                                <SkipForwardIcon />
-                            </button>
-                            <button type="button" className="bmp-ctrl" aria-label="Repeat" data-active={player.repeat} onClick={actions.toggleRepeat}>
-                                <RepeatIcon />
-                            </button>
                         </div>
 
-                        <div className="bmp-progress">
-                            <span className="bmp-time">{formatTime(player.currentTime)}</span>
-                            <input
-                                className="bmp-range"
-                                type="range"
-                                min={0}
-                                max={progressMax || 0}
-                                step={0.01}
-                                value={progressValue}
-                                disabled={!player.hasAudio || progressMax === 0}
-                                style={rangeFill(progressMax > 0 ? progressValue / progressMax : 0)}
-                                onChange={(event) => actions.seek(Number(event.currentTarget.value))}
-                            />
-                            <span className="bmp-time">{formatTime(player.duration)}</span>
-                        </div>
-
-                        <div className="bmp-footer">
-                            <div className="bmp-volume">
-                                <button
-                                    type="button"
-                                    className="bmp-icon-btn"
-                                    aria-label={player.muted ? "Unmute" : "Mute"}
-                                    onClick={actions.toggleMuted}
-                                >
-                                    <VolumeIcon
-                                        level={
-                                            player.muted || player.volume === 0
-                                                ? "off"
-                                                : player.volume < 0.4
-                                                  ? "low"
-                                                  : "high"
-                                        }
-                                    />
-                                </button>
-                                <input
-                                    className="bmp-range bmp-vol"
-                                    type="range"
-                                    min={0}
-                                    max={1}
-                                    step={0.01}
-                                    value={player.muted ? 0 : player.volume}
-                                    style={rangeFill(player.muted ? 0 : player.volume)}
-                                    onChange={(event) =>
-                                        actions.setVolume(Number(event.currentTarget.value))
-                                    }
-                                />
-                            </div>
-                            <span className="bmp-note">
-                                {player.hasAudio ? "30s preview" : "Loading audio"}
-                            </span>
-                        </div>
+                        <button
+                            type="button"
+                            className="bmp-icon-btn bmp-collapse"
+                            aria-label="Collapse"
+                            onClick={() => actions.setExpanded(false)}
+                        >
+                            <ChevronLeftIcon />
+                        </button>
                     </div>
                 </div>
             </aside>
@@ -1416,7 +1414,7 @@ const NETLIFY_ORIGIN = "https://genuine-cheesecake-75fecc.netlify.app"
 
 BlakeNavBar.defaultProps = {
     apiBaseUrl: NETLIFY_ORIGIN,
-    playlistUrl: "https://open.spotify.com/playlist/5zXp8gIyEeJteiSZj1RTqJ",
+    playlistUrl: "https://open.spotify.com/playlist/5zXp8gIyEeJteiSZj1RTqJ?si=xgbBBcvlRsmrIeklFdc-7A",
     playlistName: "Blake's Playlist",
     surpriseAfter: 4,
     surpriseTrackUrl: "https://open.spotify.com/track/4cOdK2wGLETKBW3PvgPWqT",
@@ -1495,7 +1493,7 @@ addPropertyControls(BlakeNavBar, {
     playlistUrl: {
         type: ControlType.String,
         title: "Playlist URL",
-        defaultValue: "https://open.spotify.com/playlist/5zXp8gIyEeJteiSZj1RTqJ",
+        defaultValue: "https://open.spotify.com/playlist/5zXp8gIyEeJteiSZj1RTqJ?si=xgbBBcvlRsmrIeklFdc-7A",
     },
     playlistName: {
         type: ControlType.String,

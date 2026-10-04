@@ -2,6 +2,8 @@
 
 import {
   ChevronDown,
+  ChevronLeft,
+  ChevronRight,
   ChevronUp,
   Music2,
   Play,
@@ -122,7 +124,9 @@ export function MusicPlayer({ embedded = false }: MusicPlayerProps) {
             playerActions.setExpanded(true);
           }}
         >
-          {(embedded || state.expandDirection === "down") ? (
+          {embedded ? (
+            <ChevronRight size={15} strokeWidth={ICON_STROKE} />
+          ) : state.expandDirection === "down" ? (
             <ChevronDown size={15} strokeWidth={ICON_STROKE} />
           ) : (
             <ChevronUp size={15} strokeWidth={ICON_STROKE} />
@@ -131,7 +135,11 @@ export function MusicPlayer({ embedded = false }: MusicPlayerProps) {
       </div>
 
       <div className="mp-expanded">
-        <div className="mp-expanded-inner">
+        <div
+          className={
+            embedded ? "mp-expanded-inner mp-expanded-embed" : "mp-expanded-inner"
+          }
+        >
           <div className="mp-top">
             <div className="mp-art" key={track?.id}>
               {track?.metadata?.artworkUrl ? (
@@ -143,7 +151,7 @@ export function MusicPlayer({ embedded = false }: MusicPlayerProps) {
                 />
               ) : (
                 <div className="mp-art-fallback">
-                  <Music2 size={18} strokeWidth={1.75} />
+                  <Music2 size={embedded ? 12 : 18} strokeWidth={1.75} />
                 </div>
               )}
             </div>
@@ -151,39 +159,43 @@ export function MusicPlayer({ embedded = false }: MusicPlayerProps) {
               <span className="mp-title mp-crossfade">{title}</span>
               <span className="mp-artist mp-crossfade">{artist}</span>
             </div>
-            <button
-              type="button"
-              className="mp-icon-btn mp-collapse"
-              aria-label="Collapse music player"
-              onClick={() => playerActions.setExpanded(false)}
-            >
-              {state.expandDirection === "down" ? (
-                <ChevronUp size={16} strokeWidth={2} />
-              ) : (
-                <ChevronDown size={16} strokeWidth={2} />
-              )}
-            </button>
+            {!embedded ? (
+              <button
+                type="button"
+                className="mp-icon-btn mp-collapse"
+                aria-label="Collapse music player"
+                onClick={() => playerActions.setExpanded(false)}
+              >
+                {state.expandDirection === "down" ? (
+                  <ChevronUp size={16} strokeWidth={2} />
+                ) : (
+                  <ChevronDown size={16} strokeWidth={2} />
+                )}
+              </button>
+            ) : null}
           </div>
 
           <div className="mp-transport">
             <button
               type="button"
-              className="mp-ctrl"
+              className="mp-ctrl mp-ctrl-shuffle"
               aria-label="Shuffle"
               aria-pressed={state.shuffle}
               data-active={state.shuffle}
               onClick={playerActions.toggleShuffle}
             >
-              <Shuffle size={15} strokeWidth={2} />
+              <Shuffle size={embedded ? 16 : 15} strokeWidth={2} />
             </button>
-            <button
-              type="button"
-              className="mp-ctrl"
-              aria-label="Previous track"
-              onClick={playerActions.previous}
-            >
-              <SkipBack size={16} strokeWidth={2} fill="currentColor" />
-            </button>
+            {!embedded ? (
+              <button
+                type="button"
+                className="mp-ctrl mp-ctrl-prev"
+                aria-label="Previous track"
+                onClick={playerActions.previous}
+              >
+                <SkipBack size={16} strokeWidth={2} fill="currentColor" />
+              </button>
+            ) : null}
             <button
               type="button"
               className="mp-ctrl mp-ctrl-play"
@@ -192,99 +204,123 @@ export function MusicPlayer({ embedded = false }: MusicPlayerProps) {
               onClick={playerActions.togglePlay}
             >
               {state.isPlaying ? (
-                <PauseIcon size={15} />
+                <PauseIcon size={embedded ? 16 : 15} />
               ) : (
-                <Play size={15} strokeWidth={0} fill="currentColor" absoluteStrokeWidth />
+                <Play
+                  size={embedded ? 16 : 15}
+                  strokeWidth={0}
+                  fill="currentColor"
+                  absoluteStrokeWidth
+                />
               )}
             </button>
-            <button
-              type="button"
-              className="mp-ctrl"
-              aria-label="Next track"
-              onClick={() => playerActions.next()}
-            >
-              <SkipForward size={16} strokeWidth={2} fill="currentColor" />
-            </button>
-            <button
-              type="button"
-              className="mp-ctrl"
-              aria-label="Repeat track"
-              aria-pressed={state.repeat}
-              data-active={state.repeat}
-              onClick={playerActions.toggleRepeat}
-            >
-              <Repeat size={15} strokeWidth={2} />
-            </button>
+            {!embedded ? (
+              <>
+                <button
+                  type="button"
+                  className="mp-ctrl mp-ctrl-next"
+                  aria-label="Next track"
+                  onClick={() => playerActions.next()}
+                >
+                  <SkipForward size={16} strokeWidth={2} fill="currentColor" />
+                </button>
+                <button
+                  type="button"
+                  className="mp-ctrl mp-ctrl-repeat"
+                  aria-label="Repeat track"
+                  aria-pressed={state.repeat}
+                  data-active={state.repeat}
+                  onClick={playerActions.toggleRepeat}
+                >
+                  <Repeat size={15} strokeWidth={2} />
+                </button>
+              </>
+            ) : null}
           </div>
 
-          <div className="mp-progress">
-            <span className="mp-time">{formatTime(displayTime)}</span>
-            <input
-              className="mp-range"
-              type="range"
-              min={0}
-              max={progressMax || 0}
-              step={0.01}
-              value={progressValue}
-              disabled={!state.hasAudio}
-              aria-label="Track progress"
-              style={rangeFill(progressMax > 0 ? progressValue / progressMax : 0)}
-              onPointerDown={() => {
-                setScrubbing(true);
-                setScrubTime(state.currentTime);
-              }}
-              onChange={(event) => {
-                const next = Number(event.currentTarget.value);
-                setScrubTime(next);
-                if (!scrubbing) playerActions.seek(next);
-              }}
-              onPointerUp={(event) => {
-                playerActions.seek(Number(event.currentTarget.value));
-                setScrubbing(false);
-              }}
-              onPointerCancel={() => setScrubbing(false)}
-            />
-            <span className="mp-time">{formatTime(progressMax)}</span>
-          </div>
+          {embedded ? (
+            <button
+              type="button"
+              className="mp-icon-btn mp-collapse"
+              aria-label="Collapse music player"
+              onClick={() => playerActions.setExpanded(false)}
+            >
+              <ChevronLeft size={16} strokeWidth={2} />
+            </button>
+          ) : null}
 
-          <div className="mp-footer">
-            <div className="mp-volume">
-              <button
-                type="button"
-                className="mp-icon-btn"
-                aria-label={state.muted ? "Unmute" : "Mute"}
-                onClick={() => {
-                  if (window.matchMedia("(max-width: 640px)").matches) {
-                    playerActions.toggleVolumeOpen();
-                    return;
-                  }
-                  playerActions.toggleMuted();
+          {!embedded ? (
+            <div className="mp-progress">
+              <span className="mp-time">{formatTime(displayTime)}</span>
+              <input
+                className="mp-range"
+                type="range"
+                min={0}
+                max={progressMax || 0}
+                step={0.01}
+                value={progressValue}
+                disabled={!state.hasAudio}
+                aria-label="Track progress"
+                style={rangeFill(progressMax > 0 ? progressValue / progressMax : 0)}
+                onPointerDown={() => {
+                  setScrubbing(true);
+                  setScrubTime(state.currentTime);
                 }}
-              >
-                <VolumeIcon size={15} strokeWidth={2} />
-              </button>
-              <div className="mp-volume-slider">
-                <input
-                  className="mp-range"
-                  type="range"
-                  min={0}
-                  max={1}
-                  step={0.01}
-                  value={state.muted ? 0 : state.volume}
-                  aria-label="Volume"
-                  onChange={(event) => playerActions.setVolume(Number(event.currentTarget.value))}
-                  style={rangeFill(state.muted ? 0 : state.volume)}
-                />
-              </div>
+                onChange={(event) => {
+                  const next = Number(event.currentTarget.value);
+                  setScrubTime(next);
+                  if (!scrubbing) playerActions.seek(next);
+                }}
+                onPointerUp={(event) => {
+                  playerActions.seek(Number(event.currentTarget.value));
+                  setScrubbing(false);
+                }}
+                onPointerCancel={() => setScrubbing(false)}
+              />
+              <span className="mp-time">{formatTime(progressMax)}</span>
             </div>
-            <span className="mp-note">
-              {state.hasAudio
-                ? track?.audioSrc
-                  ? "Track preview"
-                  : "30s preview"
-                : "No audio source"}
-            </span>
-          </div>
+          ) : null}
+
+          {!embedded ? (
+            <div className="mp-footer">
+              <div className="mp-volume">
+                <button
+                  type="button"
+                  className="mp-icon-btn"
+                  aria-label={state.muted ? "Unmute" : "Mute"}
+                  onClick={() => {
+                    if (window.matchMedia("(max-width: 640px)").matches) {
+                      playerActions.toggleVolumeOpen();
+                      return;
+                    }
+                    playerActions.toggleMuted();
+                  }}
+                >
+                  <VolumeIcon size={15} strokeWidth={2} />
+                </button>
+                <div className="mp-volume-slider">
+                  <input
+                    className="mp-range"
+                    type="range"
+                    min={0}
+                    max={1}
+                    step={0.01}
+                    value={state.muted ? 0 : state.volume}
+                    aria-label="Volume"
+                    onChange={(event) => playerActions.setVolume(Number(event.currentTarget.value))}
+                    style={rangeFill(state.muted ? 0 : state.volume)}
+                  />
+                </div>
+              </div>
+              <span className="mp-note">
+                {state.hasAudio
+                  ? track?.audioSrc
+                    ? "Track preview"
+                    : "30s preview"
+                  : "No audio source"}
+              </span>
+            </div>
+          ) : null}
         </div>
       </div>
     </aside>

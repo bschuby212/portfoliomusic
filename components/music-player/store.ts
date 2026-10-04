@@ -127,7 +127,8 @@ function persistPrefs() {
     muted: state.muted,
     shuffle: state.shuffle,
     repeat: state.repeat,
-    expanded: state.expanded,
+    // Never persist expand — portfolio always boots collapsed.
+    expanded: false,
   };
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(prefs));
@@ -148,7 +149,8 @@ function readPrefs(): PlayerPrefs {
       // Always start shuffled for the portfolio playlist experience unless user turned it off.
       shuffle: parsed.shuffle ?? DEFAULT_PREFS.shuffle,
       repeat: Boolean(parsed.repeat),
-      expanded: Boolean(parsed.expanded),
+      // Ignore stored expand — base state is always the collapsed card.
+      expanded: false,
     };
   } catch {
     return DEFAULT_PREFS;
@@ -301,7 +303,7 @@ export const playerActions = {
       muted: prefs.muted,
       shuffle: true,
       repeat: prefs.repeat,
-      expanded: prefs.expanded,
+      expanded: false,
       expandDirection: resolveExpandDirection(),
       ready: false,
     });
@@ -357,7 +359,7 @@ export const playerActions = {
         queueIndex: 0,
         shuffle: true,
         repeat: prefs.repeat,
-        expanded: prefs.expanded,
+        expanded: false,
         volume: prefs.volume,
         muted: prefs.muted,
         ready: true,

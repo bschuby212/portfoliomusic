@@ -20,7 +20,7 @@ Create a Framer **code component** from this repo and put it on the site. Do not
 **Default export:** already `BlakeNavBar`
 
 ### Create the code file
-1. Read `framer/BlakeMusicPlayer.tsx` in full from branch `main` (after PR #5 is merged) — or from `cursor/framer-working-defaults-653c` if not merged yet.
+1. Read `framer/BlakeMusicPlayer.tsx` in full from branch `cursor/embed-expand-right-653c` (or `main` after merge).
 2. Create or overwrite a Framer code file named `BlakeNavBar` with **exactly** that source.
 3. Do not rewrite, simplify, restyle, or split the file. Property controls and defaults are already correct.
 4. Confirm defaults use `https://genuine-cheesecake-75fecc.netlify.app` for apiBaseUrl, logoUrl, and resumeUrl (not blake-music-player.netlify.app, not relative paths).
@@ -57,4 +57,4 @@ Attach or paste the full contents of `framer/BlakeMusicPlayer.tsx` after the pro
 
 Raw file (after merge): https://raw.githubusercontent.com/bschuby212/portfoliomusic/main/framer/BlakeMusicPlayer.tsx  
 
-Raw file (this fix, before merge): https://raw.githubusercontent.com/bschuby212/portfoliomusic/cursor/framer-working-defaults-653c/framer/BlakeMusicPlayer.tsx
+Raw file (this fix, before merge): https://raw.githubusercontent.com/bschuby212/portfoliomusic/cursor/embed-expand-right-653c/framer/BlakeMusicPlayer.tsx
