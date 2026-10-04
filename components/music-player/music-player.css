@@ -26,7 +26,7 @@
   bottom: auto;
   z-index: 2;
   flex-shrink: 0;
-  width: 9.2rem;
+  width: max-content;
   box-sizing: border-box;
   height: 56px;
   min-height: 56px;
@@ -63,11 +63,11 @@
 }
 
 .mp[data-embedded="true"][data-expanded="true"] {
-  /* Match nav bar height; +56px wider than prior compact row. */
+  /* Match nav bar height; tightened after removing expand chevron. */
   position: absolute;
   top: 0;
   left: 0;
-  width: min(calc(15.5rem + 56px), calc(100vw - 2rem));
+  width: min(calc(15.5rem + 24px), calc(100vw - 2rem));
   height: 56px;
   min-height: 56px;
   max-height: 56px;
@@ -182,7 +182,7 @@
   align-items: center;
   gap: 0.28rem;
   height: 2.5rem;
-  padding: 0 0.45rem 0 0.5rem;
+  padding: 0 0.5rem;
   max-height: 2.5rem;
   opacity: 1;
   overflow: hidden;

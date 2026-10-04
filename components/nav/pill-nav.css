@@ -48,7 +48,7 @@
   width: max-content;
   min-width: calc((1 - var(--pn-elevate)) * min(100%, 56rem));
   max-width: min(
-    calc(100% - 9.9rem),
+    calc(100% - 7.5rem),
     calc(56rem - (var(--pn-elevate) * 12rem))
   );
   padding:
@@ -83,10 +83,10 @@
   pointer-events: auto;
   position: relative;
   /* Always reserve collapsed footprint — expanded panel overlays, never reflows nav. */
-  flex: 0 0 9.2rem;
-  width: 9.2rem;
-  min-width: 9.2rem;
-  max-width: 9.2rem;
+  flex: 0 0 auto;
+  width: max-content;
+  min-width: 0;
+  max-width: none;
   display: flex;
   justify-content: flex-start;
   align-items: flex-start;
@@ -499,7 +499,7 @@
 
   .pn {
     min-width: 0;
-    max-width: min(100%, calc(100% - 8.5rem));
+    max-width: min(100%, calc(100% - 6.5rem));
   }
 
   .pn-link {

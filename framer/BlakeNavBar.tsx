@@ -911,13 +911,13 @@ const css = `
 }
 .bn-music {
   pointer-events: auto; position: relative; display: block;
-  flex: 0 0 9.2rem; width: 9.2rem; min-width: 9.2rem; max-width: 9.2rem;
+  flex: 0 0 auto; width: max-content; min-width: 0; max-width: none;
   height: 56px; overflow: visible;
 }
 .bn-music[data-expanded="true"] { z-index: 3; }
 .bmp {
   position: absolute; top: 0; left: 0; z-index: 2;
-  width: 9.2rem; box-sizing: border-box; height: 56px; min-height: 56px; max-height: 56px;
+  width: max-content; box-sizing: border-box; height: 56px; min-height: 56px; max-height: 56px;
   display: flex; flex-direction: column; justify-content: center;
   color: #212324;
   background-color: rgba(250, 249, 246, calc(.52 * var(--pn-elevate)));
@@ -933,7 +933,7 @@ const css = `
 .bmp[data-embedded="true"][data-expanded="true"] {
   /* Match nav bar height; +56px wider than prior compact row. */
   position: absolute; top: 0; left: 0; z-index: 5;
-  width: min(calc(15.5rem + 56px), calc(100vw - 2rem)); max-width: calc(15.5rem + 56px);
+  width: min(calc(15.5rem + 24px), calc(100vw - 2rem)); max-width: calc(15.5rem + 24px);
   height: 56px; min-height: 56px; max-height: 56px;
   border-radius: 1.15rem; overflow: hidden;
   background-color: rgba(250, 249, 246, .82);
