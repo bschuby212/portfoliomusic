@@ -5,7 +5,7 @@ import { useEffect } from "react";
 const COLLAPSED = 72;
 const MSG = "blake-embed-height";
 
-function measureHeight() {
+function measureOverlayHeight() {
   const bottoms = [COLLAPSED];
   for (const el of document.querySelectorAll(".pn-root, .pn, .pn-music, .mp")) {
     bottoms.push(el.getBoundingClientRect().bottom);
@@ -14,9 +14,10 @@ function measureHeight() {
 }
 
 /**
- * Short sticky Framer embed (~72px collapsed).
- * Reports needed height to parent so a FIXED overlay iframe can grow
- * over the page (no document reflow / page jump).
+ * Keep the embed DOCUMENT at 72px always (Framer scale-to-fit crushes
+ * content if the document grows taller than the Embed frame).
+ * Tell the parent how tall the FIXED overlay iframe should be so expand
+ * can show without clipping — page layout does not move.
  */
 export function EmbedDocument() {
   useEffect(() => {
@@ -29,26 +30,28 @@ export function EmbedDocument() {
     let last = 0;
     let timer = 0;
 
-    const applyChrome = () => {
-      html.style.overflow = "hidden";
-      body.style.overflow = "hidden";
-      html.style.margin = "0";
-      body.style.margin = "0";
-      html.style.background = "transparent";
-      body.style.background = "transparent";
-      html.style.clipPath = "none";
-      body.style.clipPath = "none";
+    const lockDoc = () => {
+      // Document footprint stays collapsed — never grow this or Framer crushes.
+      for (const el of [html, body]) {
+        el.style.overflow = "visible";
+        el.style.overflowX = "visible";
+        el.style.overflowY = "visible";
+        el.style.height = `${COLLAPSED}px`;
+        el.style.minHeight = `${COLLAPSED}px`;
+        el.style.maxHeight = `${COLLAPSED}px`;
+        el.style.margin = "0";
+        el.style.padding = "0";
+        el.style.background = "transparent";
+        el.style.clipPath = "none";
+        el.style.zoom = "1";
+        el.style.transform = "none";
+      }
+      html.style.setProperty("-webkit-text-size-adjust", "100%");
     };
 
     const publish = () => {
-      applyChrome();
-      const height = measureHeight();
-      html.style.height = `${height}px`;
-      body.style.height = `${height}px`;
-      html.style.minHeight = `${height}px`;
-      body.style.minHeight = `${height}px`;
-      html.style.maxHeight = `${height}px`;
-      body.style.maxHeight = `${height}px`;
+      lockDoc();
+      const height = measureOverlayHeight();
       if (height === last || window.parent === window) return;
       last = height;
       window.parent.postMessage({ type: MSG, height }, "*");
@@ -62,7 +65,7 @@ export function EmbedDocument() {
       }, 40);
     };
 
-    applyChrome();
+    lockDoc();
     publish();
 
     const watched = new Set<Element>();

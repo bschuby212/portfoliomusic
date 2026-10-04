@@ -164,38 +164,42 @@ Expanded panel is the **custom** player UI (transport/scrub/volume). Spotify is 
 
 ## 5) Netlify `/embed` iframe (optional)
 
-Short bar only (~72px). Browsers clip iframes, so expand needs the iframe
-to grow — but use **`position: fixed`** so growth overlays the page and
-**does not push / move layout**. No drop shadows on the embed pills.
+`/embed` posts `{ type: "blake-embed-height", height }` on expand/collapse.
+This HTML **only resizes the iframe** — you pin the Framer layer yourself.
 
-Paste this **Embed → HTML** in Framer (do NOT set the Framer layer to 240px):
+### Framer layer (do this in the UI, not in the HTML)
+- Embed → **HTML**
+- Position: **Fixed** (best) or **Sticky** — top: 0  
+  - **Fixed** = always stays at the top, never scrolls away, resize won’t push page  
+  - **Sticky** = sticks to top while scrolling; OK if the layer isn’t trapped in a clipping stack  
+  - **Absolute alone** = scrolls away with the page (not what you want unless a parent is fixed/sticky)
+- Width **Fill**, height **Hug** (or ~72) so the layer can grow with the iframe
+- **Overflow = Visible** on this layer **and** any parent stack (or stacks will clip)
+- High z-index above page content
+
+### Paste (iframe + resize only)
 
 ```html
-<!-- 72px spacer only — page layout never changes on expand -->
-<div style="height:72px;width:100%;pointer-events:none;"></div>
-<div id="blake-embed-wrap" style="position:fixed;top:0;left:0;right:0;height:72px;z-index:9999;">
-  <iframe
-    id="blake-embed"
-    src="https://genuine-cheesecake-75fecc.netlify.app/embed"
-    title="Blake nav"
-    style="display:block;width:100%;height:72px;border:0;background:transparent;"
-    allow="autoplay; encrypted-media; clipboard-write"
-  ></iframe>
-</div>
+<iframe
+  id="blake-embed"
+  src="https://genuine-cheesecake-75fecc.netlify.app/embed"
+  title="Blake nav"
+  style="display:block;width:100%;height:72px;border:0;background:transparent;"
+  allow="autoplay; encrypted-media; clipboard-write"
+></iframe>
 <script>
   window.addEventListener("message", (event) => {
     const data = event.data;
     if (!data || data.type !== "blake-embed-height") return;
-    const h = Math.max(72, Number(data.height) || 72);
     const iframe = document.getElementById("blake-embed");
-    const wrap = document.getElementById("blake-embed-wrap");
-    if (iframe) iframe.style.height = h + "px";
-    if (wrap) wrap.style.height = h + "px";
+    if (!iframe) return;
+    iframe.style.height = Math.max(72, Number(data.height) || 72) + "px";
   });
 </script>
 ```
 
-- Collapsed = 72px. Expand grows the **fixed** overlay only — spacer stays 72px, page does not jump.
+- Collapsed ≈ 72px; expand only changes `iframe.style.height`.
+- If a parent stack has Overflow = Hidden / Clip, fix that stack — the script can’t fight it.
 - Prefer the code component when you want the nav native to the Framer page.
 
 Keep Netlify for:
