@@ -367,7 +367,12 @@
   }
 }
 
-/* Resume — download tug downward */
+/* Resume — space before pill edge + download tug downward */
+.pn-fx-nudge {
+  padding-right: 16px;
+  box-sizing: content-box;
+}
+
 .pn-fx-nudge:hover .pn-icon-face,
 .pn-fx-nudge:focus-visible .pn-icon-face {
   animation: pn-fx-nudge 0.52s var(--pn-ease) both;

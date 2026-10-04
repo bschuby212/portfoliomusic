@@ -1045,6 +1045,7 @@ const css = `
   58% { transform: translateY(-2px) rotate(5deg); }
   100% { transform: translateY(-3px) rotate(0deg); }
 }
+.bn-fx-nudge { padding-right: 16px; box-sizing: content-box; }
 .bn-fx-nudge:hover .bn-icon-face, .bn-fx-nudge:focus-visible .bn-icon-face { animation: bn-fx-nudge .52s var(--ease) both; }
 @keyframes bn-fx-nudge {
   0% { transform: translateY(0) scale(1); }
