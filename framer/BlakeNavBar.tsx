@@ -12,6 +12,9 @@
  *
  * Fastest install: give Framer External Agent this file + framer/GIVE_TO_FRAMER_AGENT.md
  * Manual: Assets → Code → New Component → paste entire file → frame 720×56, Overflow Visible
+ *
+ * Defaults point at https://genuine-cheesecake-75fecc.netlify.app for API + avatar + resume
+ * (absolute URLs — relative /avatar.png paths break when the component runs on Framer).
  */
 import { addPropertyControls, ControlType } from "framer"
 import {
@@ -182,7 +185,12 @@ function playableSrc(track: ResolvedTrack | undefined) {
 function ensureAudio() {
     if (audio || typeof window === "undefined") return audio
     audio = new Audio()
-    audio.preload = "metadata"
+    audio.preload = "auto"
+    audio.playsInline = true
+    audio.setAttribute("playsinline", "true")
+    audio.setAttribute("webkit-playsinline", "true")
+    audio.volume = state.volume
+    audio.muted = state.muted
     audio.addEventListener("timeupdate", () => {
         if (!state.isPlaying) return
         setState({ currentTime: audio?.currentTime || 0 })
@@ -192,7 +200,10 @@ function ensureAudio() {
         setState({ duration: duration > 0 ? duration : 0 })
     })
     audio.addEventListener("play", () => setState({ isPlaying: true }))
-    audio.addEventListener("pause", () => setState({ isPlaying: false }))
+    audio.addEventListener("pause", () => {
+        if (pendingAutoplay) return
+        setState({ isPlaying: false })
+    })
     audio.addEventListener("ended", () => {
         if (endedLock) return
         endedLock = true
@@ -369,9 +380,14 @@ const actions = {
         await Promise.all(indexes.map((index) => actions.ensureTrackMetadata(apiBaseUrl, index)))
     },
 
-    async ensureTrackMetadata(apiBaseUrl: string, trackIndex: number) {
+    async ensureTrackMetadata(apiBaseUrl: string, trackIndex: number, opts?: { force?: boolean }) {
         const track = state.tracks[trackIndex]
-        if (!track || track.metadataStatus === "ready" || track.metadataStatus === "loading") return
+        if (!track) return
+        const hasPreview = Boolean(playableSrc(track))
+        if (!opts?.force) {
+            if (track.metadataStatus === "loading") return
+            if (track.metadataStatus === "ready" && hasPreview) return
+        }
 
         setState((current) => {
             const tracks = current.tracks.slice()
@@ -383,9 +399,11 @@ const actions = {
 
         try {
             const base = apiBaseUrl.replace(/\/$/, "")
-            const response = await fetch(
-                `${base}/api/spotify?url=${encodeURIComponent(track.spotifyUrl)}`,
-            )
+            const params = new URLSearchParams({ url: track.spotifyUrl })
+            if (opts?.force || !hasPreview) params.set("fresh", String(Date.now()))
+            const response = await fetch(`${base}/api/spotify?${params.toString()}`, {
+                cache: "no-store",
+            })
             if (!response.ok) throw new Error("meta failed")
             const metadata = (await response.json()) as TrackMetadata
             let shouldReload = false
@@ -405,7 +423,7 @@ const actions = {
                 }
             })
 
-            if (shouldReload) {
+            if (shouldReload || (pendingAutoplay && playableSrc(state.tracks[trackIndex]))) {
                 const shouldPlay = pendingAutoplay || state.isPlaying
                 pendingAutoplay = false
                 loadCurrent(shouldPlay)
@@ -426,40 +444,62 @@ const actions = {
         if (!el) return
         const trackIndex = state.queue[state.queueIndex]
         const track = typeof trackIndex === "number" ? state.tracks[trackIndex] : undefined
-        const src = playableSrc(track)
+        let src = playableSrc(track)
 
         if (state.isPlaying) {
+            pendingAutoplay = false
             el.pause()
             setState({ isPlaying: false })
             return
         }
 
+        el.volume = state.muted ? 0 : state.volume
+        el.muted = state.muted
         setState({ isPlaying: true })
 
-        if (!src) {
-            void (async () => {
-                if (typeof trackIndex !== "number") return
+        const start = async () => {
+            if (typeof trackIndex !== "number") {
+                setState({ isPlaying: false })
+                return
+            }
+            if (!src) {
                 pendingAutoplay = true
-                await actions.ensureTrackMetadata(apiBaseUrl, trackIndex)
-                const ready = playableSrc(
-                    state.tracks[state.queue[state.queueIndex] as number],
-                )
-                if (!ready || !audio) {
-                    pendingAutoplay = false
+                await actions.ensureTrackMetadata(apiBaseUrl, trackIndex, { force: true })
+                src = playableSrc(state.tracks[trackIndex])
+            }
+            if (!src || !audio) {
+                pendingAutoplay = false
+                setState({ isPlaying: false, hasAudio: false })
+                return
+            }
+            pendingAutoplay = false
+            audio.volume = state.muted ? 0 : state.volume
+            audio.muted = state.muted
+            if (!audio.getAttribute("src") || !audio.src.includes(src.split("?")[0].slice(-24))) {
+                audio.src = src
+                audio.load()
+            }
+            try {
+                await audio.play()
+            } catch {
+                // Retry once with a fresh preview URL (CDNs expire).
+                await actions.ensureTrackMetadata(apiBaseUrl, trackIndex, { force: true })
+                const retry = playableSrc(state.tracks[trackIndex])
+                if (!retry || !audio) {
                     setState({ isPlaying: false })
                     return
                 }
-                audio.src = ready
-                void audio.play().catch(() => setState({ isPlaying: false }))
-            })()
-            return
+                audio.src = retry
+                audio.load()
+                try {
+                    await audio.play()
+                } catch {
+                    setState({ isPlaying: false })
+                }
+            }
         }
 
-        if (!el.getAttribute("src") || !el.src.includes(src.split("?")[0].slice(-24))) {
-            el.src = src
-            el.load()
-        }
-        void el.play().catch(() => setState({ isPlaying: false }))
+        void start()
     },
 
     next(fromEnded = false, apiBaseUrl = "") {
@@ -648,11 +688,10 @@ function StrokeIcon({ children }: { children: ReactNode }) {
 }
 
 function LinkedInIcon() {
+    // Brand "in" mark — clearer than the stroke outline at 16px.
     return (
-        <svg width={ICON_SIZE} height={ICON_SIZE} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={ICON_STROKE} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-            <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6z" />
-            <rect width="4" height="12" x="2" y="9" rx="0.5" />
-            <circle cx="4" cy="4" r="2" />
+        <svg width={ICON_SIZE} height={ICON_SIZE} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M4.98 3.5C4.98 4.88 3.88 6 2.5 6S0 4.88 0 3.5 1.12 1 2.5 1s2.48 1.12 2.48 2.5zM.5 8.5h4V23h-4V8.5zM8.5 8.5h3.84v1.98h.05c.53-1.01 1.84-2.08 3.79-2.08 4.05 0 4.8 2.67 4.8 6.14V23h-4v-6.56c0-1.56-.03-3.57-2.17-3.57-2.18 0-2.51 1.7-2.51 3.46V23h-4V8.5z" transform="translate(1 0.5)" />
         </svg>
     )
 }
@@ -700,6 +739,89 @@ function FileDownIcon() {
             <path d="M14 2v4a2 2 0 0 0 2 2h4" />
             <path d="M12 18v-6" />
             <path d="m9 15 3 3 3-3" />
+        </svg>
+    )
+}
+
+function ChevronDownIcon({ size = 15 }: { size?: number }) {
+    return (
+        <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="m6 9 6 6 6-6" />
+        </svg>
+    )
+}
+
+function ChevronUpIcon({ size = 16 }: { size?: number }) {
+    return (
+        <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="m18 15-6-6-6 6" />
+        </svg>
+    )
+}
+
+function ShuffleIcon() {
+    return (
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="m16 3 4 4-4 4" />
+            <path d="M20 7H4" />
+            <path d="m8 21-4-4 4-4" />
+            <path d="M4 17h16" />
+        </svg>
+    )
+}
+
+function SkipBackIcon() {
+    return (
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <polygon points="19 20 9 12 19 4 19 20" fill="currentColor" stroke="none" />
+            <line x1="5" x2="5" y1="19" y2="5" />
+        </svg>
+    )
+}
+
+function SkipForwardIcon() {
+    return (
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <polygon points="5 4 15 12 5 20 5 4" fill="currentColor" stroke="none" />
+            <line x1="19" x2="19" y1="5" y2="19" />
+        </svg>
+    )
+}
+
+function RepeatIcon() {
+    return (
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="m17 2 4 4-4 4" />
+            <path d="M3 11v-1a4 4 0 0 1 4-4h14" />
+            <path d="m7 22-4-4 4-4" />
+            <path d="M21 13v1a4 4 0 0 1-4 4H3" />
+        </svg>
+    )
+}
+
+function VolumeIcon({ level }: { level: "off" | "low" | "high" }) {
+    if (level === "off") {
+        return (
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="M11 5 6 9H2v6h4l5 4V5z" />
+                <line x1="22" x2="16" y1="9" y2="15" />
+                <line x1="16" x2="22" y1="9" y2="15" />
+            </svg>
+        )
+    }
+    if (level === "low") {
+        return (
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="M11 5 6 9H2v6h4l5 4V5z" />
+                <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
+            </svg>
+        )
+    }
+    return (
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M11 5 6 9H2v6h4l5 4V5z" />
+            <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
+            <path d="M19.07 4.93a10 10 0 0 1 0 14.14" />
         </svg>
     )
 }
@@ -1177,7 +1299,7 @@ function BlakeNavBar(props: Props) {
                             actions.setExpanded(true)
                         }}
                     >
-                        ▾
+                        <ChevronDownIcon />
                     </button>
                 </div>
 
@@ -1201,16 +1323,16 @@ function BlakeNavBar(props: Props) {
                                 aria-label="Collapse"
                                 onClick={() => actions.setExpanded(false)}
                             >
-                                ⌃
+                                <ChevronUpIcon />
                             </button>
                         </div>
 
                         <div className="bmp-transport">
                             <button type="button" className="bmp-ctrl" aria-label="Shuffle" data-active={player.shuffle} onClick={actions.toggleShuffle}>
-                                ⇄
+                                <ShuffleIcon />
                             </button>
                             <button type="button" className="bmp-ctrl" aria-label="Previous" onClick={() => actions.previous(props.apiBaseUrl)}>
-                                ⏮
+                                <SkipBackIcon />
                             </button>
                             <button
                                 type="button"
@@ -1222,10 +1344,10 @@ function BlakeNavBar(props: Props) {
                                 {player.isPlaying ? <PauseBars /> : <PlayTriangle />}
                             </button>
                             <button type="button" className="bmp-ctrl" aria-label="Next" onClick={() => actions.next(false, props.apiBaseUrl)}>
-                                ⏭
+                                <SkipForwardIcon />
                             </button>
                             <button type="button" className="bmp-ctrl" aria-label="Repeat" data-active={player.repeat} onClick={actions.toggleRepeat}>
-                                ↻
+                                <RepeatIcon />
                             </button>
                         </div>
 
@@ -1253,7 +1375,15 @@ function BlakeNavBar(props: Props) {
                                     aria-label={player.muted ? "Unmute" : "Mute"}
                                     onClick={actions.toggleMuted}
                                 >
-                                    {player.muted || player.volume === 0 ? "🔇" : "🔊"}
+                                    <VolumeIcon
+                                        level={
+                                            player.muted || player.volume === 0
+                                                ? "off"
+                                                : player.volume < 0.4
+                                                  ? "low"
+                                                  : "high"
+                                        }
+                                    />
                                 </button>
                                 <input
                                     className="bmp-range bmp-vol"
@@ -1281,8 +1411,11 @@ function BlakeNavBar(props: Props) {
     )
 }
 
+/** Live Netlify host — playlist/preview API + public avatar/resume assets. */
+const NETLIFY_ORIGIN = "https://genuine-cheesecake-75fecc.netlify.app"
+
 BlakeNavBar.defaultProps = {
-    apiBaseUrl: "https://blake-music-player.netlify.app",
+    apiBaseUrl: NETLIFY_ORIGIN,
     playlistUrl: "https://open.spotify.com/playlist/5zXp8gIyEeJteiSZj1RTqJ",
     playlistName: "Blake's Playlist",
     surpriseAfter: 4,
@@ -1294,9 +1427,9 @@ BlakeNavBar.defaultProps = {
     lookingUrl: "https://blakeschubert.com/#why-im-looking",
     linkedinUrl: "https://www.linkedin.com/in/blake-schubert/",
     email: "blakeschubertux@gmail.com",
-    resumeUrl: "https://raw.githubusercontent.com/bschuby212/portfoliomusic/main/public/Blake_Schubert_Product_Designer_Resume_2026.pdf",
+    resumeUrl: `${NETLIFY_ORIGIN}/Blake_Schubert_Product_Designer_Resume_2026.pdf`,
     brandInitials: "BS",
-    logoUrl: "https://raw.githubusercontent.com/bschuby212/portfoliomusic/main/public/avatar.png",
+    logoUrl: `${NETLIFY_ORIGIN}/avatar.png`,
 }
 
 addPropertyControls(BlakeNavBar, {
@@ -1311,7 +1444,7 @@ addPropertyControls(BlakeNavBar, {
     apiBaseUrl: {
         type: ControlType.String,
         title: "API Base URL",
-        defaultValue: "https://blake-music-player.netlify.app",
+        defaultValue: "https://genuine-cheesecake-75fecc.netlify.app",
     },
     homeUrl: {
         type: ControlType.String,
@@ -1346,7 +1479,8 @@ addPropertyControls(BlakeNavBar, {
     resumeUrl: {
         type: ControlType.String,
         title: "Resume URL",
-        defaultValue: "https://raw.githubusercontent.com/bschuby212/portfoliomusic/main/public/Blake_Schubert_Product_Designer_Resume_2026.pdf",
+        defaultValue:
+            "https://genuine-cheesecake-75fecc.netlify.app/Blake_Schubert_Product_Designer_Resume_2026.pdf",
     },
     brandInitials: {
         type: ControlType.String,
@@ -1356,7 +1490,7 @@ addPropertyControls(BlakeNavBar, {
     logoUrl: {
         type: ControlType.String,
         title: "Logo URL",
-        defaultValue: "https://raw.githubusercontent.com/bschuby212/portfoliomusic/main/public/avatar.png",
+        defaultValue: "https://genuine-cheesecake-75fecc.netlify.app/avatar.png",
     },
     playlistUrl: {
         type: ControlType.String,

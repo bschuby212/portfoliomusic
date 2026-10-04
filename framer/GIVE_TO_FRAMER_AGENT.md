@@ -20,22 +20,26 @@ Create a Framer **code component** from this repo and put it on the site. Do not
 **Default export:** already `BlakeNavBar`
 
 ### Create the code file
-1. Read `framer/BlakeMusicPlayer.tsx` in full (from branch `main`).
+1. Read `framer/BlakeMusicPlayer.tsx` in full from branch `main` (after PR #5 is merged) — or from `cursor/framer-working-defaults-653c` if not merged yet.
 2. Create or overwrite a Framer code file named `BlakeNavBar` with **exactly** that source.
 3. Do not rewrite, simplify, restyle, or split the file. Property controls and defaults are already correct.
+4. Confirm defaults use `https://genuine-cheesecake-75fecc.netlify.app` for apiBaseUrl, logoUrl, and resumeUrl (not blake-music-player.netlify.app, not relative paths).
 
 ### Place it on the page
 1. Insert **one** `BlakeNavBar` instance on a site-wide desktop overlay / template (or every primary page if no overlay exists).
 2. Pin near the top, horizontally centered, high z-index so it sits above page content.
 3. Frame size: **fixed 720 × 56** (not fill, not hug).
 4. Layer **Overflow = Visible**. Scroll = off. No clipping parent.
-5. Leave props at file defaults:
-   - `apiBaseUrl` → `https://blake-music-player.netlify.app`
+5. Leave props at file defaults (these must stay absolute Netlify URLs — relative paths break in Framer):
+   - `apiBaseUrl` → `https://genuine-cheesecake-75fecc.netlify.app`
+   - `logoUrl` → `https://genuine-cheesecake-75fecc.netlify.app/avatar.png`
+   - `resumeUrl` → `https://genuine-cheesecake-75fecc.netlify.app/Blake_Schubert_Product_Designer_Resume_2026.pdf`
    - Home → `https://blakeschubert.com/`
    - About → `https://blakeschubert.com/about`
    - Work → `https://blakeschubert.com/#all-campus`
    - Why I'm looking → `https://blakeschubert.com/#why-im-looking`
    - Email → `blakeschubertux@gmail.com`
+   - LinkedIn → `https://www.linkedin.com/in/blake-schubert/`
 6. Music player expands outside the 720×56 shell on purpose — that must stay visible (no scrollbars).
 7. Confirm the nav renders as a glass pill immediately (no scroll needed).
 
@@ -51,4 +55,6 @@ Create a Framer **code component** from this repo and put it on the site. Do not
 
 Attach or paste the full contents of `framer/BlakeMusicPlayer.tsx` after the prompt above, and say: “Use this exact file contents as the code component.”
 
-Raw file: https://raw.githubusercontent.com/bschuby212/portfoliomusic/main/framer/BlakeMusicPlayer.tsx
+Raw file (after merge): https://raw.githubusercontent.com/bschuby212/portfoliomusic/main/framer/BlakeMusicPlayer.tsx  
+
+Raw file (this fix, before merge): https://raw.githubusercontent.com/bschuby212/portfoliomusic/cursor/framer-working-defaults-653c/framer/BlakeMusicPlayer.tsx
