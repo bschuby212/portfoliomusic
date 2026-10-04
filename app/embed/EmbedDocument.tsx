@@ -30,8 +30,8 @@ export function EmbedDocument() {
     body.style.overflowY = "visible";
     html.style.height = "auto";
     body.style.height = "auto";
-    html.style.minHeight = "0";
-    body.style.minHeight = "0";
+    html.style.minHeight = "72px";
+    body.style.minHeight = "72px";
     html.style.maxHeight = "none";
     body.style.maxHeight = "none";
     html.style.clipPath = "none";
