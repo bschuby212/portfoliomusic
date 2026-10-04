@@ -974,7 +974,7 @@ const css = `
 }
 .bmp[data-embedded="true"][data-expanded="true"] .bmp-ctrl,
 .bmp[data-embedded="true"][data-expanded="true"] .bmp-play {
-  width: 1.9rem; height: 1.9rem;
+  width: 32px; height: 32px;
 }
 .bmp[data-embedded="true"][data-expanded="true"] .bmp-collapse {
   width: 1.65rem; height: 1.65rem; margin: 0; flex: 0 0 auto;

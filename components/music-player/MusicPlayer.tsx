@@ -184,7 +184,7 @@ export function MusicPlayer({ embedded = false }: MusicPlayerProps) {
               data-active={state.shuffle}
               onClick={playerActions.toggleShuffle}
             >
-              <Shuffle size={15} strokeWidth={2} />
+              <Shuffle size={embedded ? 16 : 15} strokeWidth={2} />
             </button>
             {!embedded ? (
               <button
@@ -204,9 +204,14 @@ export function MusicPlayer({ embedded = false }: MusicPlayerProps) {
               onClick={playerActions.togglePlay}
             >
               {state.isPlaying ? (
-                <PauseIcon size={15} />
+                <PauseIcon size={embedded ? 16 : 15} />
               ) : (
-                <Play size={15} strokeWidth={0} fill="currentColor" absoluteStrokeWidth />
+                <Play
+                  size={embedded ? 16 : 15}
+                  strokeWidth={0}
+                  fill="currentColor"
+                  absoluteStrokeWidth
+                />
               )}
             </button>
             {!embedded ? (

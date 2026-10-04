@@ -472,8 +472,8 @@
 
 .mp[data-embedded="true"][data-expanded="true"] .mp-transport .mp-ctrl,
 .mp[data-embedded="true"][data-expanded="true"] .mp-transport .mp-ctrl-play {
-  width: 1.9rem;
-  height: 1.9rem;
+  width: 32px;
+  height: 32px;
 }
 
 .mp[data-embedded="true"][data-expanded="true"] .mp-collapse {
