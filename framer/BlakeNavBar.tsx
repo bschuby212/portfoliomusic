@@ -1108,7 +1108,8 @@ const css = `
   height: 100%; min-height: 56px; padding: 0 .55rem; cursor: pointer; box-sizing: border-box;
 }
 .bmp[data-expanded="true"] .bmp-collapsed { display: none; }
-.bmp[data-playing="true"]:not([data-expanded="true"]) { width: 8.1rem; }
+.bmp[data-playing="true"]:not([data-expanded="true"]) { width: calc(8.1rem + 16px - 0.55rem); }
+.bmp[data-playing="true"]:not([data-expanded="true"]) .bmp-collapsed { padding-right: 16px; }
 .bmp-icon { width: 1.75rem; text-align: center; font-size: 14px; }
 .bmp-icon-btn, .bmp-ctrl {
   border: 0; background: transparent; cursor: pointer; border-radius: 999px;
@@ -1132,7 +1133,8 @@ const css = `
   clip-path: circle(50% at 50% 50%); -webkit-clip-path: circle(50% at 50% 50%);
   background: #f0efec; transform-origin: center center;
 }
-.bmp-collapsed-shuffle { color: #212324; }
+.bmp-collapsed-shuffle { color: #212324; width: 1.65rem; height: 1.65rem; }
+.bmp-collapsed-shuffle svg { width: 12px; height: 12px; display: block; }
 .bmp-collapsed-shuffle:hover { background: rgba(0,0,0,.06); }
 .bmp-disc::after {
   content: ""; position: absolute; inset: 50%; width: .28rem; height: .28rem;
@@ -1400,20 +1402,20 @@ function BlakeNavBar(props: Props) {
                 </div>
 
                 <div className="bmp-expanded">
-                    <div className="bmp-inner">
-                        <div
-                            className="bmp-top"
-                            role="button"
-                            tabIndex={0}
-                            aria-label="Collapse music player"
-                            onClick={() => actions.setExpanded(false)}
-                            onKeyDown={(event) => {
-                                if (event.key === "Enter" || event.key === " ") {
-                                    event.preventDefault()
-                                    actions.setExpanded(false)
-                                }
-                            }}
-                        >
+                    <div
+                        className="bmp-inner"
+                        role="button"
+                        tabIndex={0}
+                        aria-label="Collapse music player"
+                        onClick={() => actions.setExpanded(false)}
+                        onKeyDown={(event) => {
+                            if (event.key === "Enter" || event.key === " ") {
+                                event.preventDefault()
+                                actions.setExpanded(false)
+                            }
+                        }}
+                    >
+                        <div className="bmp-top">
                             <div className="bmp-art">
                                 {track?.metadata?.artworkUrl ? (
                                     <img src={track.metadata.artworkUrl} alt="" />
@@ -1428,7 +1430,15 @@ function BlakeNavBar(props: Props) {
                         </div>
 
                         <div className="bmp-transport">
-                            <button type="button" className="bmp-ctrl" aria-label="Reshuffle playlist" onClick={() => actions.toggleShuffle(props.apiBaseUrl)}>
+                            <button
+                                type="button"
+                                className="bmp-ctrl"
+                                aria-label="Reshuffle playlist"
+                                onClick={(event) => {
+                                    event.stopPropagation()
+                                    actions.toggleShuffle(props.apiBaseUrl)
+                                }}
+                            >
                                 <ShuffleIcon />
                             </button>
                             <button
@@ -1436,7 +1446,10 @@ function BlakeNavBar(props: Props) {
                                 className="bmp-ctrl bmp-play"
                                 disabled={!player.ready}
                                 aria-label={player.isPlaying ? "Pause" : "Play"}
-                                onClick={() => actions.togglePlay(props.apiBaseUrl)}
+                                onClick={(event) => {
+                                    event.stopPropagation()
+                                    actions.togglePlay(props.apiBaseUrl)
+                                }}
                             >
                                 {player.isPlaying ? <PauseBars /> : <PlayTriangle />}
                             </button>

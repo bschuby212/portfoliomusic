@@ -127,7 +127,7 @@ export function MusicPlayer({ embedded = false }: MusicPlayerProps) {
               playerActions.toggleShuffle();
             }}
           >
-            <Shuffle size={14} strokeWidth={2} />
+            <Shuffle size={12} strokeWidth={2} />
           </button>
         ) : null}
       </div>
@@ -137,28 +137,24 @@ export function MusicPlayer({ embedded = false }: MusicPlayerProps) {
           className={
             embedded ? "mp-expanded-inner mp-expanded-embed" : "mp-expanded-inner"
           }
-        >
-          <div
-            className="mp-top"
-            onClick={
-              embedded
-                ? () => playerActions.setExpanded(false)
-                : undefined
-            }
-            role={embedded ? "button" : undefined}
-            tabIndex={embedded ? 0 : undefined}
-            aria-label={embedded ? "Collapse music player" : undefined}
-            onKeyDown={
-              embedded
-                ? (event) => {
-                    if (event.key === "Enter" || event.key === " ") {
-                      event.preventDefault();
-                      playerActions.setExpanded(false);
-                    }
+          onClick={
+            embedded ? () => playerActions.setExpanded(false) : undefined
+          }
+          onKeyDown={
+            embedded
+              ? (event) => {
+                  if (event.key === "Enter" || event.key === " ") {
+                    event.preventDefault();
+                    playerActions.setExpanded(false);
                   }
-                : undefined
-            }
-          >
+                }
+              : undefined
+          }
+          role={embedded ? "button" : undefined}
+          tabIndex={embedded ? 0 : undefined}
+          aria-label={embedded ? "Collapse music player" : undefined}
+        >
+          <div className="mp-top">
             <div className="mp-art" key={track?.id}>
               {track?.metadata?.artworkUrl ? (
                 // eslint-disable-next-line @next/next/no-img-element
@@ -211,7 +207,10 @@ export function MusicPlayer({ embedded = false }: MusicPlayerProps) {
                 type="button"
                 className="mp-ctrl mp-ctrl-prev"
                 aria-label="Previous track"
-                onClick={playerActions.previous}
+                onClick={(event) => {
+                  event.stopPropagation();
+                  playerActions.previous();
+                }}
               >
                 <SkipBack size={16} strokeWidth={2} fill="currentColor" />
               </button>
@@ -221,7 +220,10 @@ export function MusicPlayer({ embedded = false }: MusicPlayerProps) {
               className="mp-ctrl mp-ctrl-play"
               aria-label={state.isPlaying ? "Pause" : "Play"}
               disabled={!state.ready}
-              onClick={playerActions.togglePlay}
+              onClick={(event) => {
+                event.stopPropagation();
+                playerActions.togglePlay();
+              }}
             >
               {state.isPlaying ? (
                 <PauseIcon size={embedded ? 16 : 15} />
