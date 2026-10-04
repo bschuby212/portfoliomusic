@@ -1122,12 +1122,11 @@ const css = `
 .bmp-disc-shell {
   position: relative; display: block; width: 1.45rem; height: 1.45rem; flex-shrink: 0;
   border-radius: 50%; overflow: hidden;
-  box-shadow: 0 0 0 1px rgba(0,0,0,.14); background: #f0efec; transform: translateZ(0);
+  box-shadow: 0 0 0 1px rgba(0,0,0,.14); background: #f0efec; transform-origin: center center;
 }
 .bmp-disc {
   position: relative; display: block; width: 100%; height: 100%;
-  border-radius: 50%; overflow: hidden;
-  background: #f0efec; transform-origin: center center;
+  border-radius: 50%; overflow: hidden; background: #f0efec;
 }
 .bmp-collapsed-shuffle { color: #212324; width: 1.65rem; height: 1.65rem; }
 .bmp-collapsed-shuffle svg { width: 12px; height: 12px; display: block; }

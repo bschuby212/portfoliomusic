@@ -87,7 +87,7 @@ export function MusicPlayer({ embedded = false }: MusicPlayerProps) {
         <span className="mp-icon-btn" aria-hidden="true">
           <Music2 size={15} strokeWidth={2} />
         </span>
-        {/* Shell keeps the ring circular while the inner disc spins. */}
+        {/* Shell clips and spins as one unit (reliable circle under glass). */}
         <span className="mp-disc-shell" aria-hidden="true">
           <span className="mp-disc">
             {track?.metadata?.artworkUrl ? (
