@@ -69,7 +69,7 @@ html[data-embed] .pn-root {
   z-index: 9999 !important;
   width: 100% !important;
   margin: 0 !important;
-  padding: 0.55rem 0.75rem 0 !important;
+  padding: 0.55rem 1rem 0 !important;
   gap: 0.85rem !important;
   transform: none !important;
   will-change: auto !important;
@@ -90,7 +90,7 @@ html[data-embed] .pn-music {
   contain: none !important;
 }
 
-/* Kill heavy drop shadows that clip ugly at the iframe edge. */
+/* No outer drop shadows — they clip hard at the iframe edge. */
 html:has([data-embed]) .pn,
 html[data-embed] .pn,
 html:has([data-embed]) .pn-root .mp[data-embedded="true"],
@@ -98,11 +98,10 @@ html[data-embed] .pn-root .mp[data-embedded="true"],
 html:has([data-embed]) .pn-root .mp[data-embedded="true"][data-expanded="true"],
 html[data-embed] .pn-root .mp[data-embedded="true"][data-expanded="true"],
 html:has([data-embed]) .pn-root .mp[data-embedded="true"][data-playing="true"],
-html[data-embed] .pn-root .mp[data-embedded="true"][data-playing="true"] {
-  box-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.8) inset,
-    0 -1px 0 rgba(255, 255, 255, 0.2) inset,
-    0 0 0 1px rgba(0, 0, 0, 0.06) !important;
+html[data-embed] .pn-root .mp[data-embedded="true"][data-playing="true"],
+html:has([data-embed]) .mp,
+html[data-embed] .mp {
+  box-shadow: none !important;
   filter: none !important;
 }
 
