@@ -276,9 +276,10 @@
 }
 
 /*
- * Simple circular album preview. Avoid clip-path + mask-image stacks —
- * they glitch intermittently under glass backdrop-filter. One shell clips;
- * the inner disc spins (ring may spin with it — prefer reliable circles).
+ * Simple circular album preview. No clip-path/mask stacks (those glitched
+ * some tracks under glass). Spin the same element that clips — spinning a
+ * child under backdrop-filter breaks overflow+border-radius (square-in-circle).
+ * Ring spins with the art; reliability over a static stroke.
  */
 .mp-disc-shell {
   position: relative;
@@ -290,7 +291,7 @@
   overflow: hidden;
   box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.14);
   background: #f0efec;
-  transform: translateZ(0);
+  transform-origin: center center;
 }
 
 .mp-disc {
@@ -301,7 +302,6 @@
   border-radius: 50%;
   overflow: hidden;
   background: #f0efec;
-  transform-origin: center center;
 }
 
 .mp-disc::after {
@@ -335,8 +335,8 @@
   border-radius: 50%;
 }
 
-/* Spin the disc; shell keeps the circular clip. */
-.mp[data-playing="true"] .mp-disc {
+/* Spin the clipping shell so the circle stays intact while playing. */
+.mp[data-playing="true"] .mp-disc-shell {
   animation: mp-spin 3.2s linear infinite;
 }
 

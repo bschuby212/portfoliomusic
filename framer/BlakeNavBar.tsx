@@ -1101,7 +1101,7 @@ const css = `
   font-size: .75rem; font-weight: 550; opacity: 0; pointer-events: none;
 }
 .bn-toast[data-open="true"] { opacity: 1; }
-.bmp[data-playing="true"] .bmp-disc { animation: bmp-spin 3.2s linear infinite; }
+.bmp[data-playing="true"] .bmp-disc-shell { animation: bmp-spin 3.2s linear infinite; }
 
 .bmp-collapsed {
   display: flex; align-items: center; gap: .35rem;
