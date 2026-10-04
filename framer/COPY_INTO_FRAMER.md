@@ -164,21 +164,27 @@ Expanded panel is the **custom** player UI (transport/scrub/volume). Spotify is 
 
 ## 5) Netlify `/embed` iframe (optional)
 
-Short bar only (~72px). Browsers clip iframes, so expand needs the iframe
-to grow — but use **`position: fixed`** so growth overlays the page and
-**does not push / move layout**. No drop shadows on the embed pills.
+Short bar only (~72px). The embed **document stays 72px** (so Framer cannot
+scale/crush the pills). Expand tells the parent to grow a **`position: fixed`
+overlay iframe** — page layout does not move. No drop shadows.
 
-Paste this **Embed → HTML** in Framer (do NOT set the Framer layer to 240px):
+### Framer layer settings
+- Embed → **HTML** (not URL)
+- Size: width **Fill**, height **72** (fixed — not Fit / Hug to iframe content)
+- **Overflow = Visible**
+- Pin / sticky at top
+
+Paste:
 
 ```html
 <!-- 72px spacer only — page layout never changes on expand -->
 <div style="height:72px;width:100%;pointer-events:none;"></div>
-<div id="blake-embed-wrap" style="position:fixed;top:0;left:0;right:0;height:72px;z-index:9999;">
+<div id="blake-embed-wrap" style="position:fixed;top:0;left:0;right:0;height:72px;z-index:9999;overflow:visible;">
   <iframe
     id="blake-embed"
     src="https://genuine-cheesecake-75fecc.netlify.app/embed"
     title="Blake nav"
-    style="display:block;width:100%;height:72px;border:0;background:transparent;"
+    style="display:block;width:100%;height:72px;border:0;background:transparent;overflow:visible;"
     allow="autoplay; encrypted-media; clipboard-write"
   ></iframe>
 </div>
@@ -195,7 +201,7 @@ Paste this **Embed → HTML** in Framer (do NOT set the Framer layer to 240px):
 </script>
 ```
 
-- Collapsed = 72px. Expand grows the **fixed** overlay only — spacer stays 72px, page does not jump.
+- Collapsed = 72px. Expand grows the **fixed** overlay only — spacer stays 72px.
 - Prefer the code component when you want the nav native to the Framer page.
 
 Keep Netlify for:
