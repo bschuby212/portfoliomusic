@@ -90,8 +90,8 @@
 }
 
 .mp[data-embedded="true"][data-playing="true"]:not([data-expanded="true"]) {
-  /* Room for note · disc · play · shuffle + 16px right pad. */
-  width: calc(8.1rem + 16px - 0.55rem);
+  /* Extra width so 16px right pad isn’t clipped by overflow:hidden. */
+  width: calc(8.1rem + 16px);
   box-shadow:
     0 1px 0 rgba(255, 255, 255, 0.75) inset,
     0 -1px 0 rgba(255, 255, 255, 0.18) inset,

@@ -102,10 +102,10 @@
 
 /* Collapsed playing: shuffle on the right + 16px trailing pad. */
 .pn-music[data-playing="true"]:not([data-expanded="true"]) {
-  flex: 0 0 calc(8.1rem + 16px - 0.55rem);
-  width: calc(8.1rem + 16px - 0.55rem);
-  min-width: calc(8.1rem + 16px - 0.55rem);
-  max-width: calc(8.1rem + 16px - 0.55rem);
+  flex: 0 0 calc(8.1rem + 16px);
+  width: calc(8.1rem + 16px);
+  min-width: calc(8.1rem + 16px);
+  max-width: calc(8.1rem + 16px);
 }
 
 /* Embedded music pill inherits glass elevate from .pn-root */
