@@ -16,6 +16,7 @@ import {
   buildSurprisePlaylistOrder,
   createSequentialQueue,
   restoreSequentialQueue,
+  shuffleArray,
   shuffleUpcoming,
 } from "./queue";
 import type {
@@ -352,18 +353,24 @@ export const playerActions = {
       );
 
       const prefs = readPrefs();
+      // Shuffle flag must match a real shuffled queue — sequential + shuffle:true
+      // made the control look on while playback stayed in fixed order.
+      const wantShuffle = prefs.shuffle ?? true;
+      const sequential = createSequentialQueue(ordered.length);
+      const queue = wantShuffle ? shuffleArray(sequential) : sequential;
+      const firstTrack = ordered[queue[0] ?? 0];
       const next: PlayerState = {
         ...state,
         tracks: ordered,
-        queue: createSequentialQueue(ordered.length),
+        queue,
         queueIndex: 0,
-        shuffle: true,
+        shuffle: wantShuffle,
         repeat: prefs.repeat,
         expanded: false,
         volume: prefs.volume,
         muted: prefs.muted,
         ready: true,
-        hasAudio: Boolean(playableSrc(ordered[0])),
+        hasAudio: Boolean(playableSrc(firstTrack)),
       };
 
       initialized = true;
@@ -383,12 +390,15 @@ export const playerActions = {
         surprise,
         Math.min(SURPRISE_AFTER, fallbackTracks.length),
       );
+      const sequential = createSequentialQueue(ordered.length);
+      const queue = shuffleArray(sequential);
       setState({
         ready: true,
+        shuffle: true,
         tracks: ordered,
-        queue: createSequentialQueue(ordered.length),
+        queue,
         queueIndex: 0,
-        hasAudio: Boolean(playableSrc(ordered[0])),
+        hasAudio: Boolean(playableSrc(ordered[queue[0] ?? 0])),
       });
       loadCurrent({ autoplay: false, from: state });
       void playerActions.ensureNearbyMetadata();
@@ -422,16 +432,25 @@ export const playerActions = {
     });
 
     try {
-      const metadata = await fetchTrackMetadata(track.spotifyUrl, options);
+      const requestedUrl = track.spotifyUrl;
+      const metadata = await fetchTrackMetadata(requestedUrl, options);
       let shouldReload = false;
 
       setState((current) => {
         const tracks = current.tracks.slice();
         const existing = tracks[trackIndex];
-        if (!existing) return current;
+        // Drop stale responses if the slot was reused for another track.
+        if (!existing || existing.spotifyUrl !== requestedUrl) return current;
+        if (
+          metadata.spotifyUrl &&
+          parseSpotifyTrackId(metadata.spotifyUrl) !==
+            parseSpotifyTrackId(requestedUrl)
+        ) {
+          return current;
+        }
         const updated: ResolvedTrack = {
           ...existing,
-          metadata,
+          metadata: { ...metadata, spotifyUrl: requestedUrl },
           metadataStatus: "ready",
         };
         tracks[trackIndex] = updated;
@@ -624,17 +643,22 @@ export const playerActions = {
 
   toggleShuffle() {
     const shuffle = !state.shuffle;
-    const currentIndex = state.queue[state.queueIndex] ?? 0;
+    const currentTrackIndex = state.queue[state.queueIndex] ?? 0;
     if (shuffle) {
+      // Keep the current song, reshuffle everything after it.
       const sequential = createSequentialQueue(state.tracks.length);
-      const currentQueueIndex = sequential.indexOf(currentIndex);
+      const currentQueueIndex = sequential.indexOf(currentTrackIndex);
+      const at = Math.max(currentQueueIndex, 0);
       setState({
         shuffle: true,
-        queue: shuffleUpcoming(sequential, Math.max(currentQueueIndex, 0)),
-        queueIndex: Math.max(currentQueueIndex, 0),
+        queue: shuffleUpcoming(sequential, at),
+        queueIndex: at,
       });
     } else {
-      const restored = restoreSequentialQueue(state.tracks.length, currentIndex);
+      const restored = restoreSequentialQueue(
+        state.tracks.length,
+        currentTrackIndex,
+      );
       setState({
         shuffle: false,
         queue: restored.queue,

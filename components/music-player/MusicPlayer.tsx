@@ -183,7 +183,10 @@ export function MusicPlayer({ embedded = false }: MusicPlayerProps) {
               aria-label="Shuffle"
               aria-pressed={state.shuffle}
               data-active={state.shuffle}
-              onClick={playerActions.toggleShuffle}
+              onClick={(event) => {
+                event.stopPropagation();
+                playerActions.toggleShuffle();
+              }}
             >
               <Shuffle size={embedded ? 16 : 15} strokeWidth={2} />
             </button>

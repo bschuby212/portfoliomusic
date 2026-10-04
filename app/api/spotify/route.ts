@@ -18,6 +18,7 @@ type SpotifyTrack = {
   artists?: { name: string }[];
   album?: { images?: { url: string }[] };
   external_urls?: { spotify?: string };
+  external_ids?: { isrc?: string };
 };
 
 type DeezerSearchResult = {
@@ -56,7 +57,8 @@ export async function GET(request: Request) {
 
   const canonicalUrl = `https://open.spotify.com/track/${trackId}`;
 
-  let metadata: TrackMetadata | null = null;
+  type ResolvedMeta = TrackMetadata & { isrc?: string | null };
+  let metadata: ResolvedMeta | null = null;
 
   try {
     metadata = await fetchFromWebApi(trackId, canonicalUrl);
@@ -82,19 +84,34 @@ export async function GET(request: Request) {
   // Deezer HMAC links frequently 403 from serverless / after cache.
   if (!metadata.previewUrl || !(await isReachableAudio(metadata.previewUrl))) {
     metadata.previewUrl =
+      (metadata.isrc
+        ? await fetchItunesPreviewByIsrc(metadata.isrc)
+        : null) ||
       (await fetchItunesPreview(metadata.title, metadata.artist)) ||
       (await fetchDeezerPreview(metadata.title, metadata.artist)) ||
       null;
   }
 
-  return jsonWithCors(request, metadata, {
+  const publicMetadata: TrackMetadata = {
+    title: metadata.title,
+    artist: metadata.artist,
+    artworkUrl: metadata.artworkUrl,
+    durationMs: metadata.durationMs,
+    spotifyUrl: metadata.spotifyUrl,
+    previewUrl: metadata.previewUrl,
+  };
+
+  return jsonWithCors(request, publicMetadata, {
     headers: {
       "Cache-Control": "private, no-store",
     },
   });
 }
 
-async function fetchFromWebApi(trackId: string, spotifyUrl: string): Promise<TrackMetadata | null> {
+async function fetchFromWebApi(
+  trackId: string,
+  spotifyUrl: string,
+): Promise<(TrackMetadata & { isrc?: string | null }) | null> {
   const token = await getAccessToken();
   if (!token) return null;
 
@@ -113,6 +130,7 @@ async function fetchFromWebApi(trackId: string, spotifyUrl: string): Promise<Tra
     durationMs: track.duration_ms ?? null,
     spotifyUrl: track.external_urls?.spotify ?? spotifyUrl,
     previewUrl: track.preview_url ?? null,
+    isrc: track.external_ids?.isrc ?? null,
   };
 }
 
@@ -153,6 +171,19 @@ async function fetchArtistFromPage(spotifyUrl: string): Promise<string | null> {
     if (!description) return null;
     const artist = description.split("·")[0]?.trim();
     return artist || null;
+  } catch {
+    return null;
+  }
+}
+
+async function fetchItunesPreviewByIsrc(isrc: string): Promise<string | null> {
+  try {
+    const endpoint = `https://itunes.apple.com/lookup?isrc=${encodeURIComponent(isrc)}`;
+    const response = await fetch(endpoint, { cache: "no-store" });
+    if (!response.ok) return null;
+    const data = (await response.json()) as ItunesSearchResult;
+    const hit = (data.results ?? []).find((item) => item.previewUrl);
+    return hit?.previewUrl ?? null;
   } catch {
     return null;
   }
@@ -230,7 +261,10 @@ function pickBestPreviewMatch<T>(
   const exact = mapped.find((item) => {
     const itemTitle = normalize(item.title);
     const itemArtist = normalize(item.artist);
-    const titleMatch = itemTitle === normalizedTitle;
+    const titleMatch =
+      itemTitle === normalizedTitle ||
+      itemTitle.includes(normalizedTitle) ||
+      normalizedTitle.includes(itemTitle);
     const artistMatch =
       !normalizedArtist ||
       itemArtist.includes(normalizedArtist) ||
@@ -239,10 +273,27 @@ function pickBestPreviewMatch<T>(
   });
   if (exact?.preview) return exact.preview;
 
-  const titleOnly = mapped.find((item) => normalize(item.title) === normalizedTitle);
-  if (titleOnly?.preview) return titleOnly.preview;
+  // Prefer title+artist. Never fall back to an unrelated first hit —
+  // that was playing the wrong song under the right artwork/title.
+  if (normalizedArtist) {
+    const loose = mapped.find((item) => {
+      const itemTitle = normalize(item.title);
+      const itemArtist = normalize(item.artist);
+      const titleClose =
+        itemTitle.includes(normalizedTitle) ||
+        normalizedTitle.includes(itemTitle);
+      const artistClose =
+        itemArtist.includes(normalizedArtist) ||
+        normalizedArtist.includes(itemArtist);
+      return titleClose && artistClose;
+    });
+    return loose?.preview ?? null;
+  }
 
-  return mapped[0]?.preview ?? null;
+  const titleOnly = mapped.find(
+    (item) => normalize(item.title) === normalizedTitle,
+  );
+  return titleOnly?.preview ?? null;
 }
 
 async function isReachableAudio(url: string): Promise<boolean> {
