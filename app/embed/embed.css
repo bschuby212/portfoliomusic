@@ -85,18 +85,37 @@ html[data-embed] .pn-music {
   contain: none !important;
 }
 
-/* No outer drop shadows — they clip at the iframe edge. */
+/*
+ * Embed: keep a visible filled-glass edge on #fff.
+ * Soft outer shadow only (tight) so it still reads without clipping hard.
+ */
 html:has([data-embed]) .pn,
 html[data-embed] .pn,
 html:has([data-embed]) .pn-root .mp[data-embedded="true"],
 html[data-embed] .pn-root .mp[data-embedded="true"],
+html:has([data-embed]) .pn-root .mp[data-embedded="true"][data-playing="true"]:not([data-expanded="true"]),
+html[data-embed] .pn-root .mp[data-embedded="true"][data-playing="true"]:not([data-expanded="true"]),
+html:has([data-embed]) .mp[data-embedded="true"]:not([data-expanded="true"]),
+html[data-embed] .mp[data-embedded="true"]:not([data-expanded="true"]) {
+  border-color: rgba(0, 0, 0, 0.08) !important;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.75) inset,
+    0 -1px 0 rgba(255, 255, 255, 0.2) inset,
+    0 0 0 0.5px rgba(0, 0, 0, 0.04),
+    0 4px 14px rgba(0, 0, 0, 0.07) !important;
+  filter: none !important;
+}
+
 html:has([data-embed]) .pn-root .mp[data-embedded="true"][data-expanded="true"],
 html[data-embed] .pn-root .mp[data-embedded="true"][data-expanded="true"],
-html:has([data-embed]) .pn-root .mp[data-embedded="true"][data-playing="true"],
-html[data-embed] .pn-root .mp[data-embedded="true"][data-playing="true"],
-html:has([data-embed]) .mp,
-html[data-embed] .mp {
-  box-shadow: none !important;
+html:has([data-embed]) .mp[data-embedded="true"][data-expanded="true"],
+html[data-embed] .mp[data-embedded="true"][data-expanded="true"] {
+  border-color: rgba(0, 0, 0, 0.08) !important;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.78) inset,
+    0 -1px 0 rgba(255, 255, 255, 0.18) inset,
+    0 0 0 0.5px rgba(0, 0, 0, 0.04),
+    0 6px 18px rgba(0, 0, 0, 0.08) !important;
   filter: none !important;
 }
 

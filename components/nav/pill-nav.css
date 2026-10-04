@@ -38,7 +38,7 @@
   display: flex;
   align-items: center;
   gap: calc(0.55rem - (var(--pn-elevate) * 0.2rem));
-  min-height: calc(3.15rem + (var(--pn-elevate) * 0.25rem));
+  min-height: calc(56px + (var(--pn-elevate) * 0.25rem));
   /* Top: responsive full-width text bar. Elevated: compact fixed glass pill. */
   flex: 0 1 auto;
   width: max-content;
@@ -53,36 +53,25 @@
     calc(0.48rem - (var(--pn-elevate) * 0.16rem))
     calc(0.55rem - (var(--pn-elevate) * 0.23rem));
   color: var(--pn-ink);
-  /* Soft cream underfill (~35%) + frost gradient — readable glass. */
-  background-color: rgba(250, 249, 246, calc(0.35 * var(--pn-elevate)));
+  /* Filled frost — readable on #fff, still glass over imagery. */
+  background-color: rgba(250, 249, 246, calc(0.52 * var(--pn-elevate)));
   background-image: linear-gradient(
     155deg,
-    rgba(255, 255, 255, calc(1 * var(--pn-elevate))) 0%,
-    rgba(255, 255, 255, calc(0.54 * var(--pn-elevate))) 55%,
-    rgba(255, 255, 255, calc(0.76 * var(--pn-elevate))) 100%
+    rgba(255, 255, 255, calc(0.82 * var(--pn-elevate))) 0%,
+    rgba(255, 255, 255, calc(0.48 * var(--pn-elevate))) 55%,
+    rgba(255, 255, 255, calc(0.64 * var(--pn-elevate))) 100%
   );
-  border: 1px solid rgba(255, 255, 255, calc(1 * var(--pn-elevate)));
+  border: 1px solid rgba(0, 0, 0, calc(0.08 * var(--pn-elevate)));
   border-radius: 999px;
   box-shadow:
-    0 1px 0 rgba(255, 255, 255, calc(0.8 * var(--pn-elevate))) inset,
-    0 -1px 0 rgba(255, 255, 255, calc(0.22 * var(--pn-elevate))) inset,
-    0 0 0 0.5px rgba(0, 0, 0, calc(0.045 * var(--pn-elevate))),
-    0 10px 28px rgba(0, 0, 0, calc(0.07 * var(--pn-elevate)));
-  /* Softer blur onset (quadratic) so frost eases in with the fill */
-  backdrop-filter: blur(
-      calc(
-        (var(--pn-elevate) * var(--pn-elevate) * 48px) +
-          (var(--pn-elevate) * 70px)
-      )
-    )
-    saturate(calc(100% + (var(--pn-elevate) * 80%)));
-  -webkit-backdrop-filter: blur(
-      calc(
-        (var(--pn-elevate) * var(--pn-elevate) * 48px) +
-          (var(--pn-elevate) * 70px)
-      )
-    )
-    saturate(calc(100% + (var(--pn-elevate) * 80%)));
+    0 1px 0 rgba(255, 255, 255, calc(0.75 * var(--pn-elevate))) inset,
+    0 -1px 0 rgba(255, 255, 255, calc(0.2 * var(--pn-elevate))) inset,
+    0 0 0 0.5px rgba(0, 0, 0, calc(0.04 * var(--pn-elevate))),
+    0 8px 24px rgba(0, 0, 0, calc(0.08 * var(--pn-elevate)));
+  backdrop-filter: blur(calc(var(--pn-elevate) * 64px))
+    saturate(calc(100% + (var(--pn-elevate) * 50%)));
+  -webkit-backdrop-filter: blur(calc(var(--pn-elevate) * 64px))
+    saturate(calc(100% + (var(--pn-elevate) * 50%)));
   isolation: isolate;
 }
 
@@ -108,51 +97,41 @@
 
 /* Embedded music pill inherits glass elevate from .pn-root */
 .pn-root .mp[data-embedded="true"] {
-  background-color: rgba(250, 249, 246, calc(0.35 * var(--pn-elevate)));
+  background-color: rgba(250, 249, 246, calc(0.52 * var(--pn-elevate)));
   background-image: linear-gradient(
     155deg,
-    rgba(255, 255, 255, calc(1 * var(--pn-elevate))) 0%,
-    rgba(255, 255, 255, calc(0.54 * var(--pn-elevate))) 55%,
-    rgba(255, 255, 255, calc(0.76 * var(--pn-elevate))) 100%
+    rgba(255, 255, 255, calc(0.82 * var(--pn-elevate))) 0%,
+    rgba(255, 255, 255, calc(0.48 * var(--pn-elevate))) 55%,
+    rgba(255, 255, 255, calc(0.64 * var(--pn-elevate))) 100%
   );
-  border-color: rgba(255, 255, 255, calc(1 * var(--pn-elevate)));
+  border-color: rgba(0, 0, 0, calc(0.08 * var(--pn-elevate)));
   box-shadow:
-    0 1px 0 rgba(255, 255, 255, calc(0.8 * var(--pn-elevate))) inset,
-    0 -1px 0 rgba(255, 255, 255, calc(0.22 * var(--pn-elevate))) inset,
-    0 0 0 0.5px rgba(0, 0, 0, calc(0.045 * var(--pn-elevate))),
-    0 10px 28px rgba(0, 0, 0, calc(0.07 * var(--pn-elevate)));
-  backdrop-filter: blur(
-      calc(
-        (var(--pn-elevate) * var(--pn-elevate) * 48px) +
-          (var(--pn-elevate) * 70px)
-      )
-    )
-    saturate(calc(100% + (var(--pn-elevate) * 80%)));
-  -webkit-backdrop-filter: blur(
-      calc(
-        (var(--pn-elevate) * var(--pn-elevate) * 48px) +
-          (var(--pn-elevate) * 70px)
-      )
-    )
-    saturate(calc(100% + (var(--pn-elevate) * 80%)));
+    0 1px 0 rgba(255, 255, 255, calc(0.75 * var(--pn-elevate))) inset,
+    0 -1px 0 rgba(255, 255, 255, calc(0.2 * var(--pn-elevate))) inset,
+    0 0 0 0.5px rgba(0, 0, 0, calc(0.04 * var(--pn-elevate))),
+    0 8px 24px rgba(0, 0, 0, calc(0.08 * var(--pn-elevate)));
+  backdrop-filter: blur(calc(var(--pn-elevate) * 64px))
+    saturate(calc(100% + (var(--pn-elevate) * 50%)));
+  -webkit-backdrop-filter: blur(calc(var(--pn-elevate) * 64px))
+    saturate(calc(100% + (var(--pn-elevate) * 50%)));
 }
 
 /* Expanded music gets its own panel surface — never tied to nav elevate morph. */
 .pn-root .mp[data-embedded="true"][data-expanded="true"] {
-  background-color: rgba(250, 249, 246, 0.92);
+  background-color: rgba(250, 249, 246, 0.82);
   background-image: linear-gradient(
     160deg,
-    rgba(255, 255, 255, 0.98) 0%,
-    rgba(255, 255, 255, 0.88) 100%
+    rgba(255, 255, 255, 0.9) 0%,
+    rgba(255, 255, 255, 0.72) 100%
   );
-  border-color: rgba(255, 255, 255, 1);
+  border-color: rgba(0, 0, 0, 0.08);
   box-shadow:
     0 1px 0 rgba(255, 255, 255, 0.78) inset,
-    0 -1px 0 rgba(255, 255, 255, 0.2) inset,
-    0 0 0 0.5px rgba(0, 0, 0, 0.045),
-    0 16px 40px rgba(0, 0, 0, 0.09);
-  backdrop-filter: blur(24px) saturate(160%);
-  -webkit-backdrop-filter: blur(24px) saturate(160%);
+    0 -1px 0 rgba(255, 255, 255, 0.18) inset,
+    0 0 0 0.5px rgba(0, 0, 0, 0.04),
+    0 10px 28px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(64px) saturate(150%);
+  -webkit-backdrop-filter: blur(64px) saturate(150%);
 }
 
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
@@ -414,8 +393,8 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 2.55rem;
-  height: 2.55rem;
+  width: 48px;
+  height: 48px;
   flex-shrink: 0;
   border-radius: 50%;
   overflow: hidden;
@@ -435,14 +414,11 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center 28%;
+  object-position: center center;
   display: block;
-  /* Smooth upsample — pixelated made the small avatar look broken */
   image-rendering: auto;
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
-  transform: translateZ(0) scale(1.04);
-  transform-origin: center 30%;
 }
 
 .pn-avatar-mark {

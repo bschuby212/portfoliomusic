@@ -12,6 +12,9 @@
  *
  * Fastest install: give Framer External Agent this file + framer/GIVE_TO_FRAMER_AGENT.md
  * Manual: Assets → Code → New Component → paste entire file → frame 720×56, Overflow Visible
+ *
+ * Defaults point at https://genuine-cheesecake-75fecc.netlify.app for API + avatar + resume
+ * (absolute URLs — relative /avatar.png paths break when the component runs on Framer).
  */
 import { addPropertyControls, ControlType } from "framer"
 import {
@@ -182,7 +185,12 @@ function playableSrc(track: ResolvedTrack | undefined) {
 function ensureAudio() {
     if (audio || typeof window === "undefined") return audio
     audio = new Audio()
-    audio.preload = "metadata"
+    audio.preload = "auto"
+    audio.playsInline = true
+    audio.setAttribute("playsinline", "true")
+    audio.setAttribute("webkit-playsinline", "true")
+    audio.volume = state.volume
+    audio.muted = state.muted
     audio.addEventListener("timeupdate", () => {
         if (!state.isPlaying) return
         setState({ currentTime: audio?.currentTime || 0 })
@@ -192,7 +200,10 @@ function ensureAudio() {
         setState({ duration: duration > 0 ? duration : 0 })
     })
     audio.addEventListener("play", () => setState({ isPlaying: true }))
-    audio.addEventListener("pause", () => setState({ isPlaying: false }))
+    audio.addEventListener("pause", () => {
+        if (pendingAutoplay) return
+        setState({ isPlaying: false })
+    })
     audio.addEventListener("ended", () => {
         if (endedLock) return
         endedLock = true
@@ -369,9 +380,14 @@ const actions = {
         await Promise.all(indexes.map((index) => actions.ensureTrackMetadata(apiBaseUrl, index)))
     },
 
-    async ensureTrackMetadata(apiBaseUrl: string, trackIndex: number) {
+    async ensureTrackMetadata(apiBaseUrl: string, trackIndex: number, opts?: { force?: boolean }) {
         const track = state.tracks[trackIndex]
-        if (!track || track.metadataStatus === "ready" || track.metadataStatus === "loading") return
+        if (!track) return
+        const hasPreview = Boolean(playableSrc(track))
+        if (!opts?.force) {
+            if (track.metadataStatus === "loading") return
+            if (track.metadataStatus === "ready" && hasPreview) return
+        }
 
         setState((current) => {
             const tracks = current.tracks.slice()
@@ -383,9 +399,11 @@ const actions = {
 
         try {
             const base = apiBaseUrl.replace(/\/$/, "")
-            const response = await fetch(
-                `${base}/api/spotify?url=${encodeURIComponent(track.spotifyUrl)}`,
-            )
+            const params = new URLSearchParams({ url: track.spotifyUrl })
+            if (opts?.force || !hasPreview) params.set("fresh", String(Date.now()))
+            const response = await fetch(`${base}/api/spotify?${params.toString()}`, {
+                cache: "no-store",
+            })
             if (!response.ok) throw new Error("meta failed")
             const metadata = (await response.json()) as TrackMetadata
             let shouldReload = false
@@ -405,7 +423,7 @@ const actions = {
                 }
             })
 
-            if (shouldReload) {
+            if (shouldReload || (pendingAutoplay && playableSrc(state.tracks[trackIndex]))) {
                 const shouldPlay = pendingAutoplay || state.isPlaying
                 pendingAutoplay = false
                 loadCurrent(shouldPlay)
@@ -426,40 +444,62 @@ const actions = {
         if (!el) return
         const trackIndex = state.queue[state.queueIndex]
         const track = typeof trackIndex === "number" ? state.tracks[trackIndex] : undefined
-        const src = playableSrc(track)
+        let src = playableSrc(track)
 
         if (state.isPlaying) {
+            pendingAutoplay = false
             el.pause()
             setState({ isPlaying: false })
             return
         }
 
+        el.volume = state.muted ? 0 : state.volume
+        el.muted = state.muted
         setState({ isPlaying: true })
 
-        if (!src) {
-            void (async () => {
-                if (typeof trackIndex !== "number") return
+        const start = async () => {
+            if (typeof trackIndex !== "number") {
+                setState({ isPlaying: false })
+                return
+            }
+            if (!src) {
                 pendingAutoplay = true
-                await actions.ensureTrackMetadata(apiBaseUrl, trackIndex)
-                const ready = playableSrc(
-                    state.tracks[state.queue[state.queueIndex] as number],
-                )
-                if (!ready || !audio) {
-                    pendingAutoplay = false
+                await actions.ensureTrackMetadata(apiBaseUrl, trackIndex, { force: true })
+                src = playableSrc(state.tracks[trackIndex])
+            }
+            if (!src || !audio) {
+                pendingAutoplay = false
+                setState({ isPlaying: false, hasAudio: false })
+                return
+            }
+            pendingAutoplay = false
+            audio.volume = state.muted ? 0 : state.volume
+            audio.muted = state.muted
+            if (!audio.getAttribute("src") || !audio.src.includes(src.split("?")[0].slice(-24))) {
+                audio.src = src
+                audio.load()
+            }
+            try {
+                await audio.play()
+            } catch {
+                // Retry once with a fresh preview URL (CDNs expire).
+                await actions.ensureTrackMetadata(apiBaseUrl, trackIndex, { force: true })
+                const retry = playableSrc(state.tracks[trackIndex])
+                if (!retry || !audio) {
                     setState({ isPlaying: false })
                     return
                 }
-                audio.src = ready
-                void audio.play().catch(() => setState({ isPlaying: false }))
-            })()
-            return
+                audio.src = retry
+                audio.load()
+                try {
+                    await audio.play()
+                } catch {
+                    setState({ isPlaying: false })
+                }
+            }
         }
 
-        if (!el.getAttribute("src") || !el.src.includes(src.split("?")[0].slice(-24))) {
-            el.src = src
-            el.load()
-        }
-        void el.play().catch(() => setState({ isPlaying: false }))
+        void start()
     },
 
     next(fromEnded = false, apiBaseUrl = "") {
@@ -648,11 +688,10 @@ function StrokeIcon({ children }: { children: ReactNode }) {
 }
 
 function LinkedInIcon() {
+    // Brand "in" mark — clearer than the stroke outline at 16px.
     return (
-        <svg width={ICON_SIZE} height={ICON_SIZE} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={ICON_STROKE} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-            <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6z" />
-            <rect width="4" height="12" x="2" y="9" rx="0.5" />
-            <circle cx="4" cy="4" r="2" />
+        <svg width={ICON_SIZE} height={ICON_SIZE} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M4.98 3.5C4.98 4.88 3.88 6 2.5 6S0 4.88 0 3.5 1.12 1 2.5 1s2.48 1.12 2.48 2.5zM.5 8.5h4V23h-4V8.5zM8.5 8.5h3.84v1.98h.05c.53-1.01 1.84-2.08 3.79-2.08 4.05 0 4.8 2.67 4.8 6.14V23h-4v-6.56c0-1.56-.03-3.57-2.17-3.57-2.18 0-2.51 1.7-2.51 3.46V23h-4V8.5z" transform="translate(1 0.5)" />
         </svg>
     )
 }
@@ -668,7 +707,7 @@ function MailIcon() {
 
 function PauseBars() {
     return (
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
             <rect x="6.5" y="4.5" width="4" height="15" rx="0.75" />
             <rect x="13.5" y="4.5" width="4" height="15" rx="0.75" />
         </svg>
@@ -677,7 +716,7 @@ function PauseBars() {
 
 function PlayTriangle() {
     return (
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
             <path d="M8 5.5v13l11-6.5L8 5.5z" />
         </svg>
     )
@@ -700,6 +739,97 @@ function FileDownIcon() {
             <path d="M14 2v4a2 2 0 0 0 2 2h4" />
             <path d="M12 18v-6" />
             <path d="m9 15 3 3 3-3" />
+        </svg>
+    )
+}
+
+function ChevronDownIcon({ size = 15 }: { size?: number }) {
+    return (
+        <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="m6 9 6 6 6-6" />
+        </svg>
+    )
+}
+
+function ChevronRightIcon({ size = 15 }: { size?: number }) {
+    return (
+        <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="m9 18 6-6-6-6" />
+        </svg>
+    )
+}
+
+function ChevronLeftIcon({ size = 16 }: { size?: number }) {
+    return (
+        <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="m15 18-6-6 6-6" />
+        </svg>
+    )
+}
+
+function ShuffleIcon() {
+    return (
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="m16 3 4 4-4 4" />
+            <path d="M20 7H4" />
+            <path d="m8 21-4-4 4-4" />
+            <path d="M4 17h16" />
+        </svg>
+    )
+}
+
+function SkipBackIcon() {
+    return (
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <polygon points="19 20 9 12 19 4 19 20" fill="currentColor" stroke="none" />
+            <line x1="5" x2="5" y1="19" y2="5" />
+        </svg>
+    )
+}
+
+function SkipForwardIcon() {
+    return (
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <polygon points="5 4 15 12 5 20 5 4" fill="currentColor" stroke="none" />
+            <line x1="19" x2="19" y1="5" y2="19" />
+        </svg>
+    )
+}
+
+function RepeatIcon() {
+    return (
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="m17 2 4 4-4 4" />
+            <path d="M3 11v-1a4 4 0 0 1 4-4h14" />
+            <path d="m7 22-4-4 4-4" />
+            <path d="M21 13v1a4 4 0 0 1-4 4H3" />
+        </svg>
+    )
+}
+
+function VolumeIcon({ level }: { level: "off" | "low" | "high" }) {
+    if (level === "off") {
+        return (
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="M11 5 6 9H2v6h4l5 4V5z" />
+                <line x1="22" x2="16" y1="9" y2="15" />
+                <line x1="16" x2="22" y1="9" y2="15" />
+            </svg>
+        )
+    }
+    if (level === "low") {
+        return (
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="M11 5 6 9H2v6h4l5 4V5z" />
+                <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
+            </svg>
+        )
+    }
+    return (
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M11 5 6 9H2v6h4l5 4V5z" />
+            <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
+            <path d="M19.07 4.93a10 10 0 0 1 0 14.14" />
         </svg>
     )
 }
@@ -755,7 +885,7 @@ const css = `
   pointer-events: auto; position: relative;
   display: flex; align-items: center;
   gap: calc(.55rem - (var(--pn-elevate) * .2rem));
-  min-height: calc(3.15rem + (var(--pn-elevate) * .25rem));
+  min-height: calc(56px + (var(--pn-elevate) * .25rem));
   flex: 0 1 auto; width: max-content;
   min-width: calc((1 - var(--pn-elevate)) * 560px);
   max-width: 560px;
@@ -765,13 +895,13 @@ const css = `
     calc(.48rem - (var(--pn-elevate) * .16rem))
     calc(.55rem - (var(--pn-elevate) * .23rem));
   color: var(--ink);
-  background-color: rgba(250, 249, 246, calc(.35 * var(--pn-elevate)));
-  background-image: linear-gradient(155deg, rgba(255,255,255,calc(1 * var(--pn-elevate))) 0%, rgba(255,255,255,calc(.54 * var(--pn-elevate))) 55%, rgba(255,255,255,calc(.76 * var(--pn-elevate))) 100%);
-  border: 1px solid rgba(255,255,255,calc(1 * var(--pn-elevate)));
+  background-color: rgba(250, 249, 246, calc(.52 * var(--pn-elevate)));
+  background-image: linear-gradient(155deg, rgba(255,255,255,calc(.82 * var(--pn-elevate))) 0%, rgba(255,255,255,calc(.48 * var(--pn-elevate))) 55%, rgba(255,255,255,calc(.64 * var(--pn-elevate))) 100%);
+  border: 1px solid rgba(0,0,0,calc(.08 * var(--pn-elevate)));
   border-radius: 999px;
-  box-shadow: 0 1px 0 rgba(255,255,255,calc(.8 * var(--pn-elevate))) inset, 0 -1px 0 rgba(255,255,255,calc(.22 * var(--pn-elevate))) inset, 0 0 0 .5px rgba(0,0,0,calc(.045 * var(--pn-elevate))), 0 10px 28px rgba(0,0,0,calc(.07 * var(--pn-elevate)));
-  backdrop-filter: blur(calc((var(--pn-elevate) * var(--pn-elevate) * 48px) + (var(--pn-elevate) * 70px))) saturate(calc(100% + (var(--pn-elevate) * 80%)));
-  -webkit-backdrop-filter: blur(calc((var(--pn-elevate) * var(--pn-elevate) * 48px) + (var(--pn-elevate) * 70px))) saturate(calc(100% + (var(--pn-elevate) * 80%)));
+  box-shadow: 0 1px 0 rgba(255,255,255,calc(.75 * var(--pn-elevate))) inset, 0 -1px 0 rgba(255,255,255,calc(.2 * var(--pn-elevate))) inset, 0 0 0 .5px rgba(0,0,0,calc(.04 * var(--pn-elevate))), 0 8px 24px rgba(0,0,0,calc(.08 * var(--pn-elevate)));
+  backdrop-filter: blur(calc(var(--pn-elevate) * 64px)) saturate(calc(100% + (var(--pn-elevate) * 50%)));
+  -webkit-backdrop-filter: blur(calc(var(--pn-elevate) * 64px)) saturate(calc(100% + (var(--pn-elevate) * 50%)));
   isolation: isolate; overflow: visible;
 }
 .bn-links {
@@ -789,26 +919,74 @@ const css = `
   width: 9.2rem; min-height: 3.4rem;
   display: flex; flex-direction: column; justify-content: center;
   color: #212324;
-  background-color: rgba(250, 249, 246, calc(.35 * var(--pn-elevate)));
-  background-image: linear-gradient(155deg, rgba(255,255,255,calc(1 * var(--pn-elevate))) 0%, rgba(255,255,255,calc(.54 * var(--pn-elevate))) 55%, rgba(255,255,255,calc(.76 * var(--pn-elevate))) 100%);
-  border: 1px solid rgba(255,255,255,calc(1 * var(--pn-elevate)));
+  background-color: rgba(250, 249, 246, calc(.52 * var(--pn-elevate)));
+  background-image: linear-gradient(155deg, rgba(255,255,255,calc(.82 * var(--pn-elevate))) 0%, rgba(255,255,255,calc(.48 * var(--pn-elevate))) 55%, rgba(255,255,255,calc(.64 * var(--pn-elevate))) 100%);
+  border: 1px solid rgba(0,0,0,calc(.08 * var(--pn-elevate)));
   border-radius: 999px; overflow: hidden;
-  box-shadow: 0 1px 0 rgba(255,255,255,calc(.8 * var(--pn-elevate))) inset, 0 -1px 0 rgba(255,255,255,calc(.22 * var(--pn-elevate))) inset, 0 0 0 .5px rgba(0,0,0,calc(.045 * var(--pn-elevate))), 0 10px 28px rgba(0,0,0,calc(.07 * var(--pn-elevate)));
-  backdrop-filter: blur(calc((var(--pn-elevate) * var(--pn-elevate) * 48px) + (var(--pn-elevate) * 70px))) saturate(calc(100% + (var(--pn-elevate) * 80%)));
-  -webkit-backdrop-filter: blur(calc((var(--pn-elevate) * var(--pn-elevate) * 48px) + (var(--pn-elevate) * 70px))) saturate(calc(100% + (var(--pn-elevate) * 80%)));
+  box-shadow: 0 1px 0 rgba(255,255,255,calc(.75 * var(--pn-elevate))) inset, 0 -1px 0 rgba(255,255,255,calc(.2 * var(--pn-elevate))) inset, 0 0 0 .5px rgba(0,0,0,calc(.04 * var(--pn-elevate))), 0 8px 24px rgba(0,0,0,calc(.08 * var(--pn-elevate)));
+  backdrop-filter: blur(calc(var(--pn-elevate) * 64px)) saturate(calc(100% + (var(--pn-elevate) * 50%)));
+  -webkit-backdrop-filter: blur(calc(var(--pn-elevate) * 64px)) saturate(calc(100% + (var(--pn-elevate) * 50%)));
   transform-origin: top left; isolation: isolate;
   transition: width .42s var(--ease), min-height .42s var(--ease), border-radius .42s var(--ease), box-shadow .42s ease, background .3s ease;
 }
 .bmp[data-embedded="true"][data-expanded="true"] {
-  /* Overlay only — never reflows / morphs the nav bar. */
+  /* Compact single-row expand — soft corners, 32px controls. */
   position: absolute; top: 0; left: 0; z-index: 5;
-  width: 21.25rem; max-width: 21.25rem; border-radius: 1.3rem;
-  background-color: rgba(250, 249, 246, .92);
-  background-image: linear-gradient(160deg, rgba(255,255,255,.98) 0%, rgba(255,255,255,.88) 100%);
-  border-color: rgba(255,255,255,1);
-  box-shadow: 0 1px 0 rgba(255,255,255,.78) inset, 0 -1px 0 rgba(255,255,255,.2) inset, 0 0 0 .5px rgba(0,0,0,.045), 0 16px 40px rgba(0,0,0,.09);
-  backdrop-filter: blur(24px) saturate(160%);
-  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  width: min(15.5rem, calc(100vw - 2rem)); max-width: 15.5rem;
+  height: 3.15rem; min-height: 3.15rem; max-height: 3.15rem;
+  border-radius: 1.15rem; overflow: hidden;
+  background-color: rgba(250, 249, 246, .82);
+  background-image: linear-gradient(160deg, rgba(255,255,255,.9) 0%, rgba(255,255,255,.72) 100%);
+  border-color: rgba(0,0,0,.08);
+  box-shadow: 0 1px 0 rgba(255,255,255,.78) inset, 0 -1px 0 rgba(255,255,255,.18) inset, 0 0 0 .5px rgba(0,0,0,.04), 0 10px 28px rgba(0,0,0,.1);
+  backdrop-filter: blur(64px) saturate(150%);
+  -webkit-backdrop-filter: blur(64px) saturate(150%);
+}
+.bmp[data-embedded="true"][data-expanded="true"] .bmp-expanded {
+  display: block; height: 100%;
+}
+.bmp[data-embedded="true"][data-expanded="true"] .bmp-inner {
+  display: flex; flex-direction: row; align-items: center; gap: .22rem;
+  height: 100%; min-height: 3.15rem; max-height: 3.15rem;
+  padding: 0 6px 0 8px; overflow: hidden; box-sizing: border-box;
+}
+.bmp[data-embedded="true"][data-expanded="true"] .bmp-top {
+  display: flex; align-items: center; gap: .38rem;
+  flex: 1 1 auto; min-width: 0; margin: 0;
+}
+.bmp[data-embedded="true"][data-expanded="true"] .bmp-art {
+  width: 1.9rem; height: 1.9rem; border-radius: .4rem; flex-shrink: 0;
+}
+.bmp[data-embedded="true"][data-expanded="true"] .bmp-meta {
+  flex: 1 1 auto; min-width: 0; padding: 0;
+}
+.bmp[data-embedded="true"][data-expanded="true"] .bmp-title {
+  font-size: .72rem; line-height: 1.15;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.bmp[data-embedded="true"][data-expanded="true"] .bmp-artist {
+  margin-top: .06rem; font-size: .62rem; line-height: 1.15; color: #737373;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.bmp[data-embedded="true"][data-expanded="true"] .bmp-transport {
+  display: flex; align-items: center; justify-content: flex-end; gap: 12px;
+  margin: 0; padding: 0; flex: 0 0 auto;
+}
+.bmp[data-embedded="true"][data-expanded="true"] .bmp-ctrl,
+.bmp[data-embedded="true"][data-expanded="true"] .bmp-play {
+  box-sizing: border-box;
+  width: 32px; height: 32px; min-width: 32px; min-height: 32px;
+  max-width: 32px; max-height: 32px; padding: 0; flex: 0 0 32px;
+}
+.bmp[data-embedded="true"][data-expanded="true"] .bmp-ctrl svg,
+.bmp[data-embedded="true"][data-expanded="true"] .bmp-play svg {
+  width: 16px; height: 16px;
+}
+.bmp[data-embedded="true"][data-expanded="true"] .bmp-collapse {
+  width: 1.65rem; height: 1.65rem; margin: 0; flex: 0 0 auto;
+}
+.bmp[data-embedded="true"][data-expanded="true"] .bmp-footer {
+  display: none !important;
 }
 .bn-sr {
   position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
@@ -876,12 +1054,12 @@ const css = `
 }
 .bn-avatar {
   position: relative; display: inline-flex; align-items: center; justify-content: center;
-  width: 2.55rem; height: 2.55rem; flex-shrink: 0; border-radius: 50%; overflow: hidden;
+  width: 48px; height: 48px; flex-shrink: 0; border-radius: 50%; overflow: hidden;
   background: #e8e6e1; color: #fff; text-decoration: none;
   box-shadow: 0 0 0 1px rgba(255,255,255,calc(.18 * max(var(--pn-elevate), .35))) inset, 0 0 0 1.5px rgba(255,255,255,calc(.55 * max(var(--pn-elevate), .45))), 0 0 0 2.5px rgba(0,0,0,calc(.04 * max(var(--pn-elevate), .3)));
   transition: transform .28s var(--ease), box-shadow .28s ease;
 }
-.bn-avatar-img { width:100%; height:100%; object-fit:cover; object-position:center 28%; display:block; image-rendering:auto; transform:translateZ(0) scale(1.04); transform-origin:center 30%; }
+.bn-avatar-img { width:100%; height:100%; object-fit:cover; object-position:center center; display:block; image-rendering:auto; }
 .bn-avatar-mark { font-size: .72rem; font-weight: 680; letter-spacing: .03em; }
 .bn-avatar:hover {
   transform: scale(1.06);
@@ -1177,7 +1355,7 @@ function BlakeNavBar(props: Props) {
                             actions.setExpanded(true)
                         }}
                     >
-                        ▾
+                        <ChevronRightIcon />
                     </button>
                 </div>
 
@@ -1195,22 +1373,11 @@ function BlakeNavBar(props: Props) {
                                 <span className="bmp-title">{title}</span>
                                 {artist ? <span className="bmp-artist">{artist}</span> : null}
                             </div>
-                            <button
-                                type="button"
-                                className="bmp-icon-btn"
-                                aria-label="Collapse"
-                                onClick={() => actions.setExpanded(false)}
-                            >
-                                ⌃
-                            </button>
                         </div>
 
                         <div className="bmp-transport">
                             <button type="button" className="bmp-ctrl" aria-label="Shuffle" data-active={player.shuffle} onClick={actions.toggleShuffle}>
-                                ⇄
-                            </button>
-                            <button type="button" className="bmp-ctrl" aria-label="Previous" onClick={() => actions.previous(props.apiBaseUrl)}>
-                                ⏮
+                                <ShuffleIcon />
                             </button>
                             <button
                                 type="button"
@@ -1221,57 +1388,16 @@ function BlakeNavBar(props: Props) {
                             >
                                 {player.isPlaying ? <PauseBars /> : <PlayTriangle />}
                             </button>
-                            <button type="button" className="bmp-ctrl" aria-label="Next" onClick={() => actions.next(false, props.apiBaseUrl)}>
-                                ⏭
-                            </button>
-                            <button type="button" className="bmp-ctrl" aria-label="Repeat" data-active={player.repeat} onClick={actions.toggleRepeat}>
-                                ↻
-                            </button>
                         </div>
 
-                        <div className="bmp-progress">
-                            <span className="bmp-time">{formatTime(player.currentTime)}</span>
-                            <input
-                                className="bmp-range"
-                                type="range"
-                                min={0}
-                                max={progressMax || 0}
-                                step={0.01}
-                                value={progressValue}
-                                disabled={!player.hasAudio || progressMax === 0}
-                                style={rangeFill(progressMax > 0 ? progressValue / progressMax : 0)}
-                                onChange={(event) => actions.seek(Number(event.currentTarget.value))}
-                            />
-                            <span className="bmp-time">{formatTime(player.duration)}</span>
-                        </div>
-
-                        <div className="bmp-footer">
-                            <div className="bmp-volume">
-                                <button
-                                    type="button"
-                                    className="bmp-icon-btn"
-                                    aria-label={player.muted ? "Unmute" : "Mute"}
-                                    onClick={actions.toggleMuted}
-                                >
-                                    {player.muted || player.volume === 0 ? "🔇" : "🔊"}
-                                </button>
-                                <input
-                                    className="bmp-range bmp-vol"
-                                    type="range"
-                                    min={0}
-                                    max={1}
-                                    step={0.01}
-                                    value={player.muted ? 0 : player.volume}
-                                    style={rangeFill(player.muted ? 0 : player.volume)}
-                                    onChange={(event) =>
-                                        actions.setVolume(Number(event.currentTarget.value))
-                                    }
-                                />
-                            </div>
-                            <span className="bmp-note">
-                                {player.hasAudio ? "30s preview" : "Loading audio"}
-                            </span>
-                        </div>
+                        <button
+                            type="button"
+                            className="bmp-icon-btn bmp-collapse"
+                            aria-label="Collapse"
+                            onClick={() => actions.setExpanded(false)}
+                        >
+                            <ChevronLeftIcon />
+                        </button>
                     </div>
                 </div>
             </aside>
@@ -1281,9 +1407,12 @@ function BlakeNavBar(props: Props) {
     )
 }
 
+/** Live Netlify host — playlist/preview API + public avatar/resume assets. */
+const NETLIFY_ORIGIN = "https://genuine-cheesecake-75fecc.netlify.app"
+
 BlakeNavBar.defaultProps = {
-    apiBaseUrl: "https://blake-music-player.netlify.app",
-    playlistUrl: "https://open.spotify.com/playlist/5zXp8gIyEeJteiSZj1RTqJ",
+    apiBaseUrl: NETLIFY_ORIGIN,
+    playlistUrl: "https://open.spotify.com/playlist/5zXp8gIyEeJteiSZj1RTqJ?si=xgbBBcvlRsmrIeklFdc-7A",
     playlistName: "Blake's Playlist",
     surpriseAfter: 4,
     surpriseTrackUrl: "https://open.spotify.com/track/4cOdK2wGLETKBW3PvgPWqT",
@@ -1294,9 +1423,9 @@ BlakeNavBar.defaultProps = {
     lookingUrl: "https://blakeschubert.com/#why-im-looking",
     linkedinUrl: "https://www.linkedin.com/in/blake-schubert/",
     email: "blakeschubertux@gmail.com",
-    resumeUrl: "https://raw.githubusercontent.com/bschuby212/portfoliomusic/main/public/Blake_Schubert_Product_Designer_Resume_2026.pdf",
+    resumeUrl: `${NETLIFY_ORIGIN}/Blake_Schubert_Product_Designer_Resume_2026.pdf`,
     brandInitials: "BS",
-    logoUrl: "https://raw.githubusercontent.com/bschuby212/portfoliomusic/main/public/avatar.png",
+    logoUrl: `${NETLIFY_ORIGIN}/avatar.png`,
 }
 
 addPropertyControls(BlakeNavBar, {
@@ -1311,7 +1440,7 @@ addPropertyControls(BlakeNavBar, {
     apiBaseUrl: {
         type: ControlType.String,
         title: "API Base URL",
-        defaultValue: "https://blake-music-player.netlify.app",
+        defaultValue: "https://genuine-cheesecake-75fecc.netlify.app",
     },
     homeUrl: {
         type: ControlType.String,
@@ -1346,7 +1475,8 @@ addPropertyControls(BlakeNavBar, {
     resumeUrl: {
         type: ControlType.String,
         title: "Resume URL",
-        defaultValue: "https://raw.githubusercontent.com/bschuby212/portfoliomusic/main/public/Blake_Schubert_Product_Designer_Resume_2026.pdf",
+        defaultValue:
+            "https://genuine-cheesecake-75fecc.netlify.app/Blake_Schubert_Product_Designer_Resume_2026.pdf",
     },
     brandInitials: {
         type: ControlType.String,
@@ -1356,12 +1486,12 @@ addPropertyControls(BlakeNavBar, {
     logoUrl: {
         type: ControlType.String,
         title: "Logo URL",
-        defaultValue: "https://raw.githubusercontent.com/bschuby212/portfoliomusic/main/public/avatar.png",
+        defaultValue: "https://genuine-cheesecake-75fecc.netlify.app/avatar.png",
     },
     playlistUrl: {
         type: ControlType.String,
         title: "Playlist URL",
-        defaultValue: "https://open.spotify.com/playlist/5zXp8gIyEeJteiSZj1RTqJ",
+        defaultValue: "https://open.spotify.com/playlist/5zXp8gIyEeJteiSZj1RTqJ?si=xgbBBcvlRsmrIeklFdc-7A",
     },
     playlistName: {
         type: ControlType.String,
