@@ -267,7 +267,8 @@ function persist() {
             JSON.stringify({
                 volume: state.volume,
                 muted: state.muted,
-                expanded: state.expanded,
+                // Never persist expand — always boot collapsed.
+                expanded: false,
                 repeat: state.repeat,
             }),
         )
@@ -309,7 +310,7 @@ const actions = {
             playlistName: props.playlistName || "Blake's Playlist",
             volume: prefs?.volume ?? 0.25,
             muted: Boolean(prefs?.muted),
-            expanded: Boolean(prefs?.expanded),
+            expanded: false,
             repeat: Boolean(prefs?.repeat),
             ready: false,
         })
