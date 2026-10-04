@@ -900,7 +900,7 @@ const css = `
   background-image: linear-gradient(155deg, rgba(255,255,255,calc(.82 * var(--pn-elevate))) 0%, rgba(255,255,255,calc(.48 * var(--pn-elevate))) 55%, rgba(255,255,255,calc(.64 * var(--pn-elevate))) 100%);
   border: 1px solid rgba(0,0,0,calc(.08 * var(--pn-elevate)));
   border-radius: 999px;
-  box-shadow: 0 1px 0 rgba(255,255,255,calc(.75 * var(--pn-elevate))) inset, 0 -1px 0 rgba(255,255,255,calc(.2 * var(--pn-elevate))) inset, 0 0 0 .5px rgba(0,0,0,calc(.04 * var(--pn-elevate))), 0 8px 24px rgba(0,0,0,calc(.08 * var(--pn-elevate)));
+  box-shadow: 0 1px 0 rgba(255,255,255,calc(.75 * var(--pn-elevate))) inset, 0 -1px 0 rgba(255,255,255,calc(.2 * var(--pn-elevate))) inset, 0 0 0 .5px rgba(0,0,0,calc(.04 * var(--pn-elevate))), 0 3px 10px rgba(0,0,0,calc(.05 * var(--pn-elevate)));
   backdrop-filter: blur(calc(var(--pn-elevate) * 64px)) saturate(calc(100% + (var(--pn-elevate) * 50%)));
   -webkit-backdrop-filter: blur(calc(var(--pn-elevate) * 64px)) saturate(calc(100% + (var(--pn-elevate) * 50%)));
   isolation: isolate; overflow: visible;
@@ -924,7 +924,7 @@ const css = `
   background-image: linear-gradient(155deg, rgba(255,255,255,calc(.82 * var(--pn-elevate))) 0%, rgba(255,255,255,calc(.48 * var(--pn-elevate))) 55%, rgba(255,255,255,calc(.64 * var(--pn-elevate))) 100%);
   border: 1px solid rgba(0,0,0,calc(.08 * var(--pn-elevate)));
   border-radius: 999px; overflow: hidden;
-  box-shadow: 0 1px 0 rgba(255,255,255,calc(.75 * var(--pn-elevate))) inset, 0 -1px 0 rgba(255,255,255,calc(.2 * var(--pn-elevate))) inset, 0 0 0 .5px rgba(0,0,0,calc(.04 * var(--pn-elevate))), 0 8px 24px rgba(0,0,0,calc(.08 * var(--pn-elevate)));
+  box-shadow: 0 1px 0 rgba(255,255,255,calc(.75 * var(--pn-elevate))) inset, 0 -1px 0 rgba(255,255,255,calc(.2 * var(--pn-elevate))) inset, 0 0 0 .5px rgba(0,0,0,calc(.04 * var(--pn-elevate))), 0 3px 10px rgba(0,0,0,calc(.05 * var(--pn-elevate)));
   backdrop-filter: blur(calc(var(--pn-elevate) * 64px)) saturate(calc(100% + (var(--pn-elevate) * 50%)));
   -webkit-backdrop-filter: blur(calc(var(--pn-elevate) * 64px)) saturate(calc(100% + (var(--pn-elevate) * 50%)));
   transform-origin: top left; isolation: isolate;
@@ -939,7 +939,7 @@ const css = `
   background-color: rgba(250, 249, 246, .82);
   background-image: linear-gradient(160deg, rgba(255,255,255,.9) 0%, rgba(255,255,255,.72) 100%);
   border-color: rgba(0,0,0,.08);
-  box-shadow: 0 1px 0 rgba(255,255,255,.78) inset, 0 -1px 0 rgba(255,255,255,.18) inset, 0 0 0 .5px rgba(0,0,0,.04), 0 10px 28px rgba(0,0,0,.1);
+  box-shadow: 0 1px 0 rgba(255,255,255,.78) inset, 0 -1px 0 rgba(255,255,255,.18) inset, 0 0 0 .5px rgba(0,0,0,.04), 0 4px 12px rgba(0,0,0,.06);
   backdrop-filter: blur(64px) saturate(150%);
   -webkit-backdrop-filter: blur(64px) saturate(150%);
 }
