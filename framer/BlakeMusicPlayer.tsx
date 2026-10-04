@@ -1119,12 +1119,14 @@ const css = `
 .bmp-play { background: #111 !important; color: #fff !important; }
 .bmp-ctrl[data-active="true"] { background: rgba(0,0,0,.06); }
 .bmp-disc-shell {
-  position: relative; width: 1.45rem; height: 1.45rem; flex-shrink: 0;
-  border-radius: 50%; box-shadow: 0 0 0 1px rgba(0,0,0,.1);
+  position: relative; display: block; width: 1.45rem; height: 1.45rem; flex-shrink: 0;
+  border-radius: 50%; overflow: hidden; box-shadow: 0 0 0 1px rgba(0,0,0,.1);
+  transform: translateZ(0);
 }
 .bmp-disc {
-  position: relative; width: 100%; height: 100%;
+  position: relative; display: block; width: 100%; height: 100%;
   border-radius: 50%; overflow: hidden; background: #f0efec;
+  transform-origin: center center;
 }
 .bmp-collapsed-shuffle { color: #212324; }
 .bmp-collapsed-shuffle:hover { background: rgba(0,0,0,.06); }
