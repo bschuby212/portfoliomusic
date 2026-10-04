@@ -13,10 +13,24 @@ function measureEmbedHeight() {
   return Math.ceil(Math.max(...bottoms) + 8);
 }
 
+let lastPosted = 0;
+let scheduled = 0;
+
 function postEmbedHeight() {
   if (window.parent === window) return;
   const height = measureEmbedHeight();
+  if (height === lastPosted) return;
+  lastPosted = height;
   window.parent.postMessage({ type: MSG_TYPE, height }, "*");
+}
+
+function scheduleEmbedHeight() {
+  // Fixed nav/player don't resize <html>, so wait a frame for expand layout.
+  if (scheduled) return;
+  scheduled = window.setTimeout(() => {
+    scheduled = 0;
+    requestAnimationFrame(postEmbedHeight);
+  }, 50);
 }
 
 /**
@@ -55,25 +69,40 @@ export function EmbedDocument() {
     html.style.clipPath = "none";
     body.style.clipPath = "none";
 
-    postEmbedHeight();
-    const ro = new ResizeObserver(() => postEmbedHeight());
-    ro.observe(html);
-    ro.observe(body);
-    const root = document.querySelector(".pn-root");
-    if (root) ro.observe(root);
-    const mo = new MutationObserver(() => postEmbedHeight());
+    const watched = new Set<Element>();
+    const ro = new ResizeObserver(() => scheduleEmbedHeight());
+    const watch = (el: Element | null) => {
+      if (!el || watched.has(el)) return;
+      watched.add(el);
+      ro.observe(el);
+    };
+
+    const syncWatches = () => {
+      watch(document.querySelector(".pn-root"));
+      watch(document.querySelector(".pn-music"));
+      watch(document.querySelector(".mp"));
+      scheduleEmbedHeight();
+    };
+
+    syncWatches();
+    const mo = new MutationObserver(syncWatches);
     mo.observe(body, {
       subtree: true,
       childList: true,
       attributes: true,
       attributeFilter: ["data-expanded", "class", "style"],
     });
-    window.addEventListener("resize", postEmbedHeight);
+    window.addEventListener("resize", scheduleEmbedHeight);
+    // Click/keyboard expand also lands here after React paint.
+    body.addEventListener("click", scheduleEmbedHeight, true);
+    body.addEventListener("keyup", scheduleEmbedHeight, true);
 
     return () => {
       ro.disconnect();
       mo.disconnect();
-      window.removeEventListener("resize", postEmbedHeight);
+      window.removeEventListener("resize", scheduleEmbedHeight);
+      body.removeEventListener("click", scheduleEmbedHeight, true);
+      body.removeEventListener("keyup", scheduleEmbedHeight, true);
       delete html.dataset.embed;
       delete body.dataset.embed;
       html.style.overflow = prev.htmlOverflow;
