@@ -403,7 +403,7 @@
   height: 100%;
   min-height: 3.15rem;
   max-height: 3.15rem;
-  padding: 0 0.28rem 0 0.35rem;
+  padding: 0 0.28rem 0 8px;
   overflow: hidden;
 }
 

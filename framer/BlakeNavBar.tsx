@@ -948,7 +948,7 @@ const css = `
 .bmp[data-embedded="true"][data-expanded="true"] .bmp-inner {
   display: flex; flex-direction: row; align-items: center; gap: .22rem;
   height: 100%; min-height: 3.15rem; max-height: 3.15rem;
-  padding: 0 .28rem 0 .35rem; overflow: hidden;
+  padding: 0 .28rem 0 8px; overflow: hidden;
 }
 .bmp[data-embedded="true"][data-expanded="true"] .bmp-top {
   display: flex; align-items: center; gap: .38rem;
