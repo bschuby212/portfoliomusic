@@ -3,8 +3,7 @@
 import { useEffect } from "react";
 
 /**
- * Pin the embed document for Framer URL embeds:
- * fixed 420px canvas, no internal scroll, nav stays snapped to top.
+ * Fixed-top Framer embed: allow overflow so the expanded music panel can overfill.
  */
 export function EmbedDocument() {
   useEffect(() => {
@@ -17,50 +16,44 @@ export function EmbedDocument() {
     const prev = {
       htmlOverflow: html.style.overflow,
       bodyOverflow: body.style.overflow,
-      htmlHeight: html.style.height,
-      bodyHeight: body.style.height,
+      htmlOverflowX: html.style.overflowX,
+      bodyOverflowX: body.style.overflowX,
+      htmlOverflowY: html.style.overflowY,
+      bodyOverflowY: body.style.overflowY,
     };
 
-    html.style.overflow = "hidden";
-    body.style.overflow = "hidden";
-    html.style.overflowX = "hidden";
-    body.style.overflowX = "hidden";
-    html.style.overflowY = "hidden";
-    body.style.overflowY = "hidden";
-    html.style.height = "420px";
-    body.style.height = "420px";
-    html.style.minHeight = "420px";
-    body.style.minHeight = "420px";
-    html.style.maxHeight = "420px";
-    body.style.maxHeight = "420px";
+    html.style.overflow = "visible";
+    body.style.overflow = "visible";
+    html.style.overflowX = "visible";
+    body.style.overflowX = "visible";
+    html.style.overflowY = "visible";
+    body.style.overflowY = "visible";
+    html.style.height = "auto";
+    body.style.height = "auto";
+    html.style.minHeight = "0";
+    body.style.minHeight = "0";
+    html.style.maxHeight = "none";
+    body.style.maxHeight = "none";
     html.style.clipPath = "none";
     body.style.clipPath = "none";
-    html.style.overscrollBehavior = "none";
-    body.style.overscrollBehavior = "none";
-
-    // Kill any residual scroll so sticky/fixed never fight the iframe.
-    window.scrollTo(0, 0);
-    const lockScroll = () => {
-      if (window.scrollY !== 0 || window.scrollX !== 0) window.scrollTo(0, 0);
-    };
-    window.addEventListener("scroll", lockScroll, { passive: true, capture: true });
 
     return () => {
       delete html.dataset.embed;
       delete body.dataset.embed;
       html.style.overflow = prev.htmlOverflow;
       body.style.overflow = prev.bodyOverflow;
-      html.style.height = prev.htmlHeight;
-      body.style.height = prev.bodyHeight;
+      html.style.overflowX = prev.htmlOverflowX;
+      body.style.overflowX = prev.bodyOverflowX;
+      html.style.overflowY = prev.htmlOverflowY;
+      body.style.overflowY = prev.bodyOverflowY;
+      html.style.height = "";
+      body.style.height = "";
       html.style.minHeight = "";
       body.style.minHeight = "";
       html.style.maxHeight = "";
       body.style.maxHeight = "";
       html.style.clipPath = "";
       body.style.clipPath = "";
-      html.style.overscrollBehavior = "";
-      body.style.overscrollBehavior = "";
-      window.removeEventListener("scroll", lockScroll, true);
     };
   }, []);
 
