@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Framer sticky iframe test</title>
+    <style>
+      body {
+        margin: 0;
+        font-family: "Avenir Next", "Segoe UI", sans-serif;
+        color: #1c1c1c;
+        background:
+          radial-gradient(1200px 600px at 20% -10%, #d9e7ff 0%, transparent 55%),
+          radial-gradient(900px 500px at 90% 10%, #ffe7d6 0%, transparent 50%),
+          linear-gradient(180deg, #f7f4ef 0%, #ebe4d8 100%);
+      }
+      #blake-embed-wrap {
+        position: sticky;
+        top: 0;
+        z-index: 50;
+        width: 100%;
+        height: 72px;
+        overflow: visible;
+      }
+      #blake-embed {
+        display: block;
+        width: 100%;
+        height: 72px;
+        border: 0;
+        background: transparent;
+      }
+      main {
+        max-width: 42rem;
+        margin: 0 auto;
+        padding: 4rem 1.25rem 8rem;
+      }
+      h1 {
+        font-size: 3rem;
+        letter-spacing: -0.04em;
+        line-height: 0.95;
+      }
+      .block {
+        height: 70vh;
+        margin: 2rem 0;
+        border-radius: 1.25rem;
+        background: linear-gradient(135deg, #2b2f36, #6b5b4b);
+        color: #f6f1ea;
+        display: grid;
+        place-items: end start;
+        padding: 1.5rem;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="blake-embed-wrap">
+      <iframe
+        id="blake-embed"
+        title="Blake nav embed"
+        src="/embed"
+        allow="autoplay"
+      ></iframe>
+    </div>
+    <main>
+      <h1>Scroll under sticky embed</h1>
+      <p>
+        Sticky iframe starts at 72px and resizes from
+        <code>blake-embed-height</code> postMessage so expand can overfill.
+      </p>
+      <div class="block">Section A</div>
+      <div class="block">Section B</div>
+      <div class="block">Section C</div>
+    </main>
+    <script>
+      window.addEventListener("message", (event) => {
+        const data = event.data;
+        if (!data || data.type !== "blake-embed-height") return;
+        const h = Math.max(72, Number(data.height) || 72);
+        const iframe = document.getElementById("blake-embed");
+        const wrap = document.getElementById("blake-embed-wrap");
+        if (iframe) iframe.style.height = h + "px";
+        if (wrap) wrap.style.height = h + "px";
+      });
+    </script>
+  </body>
+</html>

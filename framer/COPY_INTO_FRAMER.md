@@ -164,20 +164,35 @@ Expanded panel is the **custom** player UI (transport/scrub/volume). Spotify is 
 
 ## 5) Netlify `/embed` iframe (optional)
 
-Glass is always on now, so `/embed` is fine if you just want the nav iframe’d:
+Browsers clip iframe contents — a short sticky iframe cannot paint outside its box.
+`/embed` posts `{ type: "blake-embed-height", height }` so the parent can grow/shrink.
+
+Paste this **Embed → HTML** (sticky/fixed at top in Framer):
 
 ```html
-<iframe
-  src="https://YOUR-SITE.netlify.app/embed"
-  title="Blake nav"
-  style="width:100%;height:420px;border:0;background:transparent;overflow:visible;"
-  allow="autoplay; encrypted-media; clipboard-write"
-  loading="lazy"
-></iframe>
+<div id="blake-embed-wrap" style="position:sticky;top:0;z-index:50;width:100%;height:72px;overflow:visible;">
+  <iframe
+    id="blake-embed"
+    src="https://genuine-cheesecake-75fecc.netlify.app/embed"
+    title="Blake nav"
+    style="display:block;width:100%;height:72px;border:0;background:transparent;"
+    allow="autoplay; encrypted-media; clipboard-write"
+  ></iframe>
+</div>
+<script>
+  window.addEventListener("message", (event) => {
+    const data = event.data;
+    if (!data || data.type !== "blake-embed-height") return;
+    const h = Math.max(72, Number(data.height) || 72);
+    const iframe = document.getElementById("blake-embed");
+    const wrap = document.getElementById("blake-embed-wrap");
+    if (iframe) iframe.style.height = h + "px";
+    if (wrap) wrap.style.height = h + "px";
+  });
+</script>
 ```
 
-- Document inside `/embed` is `overflow: visible` (expanded player not clipped by html/body).
-- The **iframe box itself** still clips to its height — use ~420px (or taller) and keep the Framer parent **Overflow = Visible**.
+- Collapsed ≈ 72px; expand grows the iframe so the panel isn’t clipped.
 - Prefer the code component when you want the nav native to the Framer page.
 
 Keep Netlify for:

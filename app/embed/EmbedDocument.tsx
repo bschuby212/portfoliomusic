@@ -2,8 +2,26 @@
 
 import { useEffect } from "react";
 
+const COLLAPSED_HEIGHT = 72;
+const MSG_TYPE = "blake-embed-height";
+
+function measureEmbedHeight() {
+  const bottoms = [COLLAPSED_HEIGHT];
+  for (const el of document.querySelectorAll(".pn-root, .pn, .pn-music, .mp")) {
+    bottoms.push(el.getBoundingClientRect().bottom);
+  }
+  return Math.ceil(Math.max(...bottoms) + 8);
+}
+
+function postEmbedHeight() {
+  if (window.parent === window) return;
+  const height = measureEmbedHeight();
+  window.parent.postMessage({ type: MSG_TYPE, height }, "*");
+}
+
 /**
- * Fixed-top Framer embed: allow overflow so the expanded music panel can overfill.
+ * Fixed-top Framer embed: overflow visible + tell the parent iframe how tall
+ * we need so expand can overfill (browsers clip iframe contents otherwise).
  */
 export function EmbedDocument() {
   useEffect(() => {
@@ -30,14 +48,32 @@ export function EmbedDocument() {
     body.style.overflowY = "visible";
     html.style.height = "auto";
     body.style.height = "auto";
-    html.style.minHeight = "72px";
-    body.style.minHeight = "72px";
+    html.style.minHeight = `${COLLAPSED_HEIGHT}px`;
+    body.style.minHeight = `${COLLAPSED_HEIGHT}px`;
     html.style.maxHeight = "none";
     body.style.maxHeight = "none";
     html.style.clipPath = "none";
     body.style.clipPath = "none";
 
+    postEmbedHeight();
+    const ro = new ResizeObserver(() => postEmbedHeight());
+    ro.observe(html);
+    ro.observe(body);
+    const root = document.querySelector(".pn-root");
+    if (root) ro.observe(root);
+    const mo = new MutationObserver(() => postEmbedHeight());
+    mo.observe(body, {
+      subtree: true,
+      childList: true,
+      attributes: true,
+      attributeFilter: ["data-expanded", "class", "style"],
+    });
+    window.addEventListener("resize", postEmbedHeight);
+
     return () => {
+      ro.disconnect();
+      mo.disconnect();
+      window.removeEventListener("resize", postEmbedHeight);
       delete html.dataset.embed;
       delete body.dataset.embed;
       html.style.overflow = prev.htmlOverflow;
