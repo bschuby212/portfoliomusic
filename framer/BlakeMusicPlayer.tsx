@@ -930,10 +930,10 @@ const css = `
   transition: width .42s var(--ease), min-height .42s var(--ease), border-radius .42s var(--ease), box-shadow .42s ease, background .3s ease;
 }
 .bmp[data-embedded="true"][data-expanded="true"] {
-  /* Compact single-row expand — 48px art, 32px controls, softer corners. */
+  /* Compact single-row expand — soft corners, 32px controls. */
   position: absolute; top: 0; left: 0; z-index: 5;
-  width: min(17.5rem, calc(100vw - 2rem)); max-width: 17.5rem;
-  height: 64px; min-height: 64px; max-height: 64px;
+  width: min(15.5rem, calc(100vw - 2rem)); max-width: 15.5rem;
+  height: 3.15rem; min-height: 3.15rem; max-height: 3.15rem;
   border-radius: 1.15rem; overflow: hidden;
   background-color: rgba(250, 249, 246, .82);
   background-image: linear-gradient(160deg, rgba(255,255,255,.9) 0%, rgba(255,255,255,.72) 100%);
@@ -946,16 +946,16 @@ const css = `
   display: block; height: 100%;
 }
 .bmp[data-embedded="true"][data-expanded="true"] .bmp-inner {
-  display: flex; flex-direction: row; align-items: center; gap: .28rem;
-  height: 100%; min-height: 64px; max-height: 64px;
+  display: flex; flex-direction: row; align-items: center; gap: .22rem;
+  height: 100%; min-height: 3.15rem; max-height: 3.15rem;
   padding: 0 6px 0 8px; overflow: hidden; box-sizing: border-box;
 }
 .bmp[data-embedded="true"][data-expanded="true"] .bmp-top {
-  display: flex; align-items: center; gap: .4rem;
+  display: flex; align-items: center; gap: .38rem;
   flex: 1 1 auto; min-width: 0; margin: 0;
 }
 .bmp[data-embedded="true"][data-expanded="true"] .bmp-art {
-  width: 48px; height: 48px; border-radius: 8px; flex-shrink: 0;
+  width: 1.9rem; height: 1.9rem; border-radius: .4rem; flex-shrink: 0;
 }
 .bmp[data-embedded="true"][data-expanded="true"] .bmp-meta {
   flex: 1 1 auto; min-width: 0; padding: 0;
@@ -969,7 +969,7 @@ const css = `
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 .bmp[data-embedded="true"][data-expanded="true"] .bmp-transport {
-  display: flex; align-items: center; justify-content: flex-end; gap: .12rem;
+  display: flex; align-items: center; justify-content: flex-end; gap: 12px;
   margin: 0; padding: 0; flex: 0 0 auto;
 }
 .bmp[data-embedded="true"][data-expanded="true"] .bmp-ctrl,

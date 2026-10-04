@@ -930,10 +930,10 @@ const css = `
   transition: width .42s var(--ease), min-height .42s var(--ease), border-radius .42s var(--ease), box-shadow .42s ease, background .3s ease;
 }
 .bmp[data-embedded="true"][data-expanded="true"] {
-  /* Compact single-row expand — tighter width, softer (not pill) corners. */
+  /* Compact single-row expand — soft corners, 32px controls. */
   position: absolute; top: 0; left: 0; z-index: 5;
-  width: min(17.5rem, calc(100vw - 2rem)); max-width: 17.5rem;
-  height: 64px; min-height: 64px; max-height: 64px;
+  width: min(15.5rem, calc(100vw - 2rem)); max-width: 15.5rem;
+  height: 3.15rem; min-height: 3.15rem; max-height: 3.15rem;
   border-radius: 1.15rem; overflow: hidden;
   background-color: rgba(250, 249, 246, .82);
   background-image: linear-gradient(160deg, rgba(255,255,255,.9) 0%, rgba(255,255,255,.72) 100%);
@@ -969,7 +969,7 @@ const css = `
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 .bmp[data-embedded="true"][data-expanded="true"] .bmp-transport {
-  display: flex; align-items: center; justify-content: flex-end; gap: .12rem;
+  display: flex; align-items: center; justify-content: flex-end; gap: 12px;
   margin: 0; padding: 0; flex: 0 0 auto;
 }
 .bmp[data-embedded="true"][data-expanded="true"] .bmp-ctrl,
