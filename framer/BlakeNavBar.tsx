@@ -1097,7 +1097,7 @@ const css = `
 .bmp-disc {
   position: relative; width: 1.45rem; height: 1.45rem; flex-shrink: 0;
   border-radius: 50%; overflow: hidden; background: #f0efec;
-  box-shadow: inset 0 0 0 1px rgba(0,0,0,.06), 0 0 0 1px rgba(255,255,255,.5);
+  box-shadow: 0 0 0 1px rgba(0,0,0,.1);
 }
 .bmp-disc::after {
   content: ""; position: absolute; inset: 50%; width: .28rem; height: .28rem;

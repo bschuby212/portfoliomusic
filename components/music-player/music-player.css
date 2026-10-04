@@ -98,9 +98,7 @@
 }
 
 .mp[data-embedded="true"][data-playing="true"] .mp-disc {
-  box-shadow:
-    inset 0 0 0 1px rgba(0, 0, 0, 0.06),
-    0 0 0 1px rgba(255, 255, 255, 0.5);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.12);
 }
 
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
@@ -274,9 +272,8 @@
   border-radius: 50%;
   overflow: hidden;
   background: #f0efec;
-  box-shadow:
-    inset 0 0 0 1px rgba(0, 0, 0, 0.06),
-    0 0 0 1px rgba(255, 255, 255, 0.5);
+  /* Super-subtle edge so album reads as its own disc on the glass pill. */
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
 }
 
 .mp-disc::after {
