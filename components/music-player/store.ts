@@ -12,10 +12,7 @@ import {
   SURPRISE_TRACK,
   USE_FILLER_PLAYLIST,
 } from "./playlist";
-import {
-  buildPlaybackQueue,
-  reshuffleFromCurrent,
-} from "./queue";
+import { buildPlaybackQueue } from "./queue";
 import type {
   ExpandDirection,
   PlaybackAdapter,
@@ -25,7 +22,8 @@ import type {
   TrackMetadata,
 } from "./types";
 
-const STORAGE_KEY = "portfolio-music-player-v3";
+/** v4: ignore stale shuffle:false prefs that left the queue stuck in Spotify order. */
+const STORAGE_KEY = "portfolio-music-player-v4";
 const RESTART_THRESHOLD = 3;
 
 const DEFAULT_PREFS: PlayerPrefs = {
@@ -123,7 +121,8 @@ function persistPrefs() {
   const prefs: PlayerPrefs = {
     volume: state.volume,
     muted: state.muted,
-    shuffle: state.shuffle,
+    // Portfolio player stays shuffled — don't persist an off state.
+    shuffle: true,
     repeat: state.repeat,
     // Never persist expand — portfolio always boots collapsed.
     expanded: false,
@@ -144,8 +143,7 @@ function readPrefs(): PlayerPrefs {
     return {
       volume: clampVolume(parsed.volume ?? DEFAULT_PREFS.volume),
       muted: Boolean(parsed.muted),
-      // Always start shuffled for the portfolio playlist experience unless user turned it off.
-      shuffle: parsed.shuffle ?? DEFAULT_PREFS.shuffle,
+      shuffle: true,
       repeat: Boolean(parsed.repeat),
       // Ignore stored expand — base state is always the collapsed card.
       expanded: false,
@@ -153,6 +151,27 @@ function readPrefs(): PlayerPrefs {
   } catch {
     return DEFAULT_PREFS;
   }
+}
+
+/** Fresh shuffle of Spotify links, surprise pinned after N songs. */
+function makeShuffledQueue(playlistLength: number): number[] {
+  return buildPlaybackQueue(playlistLength, {
+    shuffle: true,
+    surpriseAfter: SURPRISE_AFTER,
+    includeSurprise: true,
+  });
+}
+
+/** Rotate queue so reshuffle doesn't restart on the same track. */
+function preferDifferentStart(
+  queue: number[],
+  currentTrackIndex: number | undefined,
+): number[] {
+  if (typeof currentTrackIndex !== "number" || queue.length <= 1) return queue;
+  if (queue[0] !== currentTrackIndex) return queue;
+  const startAt = queue.findIndex((index) => index !== currentTrackIndex);
+  if (startAt <= 0) return queue;
+  return [...queue.slice(startAt), ...queue.slice(0, startAt)];
 }
 
 function currentTrack(from: PlayerState = state): ResolvedTrack | undefined {
@@ -347,23 +366,18 @@ export const playerActions = {
         : await fetchRemotePlaylistTracks();
 
       const surprise = toResolvedTrack(SURPRISE_TRACK);
-      // Stable track list: Spotify order + surprise appended. Queue owns shuffle.
+      // Stable Spotify link list + surprise. Queue is a simple shuffled order of those links.
       const ordered = [...playlistTracks, surprise];
 
       const prefs = readPrefs();
-      const wantShuffle = prefs.shuffle ?? true;
-      const queue = buildPlaybackQueue(playlistTracks.length, {
-        shuffle: wantShuffle,
-        surpriseAfter: SURPRISE_AFTER,
-        includeSurprise: true,
-      });
+      const queue = makeShuffledQueue(playlistTracks.length);
       const firstTrack = ordered[queue[0] ?? 0];
       const next: PlayerState = {
         ...state,
         tracks: ordered,
         queue,
         queueIndex: 0,
-        shuffle: wantShuffle,
+        shuffle: true,
         repeat: prefs.repeat,
         expanded: false,
         volume: prefs.volume,
@@ -388,11 +402,7 @@ export const playerActions = {
         ? [...fallbackTracks, surprise]
         : [surprise];
       const playlistLength = fallbackTracks.length;
-      const queue = buildPlaybackQueue(playlistLength, {
-        shuffle: true,
-        surpriseAfter: Math.min(SURPRISE_AFTER, playlistLength),
-        includeSurprise: true,
-      });
+      const queue = makeShuffledQueue(playlistLength);
       setState({
         ready: true,
         shuffle: true,
@@ -642,36 +652,30 @@ export const playerActions = {
     persistPrefs();
   },
 
+  /**
+   * Portfolio shuffle is always on. Clicking reshuffles the Spotify-link queue
+   * and jumps to a different preview so the change is obvious immediately.
+   */
   toggleShuffle() {
-    const shuffle = !state.shuffle;
-    const currentTrackIndex = state.queue[state.queueIndex] ?? 0;
-    // Tracks are [...playlist, surprise]; surprise is always last when present.
+    if (state.tracks.length === 0) return;
     const playlistLength = Math.max(state.tracks.length - 1, 0);
-    if (shuffle) {
-      // Keep the current song first, reshuffle everything else after it.
-      const reshuffled = reshuffleFromCurrent(
-        state.tracks.length,
-        currentTrackIndex,
-      );
-      setState({
-        shuffle: true,
-        queue: reshuffled.queue,
-        queueIndex: reshuffled.queueIndex,
-      });
-    } else {
-      const queue = buildPlaybackQueue(playlistLength, {
-        shuffle: false,
-        surpriseAfter: SURPRISE_AFTER,
-        includeSurprise: state.tracks.length > playlistLength,
-      });
-      const queueIndex = Math.max(0, queue.indexOf(currentTrackIndex));
-      setState({
-        shuffle: false,
-        queue,
-        queueIndex: queueIndex === -1 ? 0 : queueIndex,
-      });
-    }
+    const currentTrackIndex = state.queue[state.queueIndex];
+    const wasPlaying = state.isPlaying || pendingAutoplay;
+
+    const queue = preferDifferentStart(
+      makeShuffledQueue(playlistLength),
+      currentTrackIndex,
+    );
+
+    pendingAutoplay = wasPlaying;
+    setState({
+      shuffle: true,
+      queue,
+      queueIndex: 0,
+    });
     persistPrefs();
+    loadCurrent({ autoplay: wasPlaying, from: state });
+    void playerActions.ensureNearbyMetadata();
   },
 
   toggleRepeat() {

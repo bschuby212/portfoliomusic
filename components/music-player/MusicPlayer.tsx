@@ -180,7 +180,8 @@ export function MusicPlayer({ embedded = false }: MusicPlayerProps) {
             <button
               type="button"
               className="mp-ctrl mp-ctrl-shuffle"
-              aria-label="Shuffle"
+              aria-label="Reshuffle playlist"
+              title="Reshuffle"
               aria-pressed={state.shuffle}
               data-active={state.shuffle}
               onClick={(event) => {

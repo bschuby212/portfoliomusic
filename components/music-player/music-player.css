@@ -632,8 +632,13 @@
 }
 
 .mp-transport .mp-ctrl[data-active="true"] {
-  color: #212324;
-  background: rgba(0, 0, 0, 0.06);
+  color: #111;
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.mp-transport .mp-ctrl-shuffle[data-active="true"] {
+  color: #0b6e4f;
+  background: rgba(11, 110, 79, 0.12);
 }
 
 .mp-transport .mp-ctrl-play[data-active="true"] {

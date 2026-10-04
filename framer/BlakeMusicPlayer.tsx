@@ -584,31 +584,29 @@ const actions = {
         persist()
     },
 
-    toggleShuffle() {
-        const currentTrackIndex = state.queue[state.queueIndex] ?? 0
+    /** Always-on shuffle: click builds a new random order and jumps to a new track. */
+    toggleShuffle(apiBaseUrl: string) {
+        if (state.tracks.length === 0) return
         const playlistLength = Math.max(state.tracks.length - 1, 0)
-        if (!state.shuffle) {
-            const rest = state.tracks
-                .map((_, index) => index)
-                .filter((index) => index !== currentTrackIndex)
-            setState({
-                shuffle: true,
-                queue: [currentTrackIndex, ...shuffleArray(rest)],
-                queueIndex: 0,
-            })
-        } else {
-            const queue = buildPlaybackQueue(playlistLength, {
-                shuffle: false,
-                surpriseAfter: 4,
-                includeSurprise: state.tracks.length > playlistLength,
-            })
-            const queueIndex = Math.max(0, queue.indexOf(currentTrackIndex))
-            setState({
-                shuffle: false,
-                queue,
-                queueIndex: queueIndex === -1 ? 0 : queueIndex,
-            })
+        const currentTrackIndex = state.queue[state.queueIndex]
+        const wasPlaying = state.isPlaying || pendingAutoplay
+        let queue = buildPlaybackQueue(playlistLength, {
+            shuffle: true,
+            surpriseAfter: 4,
+            includeSurprise: state.tracks.length > playlistLength,
+        })
+        if (
+            typeof currentTrackIndex === "number" &&
+            queue.length > 1 &&
+            queue[0] === currentTrackIndex
+        ) {
+            const startAt = queue.findIndex((index) => index !== currentTrackIndex)
+            if (startAt > 0) queue = [...queue.slice(startAt), ...queue.slice(0, startAt)]
         }
+        pendingAutoplay = wasPlaying
+        setState({ shuffle: true, queue, queueIndex: 0 })
+        loadCurrent(wasPlaying)
+        if (apiBaseUrl) void actions.ensureNearbyMetadata(apiBaseUrl)
         persist()
     },
 
@@ -1402,7 +1400,7 @@ function BlakeNavBar(props: Props) {
                         </div>
 
                         <div className="bmp-transport">
-                            <button type="button" className="bmp-ctrl" aria-label="Shuffle" data-active={player.shuffle} onClick={actions.toggleShuffle}>
+                            <button type="button" className="bmp-ctrl" aria-label="Reshuffle playlist" data-active={player.shuffle} onClick={() => actions.toggleShuffle(props.apiBaseUrl)}>
                                 <ShuffleIcon />
                             </button>
                             <button
