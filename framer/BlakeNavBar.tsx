@@ -854,11 +854,11 @@ const css = `
   position: relative;
   box-sizing: border-box;
   width: 720px;
-  height: 56px;
+  height: 52px;
   max-width: 720px;
-  max-height: 56px;
+  max-height: 52px;
   min-width: 720px;
-  min-height: 56px;
+  min-height: 52px;
   margin: 0;
   padding: 0;
   overflow: visible;
@@ -875,7 +875,7 @@ const css = `
   top: 0; left: 0; z-index: 1;
   display: flex; align-items: flex-start; justify-content: center;
   gap: calc(1.25rem - (var(--pn-elevate) * 0.25rem));
-  width: 720px; height: 56px; max-width: 720px; max-height: 56px;
+  width: 720px; height: 52px; max-width: 720px; max-height: 52px;
   overflow: visible; overscroll-behavior: none;
   scrollbar-width: none; -ms-overflow-style: none; pointer-events: none;
   transform: none;
@@ -886,14 +886,14 @@ const css = `
   pointer-events: auto; position: relative;
   display: flex; align-items: center;
   gap: calc(.55rem - (var(--pn-elevate) * .2rem));
-  min-height: calc(56px + (var(--pn-elevate) * .25rem));
+  box-sizing: border-box; height: 52px; min-height: 52px; max-height: 52px;
   flex: 0 1 auto; width: max-content;
   min-width: calc((1 - var(--pn-elevate)) * 560px);
   max-width: 560px;
   padding:
-    calc(.48rem - (var(--pn-elevate) * .16rem))
+    0
     calc(.72rem - (var(--pn-elevate) * .34rem))
-    calc(.48rem - (var(--pn-elevate) * .16rem))
+    0
     calc(.55rem - (var(--pn-elevate) * .23rem));
   color: var(--ink);
   background-color: rgba(250, 249, 246, calc(.52 * var(--pn-elevate)));
@@ -912,12 +912,12 @@ const css = `
 .bn-music {
   pointer-events: auto; position: relative; display: block;
   flex: 0 0 9.2rem; width: 9.2rem; min-width: 9.2rem; max-width: 9.2rem;
-  height: 3.4rem; overflow: visible;
+  height: 52px; overflow: visible;
 }
 .bn-music[data-expanded="true"] { z-index: 3; }
 .bmp {
   position: absolute; top: 0; left: 0; z-index: 2;
-  width: 9.2rem; min-height: 3.4rem;
+  width: 9.2rem; box-sizing: border-box; height: 52px; min-height: 52px; max-height: 52px;
   display: flex; flex-direction: column; justify-content: center;
   color: #212324;
   background-color: rgba(250, 249, 246, calc(.52 * var(--pn-elevate)));
@@ -931,7 +931,7 @@ const css = `
   transition: width .42s var(--ease), min-height .42s var(--ease), border-radius .42s var(--ease), box-shadow .42s ease, background .3s ease;
 }
 .bmp[data-embedded="true"][data-expanded="true"] {
-  /* 8px shorter than nav bar; +24px wider than prior compact row. */
+  /* Match nav bar height; +24px wider than prior compact row. */
   position: absolute; top: 0; left: 0; z-index: 5;
   width: min(calc(15.5rem + 24px), calc(100vw - 2rem)); max-width: calc(15.5rem + 24px);
   height: 52px; min-height: 52px; max-height: 52px;

@@ -38,7 +38,11 @@
   display: flex;
   align-items: center;
   gap: calc(0.55rem - (var(--pn-elevate) * 0.2rem));
-  min-height: calc(56px + (var(--pn-elevate) * 0.25rem));
+  /* Match expanded music card height. */
+  box-sizing: border-box;
+  height: 52px;
+  min-height: 52px;
+  max-height: 52px;
   /* Top: responsive full-width text bar. Elevated: compact fixed glass pill. */
   flex: 0 1 auto;
   width: max-content;
@@ -48,9 +52,9 @@
     calc(56rem - (var(--pn-elevate) * 12rem))
   );
   padding:
-    calc(0.48rem - (var(--pn-elevate) * 0.16rem))
+    0
     calc(0.72rem - (var(--pn-elevate) * 0.34rem))
-    calc(0.48rem - (var(--pn-elevate) * 0.16rem))
+    0
     calc(0.55rem - (var(--pn-elevate) * 0.23rem));
   color: var(--pn-ink);
   /* Filled frost — readable on #fff, still glass over imagery. */
@@ -86,7 +90,7 @@
   display: flex;
   justify-content: flex-start;
   align-items: flex-start;
-  min-height: 3.4rem;
+  min-height: 52px;
   overflow: visible;
 }
 
