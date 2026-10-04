@@ -90,8 +90,8 @@
 }
 
 .mp[data-embedded="true"][data-playing="true"]:not([data-expanded="true"]) {
-  /* Room for note · disc · play · shuffle on the right. */
-  width: 8.1rem;
+  /* Room for note · disc · play · shuffle + 16px right pad. */
+  width: calc(8.1rem + 16px - 0.55rem);
   box-shadow:
     0 1px 0 rgba(255, 255, 255, 0.75) inset,
     0 -1px 0 rgba(255, 255, 255, 0.18) inset,
@@ -200,6 +200,10 @@
   box-sizing: border-box;
 }
 
+.mp[data-embedded="true"][data-playing="true"]:not([data-expanded="true"]) .mp-collapsed {
+  padding-right: 16px;
+}
+
 .mp[data-expanded="true"] .mp-collapsed {
   max-height: 0;
   opacity: 0;
@@ -271,26 +275,39 @@
   color: rgba(0, 0, 0, 0.35);
 }
 
-/* Static shell = circular stroke; inner .mp-disc is what spins while playing. */
+/*
+ * Glass pills use backdrop-filter, which can break overflow+border-radius
+ * clipping (square art inside a round stroke). Force a circular mask.
+ * Shell stays still for the ring; .mp-disc is what spins while playing.
+ */
 .mp-disc-shell {
   position: relative;
   display: block;
   width: 1.45rem;
   height: 1.45rem;
   flex-shrink: 0;
-  border-radius: 50%;
+  border-radius: 999px;
   overflow: hidden;
-  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
-  transform: translateZ(0);
+  clip-path: circle(50% at 50% 50%);
+  -webkit-clip-path: circle(50% at 50% 50%);
+  -webkit-mask-image: radial-gradient(circle at center, #000 99%, transparent 100%);
+  mask-image: radial-gradient(circle at center, #000 99%, transparent 100%);
+  /* Inset stroke so the ring isn't clipped away by mask/clip-path. */
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.14);
+  background: #f0efec;
+  isolation: isolate;
 }
 
 .mp-disc {
-  position: relative;
+  position: absolute;
+  inset: 0;
   display: block;
   width: 100%;
   height: 100%;
-  border-radius: 50%;
+  border-radius: 999px;
   overflow: hidden;
+  clip-path: circle(50% at 50% 50%);
+  -webkit-clip-path: circle(50% at 50% 50%);
   background: #f0efec;
   transform-origin: center center;
 }
@@ -302,7 +319,7 @@
   width: 0.28rem;
   height: 0.28rem;
   margin: -0.14rem 0 0 -0.14rem;
-  border-radius: 50%;
+  border-radius: 999px;
   background: #fff;
   box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.08);
   z-index: 1;
@@ -313,6 +330,7 @@
   height: 100%;
   object-fit: cover;
   display: block;
+  border-radius: 999px;
 }
 
 .mp-disc-fallback {
@@ -322,6 +340,7 @@
   align-items: center;
   justify-content: center;
   color: #a1a1a1;
+  border-radius: 999px;
 }
 
 /* Spin the whole disc (not just the img) so playing state is obvious. */
@@ -331,7 +350,10 @@
 
 .mp-collapsed-play,
 .mp-collapsed-shuffle {
-  /* Own compositor layer so backdrop-filter on the glass pill doesn’t soft-blur the glyph. */
+  /* Match pause control: same hit size, ink color, crisp glyph. */
+  width: 1.65rem;
+  height: 1.65rem;
+  color: #212324;
   transform: translateZ(0);
   backface-visibility: hidden;
   transition:
@@ -340,19 +362,11 @@
     box-shadow 0.3s ease;
 }
 
-.mp-collapsed-shuffle {
-  width: 1.65rem;
-  height: 1.65rem;
-  margin-left: 0.05rem;
-  color: #212324;
-}
-
-.mp-collapsed-shuffle:hover {
-  background: rgba(0, 0, 0, 0.06);
-}
-
-.mp-collapsed-play svg {
+.mp-collapsed-play svg,
+.mp-collapsed-shuffle svg {
   display: block;
+  width: 12px;
+  height: 12px;
   transform: translateZ(0);
 }
 
