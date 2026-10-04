@@ -2,8 +2,6 @@
 
 import {
   ChevronDown,
-  ChevronLeft,
-  ChevronRight,
   ChevronUp,
   Music2,
   Play,
@@ -115,23 +113,6 @@ export function MusicPlayer({ embedded = false }: MusicPlayerProps) {
             <Play size={13} strokeWidth={0} fill="currentColor" absoluteStrokeWidth />
           )}
         </button>
-        <button
-          type="button"
-          className="mp-icon-btn mp-collapsed-chevron"
-          aria-label="Expand music player"
-          onClick={(event) => {
-            event.stopPropagation();
-            playerActions.setExpanded(true);
-          }}
-        >
-          {embedded ? (
-            <ChevronRight size={15} strokeWidth={ICON_STROKE} />
-          ) : state.expandDirection === "down" ? (
-            <ChevronDown size={15} strokeWidth={ICON_STROKE} />
-          ) : (
-            <ChevronUp size={15} strokeWidth={ICON_STROKE} />
-          )}
-        </button>
       </div>
 
       <div className="mp-expanded">
@@ -140,7 +121,27 @@ export function MusicPlayer({ embedded = false }: MusicPlayerProps) {
             embedded ? "mp-expanded-inner mp-expanded-embed" : "mp-expanded-inner"
           }
         >
-          <div className="mp-top">
+          <div
+            className="mp-top"
+            onClick={
+              embedded
+                ? () => playerActions.setExpanded(false)
+                : undefined
+            }
+            role={embedded ? "button" : undefined}
+            tabIndex={embedded ? 0 : undefined}
+            aria-label={embedded ? "Collapse music player" : undefined}
+            onKeyDown={
+              embedded
+                ? (event) => {
+                    if (event.key === "Enter" || event.key === " ") {
+                      event.preventDefault();
+                      playerActions.setExpanded(false);
+                    }
+                  }
+                : undefined
+            }
+          >
             <div className="mp-art" key={track?.id}>
               {track?.metadata?.artworkUrl ? (
                 // eslint-disable-next-line @next/next/no-img-element
@@ -237,17 +238,6 @@ export function MusicPlayer({ embedded = false }: MusicPlayerProps) {
               </>
             ) : null}
           </div>
-
-          {embedded ? (
-            <button
-              type="button"
-              className="mp-icon-btn mp-collapse"
-              aria-label="Collapse music player"
-              onClick={() => playerActions.setExpanded(false)}
-            >
-              <ChevronLeft size={16} strokeWidth={2} />
-            </button>
-          ) : null}
 
           {!embedded ? (
             <div className="mp-progress">

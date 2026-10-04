@@ -55,7 +55,7 @@
     0
     calc(0.72rem - (var(--pn-elevate) * 0.34rem))
     0
-    calc(0.55rem - (var(--pn-elevate) * 0.23rem));
+    12px;
   color: var(--pn-ink);
   /* Filled frost — readable on #fff, still glass over imagery. */
   background-color: rgba(250, 249, 246, calc(0.52 * var(--pn-elevate)));

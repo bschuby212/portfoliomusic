@@ -184,7 +184,7 @@
   align-items: center;
   gap: 0.28rem;
   height: 2.5rem;
-  padding: 0 0.25rem 0 0.5rem;
+  padding: 0 0.45rem 0 0.5rem;
   max-height: 2.5rem;
   opacity: 1;
   overflow: hidden;
@@ -328,14 +328,6 @@
   transform: translateZ(0);
 }
 
-.mp-collapsed-chevron {
-  color: #737373;
-}
-
-.mp-collapsed-chevron:hover {
-  color: #212324;
-}
-
 /* Soft ring only — avoid scaling the pause glyph (looks blurry). */
 .mp[data-playing="true"] .mp-collapsed-play {
   animation: mp-play-pulse 1.8s ease-in-out infinite;
@@ -406,7 +398,7 @@
   height: 100%;
   min-height: 56px;
   max-height: 56px;
-  padding: 0 6px 0 8px;
+  padding: 0 12px 0 12px;
   overflow: hidden;
   box-sizing: border-box;
 }
@@ -493,11 +485,8 @@
   height: 16px;
 }
 
-.mp[data-embedded="true"][data-expanded="true"] .mp-collapse {
-  width: 1.65rem;
-  height: 1.65rem;
-  margin: 0;
-  flex: 0 0 auto;
+.mp[data-embedded="true"][data-expanded="true"] .mp-top {
+  cursor: pointer;
 }
 
 .mp-top {

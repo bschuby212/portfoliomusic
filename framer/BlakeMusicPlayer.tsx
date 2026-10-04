@@ -894,7 +894,7 @@ const css = `
     0
     calc(.72rem - (var(--pn-elevate) * .34rem))
     0
-    calc(.55rem - (var(--pn-elevate) * .23rem));
+    12px;
   color: var(--ink);
   background-color: rgba(250, 249, 246, calc(.52 * var(--pn-elevate)));
   background-image: linear-gradient(155deg, rgba(255,255,255,calc(.82 * var(--pn-elevate))) 0%, rgba(255,255,255,calc(.48 * var(--pn-elevate))) 55%, rgba(255,255,255,calc(.64 * var(--pn-elevate))) 100%);
@@ -949,7 +949,7 @@ const css = `
 .bmp[data-embedded="true"][data-expanded="true"] .bmp-inner {
   display: flex; flex-direction: row; align-items: center; gap: .22rem;
   height: 100%; min-height: 56px; max-height: 56px;
-  padding: 0 6px 0 8px; overflow: hidden; box-sizing: border-box;
+  padding: 0 12px; overflow: hidden; box-sizing: border-box;
 }
 .bmp[data-embedded="true"][data-expanded="true"] .bmp-top {
   display: flex; align-items: center; gap: .38rem;
@@ -983,9 +983,7 @@ const css = `
 .bmp[data-embedded="true"][data-expanded="true"] .bmp-play svg {
   width: 16px; height: 16px;
 }
-.bmp[data-embedded="true"][data-expanded="true"] .bmp-collapse {
-  width: 1.65rem; height: 1.65rem; margin: 0; flex: 0 0 auto;
-}
+.bmp[data-embedded="true"][data-expanded="true"] .bmp-top { cursor: pointer; }
 .bmp[data-embedded="true"][data-expanded="true"] .bmp-footer {
   display: none !important;
 }
@@ -1081,7 +1079,7 @@ const css = `
 }
 .bn-toast[data-open="true"] { opacity: 1; }
 .bmp[data-playing="true"] .bmp-disc { animation: bmp-spin 3.2s linear infinite; }
-.bmp-collapsed-chevron { color: rgba(33,35,36,.72); font-size: .85rem; line-height: 1; }
+
 .bmp-collapsed {
   display: flex; align-items: center; gap: .35rem;
   height: 2.5rem; padding: 0 .3rem 0 .55rem; cursor: pointer;
@@ -1348,22 +1346,23 @@ function BlakeNavBar(props: Props) {
                     >
                         {player.isPlaying ? <PauseBars /> : <PlayTriangle />}
                     </button>
-                    <button
-                        type="button"
-                        className="bmp-icon-btn bmp-collapsed-chevron"
-                        aria-label="Expand music player"
-                        onClick={(event) => {
-                            event.stopPropagation()
-                            actions.setExpanded(true)
-                        }}
-                    >
-                        <ChevronRightIcon />
-                    </button>
                 </div>
 
                 <div className="bmp-expanded">
                     <div className="bmp-inner">
-                        <div className="bmp-top">
+                        <div
+                            className="bmp-top"
+                            role="button"
+                            tabIndex={0}
+                            aria-label="Collapse music player"
+                            onClick={() => actions.setExpanded(false)}
+                            onKeyDown={(event) => {
+                                if (event.key === "Enter" || event.key === " ") {
+                                    event.preventDefault()
+                                    actions.setExpanded(false)
+                                }
+                            }}
+                        >
                             <div className="bmp-art">
                                 {track?.metadata?.artworkUrl ? (
                                     <img src={track.metadata.artworkUrl} alt="" />
@@ -1391,15 +1390,6 @@ function BlakeNavBar(props: Props) {
                                 {player.isPlaying ? <PauseBars /> : <PlayTriangle />}
                             </button>
                         </div>
-
-                        <button
-                            type="button"
-                            className="bmp-icon-btn bmp-collapse"
-                            aria-label="Collapse"
-                            onClick={() => actions.setExpanded(false)}
-                        >
-                            <ChevronLeftIcon />
-                        </button>
                     </div>
                 </div>
             </aside>
