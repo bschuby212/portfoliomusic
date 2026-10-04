@@ -1142,7 +1142,7 @@ const css = `
 .bmp-disc img { width: 100%; height: 100%; object-fit: cover; display: block; border-radius: 999px; }
 .bmp-disc-fallback {
   width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;
-  color: #a1a1a1; font-size: 10px;
+  color: #a1a1a1; font-size: 10px; border-radius: 999px;
 }
 .bmp-collapsed-play { transition: box-shadow .3s ease; }
 .bmp[data-playing="true"] .bmp-collapsed-play { animation: bmp-play-pulse 1.8s ease-in-out infinite; }
