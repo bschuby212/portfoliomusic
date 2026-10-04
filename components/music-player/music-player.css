@@ -60,15 +60,15 @@
 }
 
 .mp[data-embedded="true"][data-expanded="true"] {
-  /* Short vertical card from the music slot — art + meta + shuffle/play. */
+  /* Single-row expand from the music slot — art · meta · shuffle/play · collapse. */
   position: absolute;
   top: 0;
   left: 0;
-  width: min(16.5rem, calc(100vw - 2rem));
-  height: auto;
-  min-height: 0;
-  max-height: none;
-  border-radius: 1.3rem;
+  width: min(22rem, calc(100vw - 2rem));
+  height: 3.4rem;
+  min-height: 3.4rem;
+  max-height: 3.4rem;
+  border-radius: 999px;
   background-color: rgba(250, 249, 246, 0.82);
   background-image: linear-gradient(
     160deg,
@@ -386,62 +386,70 @@
   padding: 0.55rem 0.65rem 0.6rem;
 }
 
-/* Short embedded card: artist/title stack, shuffle+play, volume — no progress/skip */
+/* Single-row embed: art · title/artist · equal shuffle/play · collapse */
 .mp[data-embedded="true"][data-expanded="true"] .mp-expanded {
   display: block;
   opacity: 1;
   grid-template-rows: none;
-  height: auto;
+  height: 100%;
 }
 
 .mp[data-embedded="true"][data-expanded="true"] .mp-expanded-inner,
 .mp[data-embedded="true"][data-expanded="true"] .mp-expanded-inner.mp-expanded-embed {
   display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  gap: 0;
-  height: auto;
-  min-height: 0;
-  max-height: none;
-  padding: 0.55rem 0.65rem 0.6rem;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.3rem;
+  height: 100%;
+  min-height: 3.4rem;
+  max-height: 3.4rem;
+  padding: 0 0.3rem 0 0.4rem;
   overflow: hidden;
 }
 
 .mp[data-embedded="true"][data-expanded="true"] .mp-top {
   display: flex;
-  align-items: flex-start;
-  gap: 0.6rem;
+  align-items: center;
+  gap: 0.45rem;
+  flex: 1 1 auto;
+  min-width: 0;
   margin: 0;
 }
 
 .mp[data-embedded="true"][data-expanded="true"] .mp-art {
-  width: 2.75rem;
-  height: 2.75rem;
-  border-radius: 0.55rem;
+  width: 2.15rem;
+  height: 2.15rem;
+  border-radius: 0.45rem;
   flex-shrink: 0;
 }
 
 .mp[data-embedded="true"][data-expanded="true"] .mp-art::after {
-  width: 0.35rem;
-  height: 0.35rem;
-  margin: -0.175rem 0 0 -0.175rem;
+  width: 0.3rem;
+  height: 0.3rem;
+  margin: -0.15rem 0 0 -0.15rem;
 }
 
 .mp[data-embedded="true"][data-expanded="true"] .mp-meta {
   flex: 1 1 auto;
   min-width: 0;
-  padding-top: 0.1rem;
+  padding-top: 0;
 }
 
 .mp[data-embedded="true"][data-expanded="true"] .mp-title {
-  font-size: 0.82rem;
-  line-height: 1.2;
+  font-size: 0.78rem;
+  line-height: 1.15;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .mp[data-embedded="true"][data-expanded="true"] .mp-artist {
-  margin-top: 0.12rem;
-  font-size: 0.7rem;
-  line-height: 1.2;
+  margin-top: 0.08rem;
+  font-size: 0.68rem;
+  line-height: 1.15;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .mp[data-embedded="true"][data-expanded="true"] .mp-progress,
@@ -455,26 +463,24 @@
 .mp[data-embedded="true"][data-expanded="true"] .mp-transport {
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 1.1rem;
-  margin-top: 0.55rem;
+  justify-content: flex-end;
+  gap: 0.15rem;
+  margin: 0;
   padding: 0;
+  flex: 0 0 auto;
 }
 
-.mp[data-embedded="true"][data-expanded="true"] .mp-transport .mp-ctrl {
-  width: 2.35rem;
-  height: 2.35rem;
-}
-
+.mp[data-embedded="true"][data-expanded="true"] .mp-transport .mp-ctrl,
 .mp[data-embedded="true"][data-expanded="true"] .mp-transport .mp-ctrl-play {
-  width: 2.55rem;
-  height: 2.55rem;
+  width: 2.15rem;
+  height: 2.15rem;
 }
 
 .mp[data-embedded="true"][data-expanded="true"] .mp-collapse {
-  width: 1.75rem;
-  height: 1.75rem;
+  width: 1.85rem;
+  height: 1.85rem;
   margin: 0;
+  flex: 0 0 auto;
 }
 
 .mp-top {

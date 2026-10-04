@@ -930,11 +930,11 @@ const css = `
   transition: width .42s var(--ease), min-height .42s var(--ease), border-radius .42s var(--ease), box-shadow .42s ease, background .3s ease;
 }
 .bmp[data-embedded="true"][data-expanded="true"] {
-  /* Short vertical card from the music slot — art + meta + shuffle/play. */
+  /* Single-row expand — art · meta · equal shuffle/play · collapse. */
   position: absolute; top: 0; left: 0; z-index: 5;
-  width: min(16.5rem, calc(100vw - 2rem)); max-width: 16.5rem;
-  height: auto; min-height: 0; max-height: none;
-  border-radius: 1.3rem; overflow: hidden;
+  width: min(22rem, calc(100vw - 2rem)); max-width: 22rem;
+  height: 3.4rem; min-height: 3.4rem; max-height: 3.4rem;
+  border-radius: 999px; overflow: hidden;
   background-color: rgba(250, 249, 246, .82);
   background-image: linear-gradient(160deg, rgba(255,255,255,.9) 0%, rgba(255,255,255,.72) 100%);
   border-color: rgba(0,0,0,.08);
@@ -943,40 +943,41 @@ const css = `
   -webkit-backdrop-filter: blur(64px) saturate(150%);
 }
 .bmp[data-embedded="true"][data-expanded="true"] .bmp-expanded {
-  display: block; height: auto;
+  display: block; height: 100%;
 }
 .bmp[data-embedded="true"][data-expanded="true"] .bmp-inner {
-  display: flex; flex-direction: column; align-items: stretch;
-  height: auto; min-height: 0; max-height: none;
-  padding: .55rem .65rem .6rem; overflow: hidden;
+  display: flex; flex-direction: row; align-items: center; gap: .3rem;
+  height: 100%; min-height: 3.4rem; max-height: 3.4rem;
+  padding: 0 .3rem 0 .4rem; overflow: hidden;
 }
 .bmp[data-embedded="true"][data-expanded="true"] .bmp-top {
-  display: flex; align-items: flex-start; gap: .6rem; margin: 0;
+  display: flex; align-items: center; gap: .45rem;
+  flex: 1 1 auto; min-width: 0; margin: 0;
 }
 .bmp[data-embedded="true"][data-expanded="true"] .bmp-art {
-  width: 2.75rem; height: 2.75rem; border-radius: .55rem; flex-shrink: 0;
+  width: 2.15rem; height: 2.15rem; border-radius: .45rem; flex-shrink: 0;
 }
 .bmp[data-embedded="true"][data-expanded="true"] .bmp-meta {
-  flex: 1 1 auto; min-width: 0; padding: .1rem 0 0;
+  flex: 1 1 auto; min-width: 0; padding: 0;
 }
 .bmp[data-embedded="true"][data-expanded="true"] .bmp-title {
-  font-size: .82rem; line-height: 1.2;
+  font-size: .78rem; line-height: 1.15;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 .bmp[data-embedded="true"][data-expanded="true"] .bmp-artist {
-  margin-top: .12rem; font-size: .7rem; line-height: 1.2; color: #737373;
+  margin-top: .08rem; font-size: .68rem; line-height: 1.15; color: #737373;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 .bmp[data-embedded="true"][data-expanded="true"] .bmp-transport {
-  display: flex; align-items: center; justify-content: center; gap: 1.1rem;
-  margin-top: .55rem; padding: 0;
+  display: flex; align-items: center; justify-content: flex-end; gap: .15rem;
+  margin: 0; padding: 0; flex: 0 0 auto;
 }
-.bmp[data-embedded="true"][data-expanded="true"] .bmp-ctrl {
-  width: 2.35rem; height: 2.35rem;
-}
+.bmp[data-embedded="true"][data-expanded="true"] .bmp-ctrl,
 .bmp[data-embedded="true"][data-expanded="true"] .bmp-play {
-  width: 2.55rem; height: 2.55rem;
+  width: 2.15rem; height: 2.15rem;
 }
 .bmp[data-embedded="true"][data-expanded="true"] .bmp-collapse {
-  width: 1.75rem; height: 1.75rem; margin: 0;
+  width: 1.85rem; height: 1.85rem; margin: 0; flex: 0 0 auto;
 }
 .bmp[data-embedded="true"][data-expanded="true"] .bmp-footer {
   display: none !important;
@@ -1366,14 +1367,6 @@ function BlakeNavBar(props: Props) {
                                 <span className="bmp-title">{title}</span>
                                 {artist ? <span className="bmp-artist">{artist}</span> : null}
                             </div>
-                            <button
-                                type="button"
-                                className="bmp-icon-btn bmp-collapse"
-                                aria-label="Collapse"
-                                onClick={() => actions.setExpanded(false)}
-                            >
-                                <ChevronLeftIcon />
-                            </button>
                         </div>
 
                         <div className="bmp-transport">
@@ -1390,6 +1383,15 @@ function BlakeNavBar(props: Props) {
                                 {player.isPlaying ? <PauseBars /> : <PlayTriangle />}
                             </button>
                         </div>
+
+                        <button
+                            type="button"
+                            className="bmp-icon-btn bmp-collapse"
+                            aria-label="Collapse"
+                            onClick={() => actions.setExpanded(false)}
+                        >
+                            <ChevronLeftIcon />
+                        </button>
                     </div>
                 </div>
             </aside>
@@ -1404,7 +1406,7 @@ const NETLIFY_ORIGIN = "https://genuine-cheesecake-75fecc.netlify.app"
 
 BlakeNavBar.defaultProps = {
     apiBaseUrl: NETLIFY_ORIGIN,
-    playlistUrl: "https://open.spotify.com/playlist/5zXp8gIyEeJteiSZj1RTqJ",
+    playlistUrl: "https://open.spotify.com/playlist/5zXp8gIyEeJteiSZj1RTqJ?si=xgbBBcvlRsmrIeklFdc-7A",
     playlistName: "Blake's Playlist",
     surpriseAfter: 4,
     surpriseTrackUrl: "https://open.spotify.com/track/4cOdK2wGLETKBW3PvgPWqT",
@@ -1483,7 +1485,7 @@ addPropertyControls(BlakeNavBar, {
     playlistUrl: {
         type: ControlType.String,
         title: "Playlist URL",
-        defaultValue: "https://open.spotify.com/playlist/5zXp8gIyEeJteiSZj1RTqJ",
+        defaultValue: "https://open.spotify.com/playlist/5zXp8gIyEeJteiSZj1RTqJ?si=xgbBBcvlRsmrIeklFdc-7A",
     },
     playlistName: {
         type: ControlType.String,

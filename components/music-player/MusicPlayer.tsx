@@ -159,20 +159,20 @@ export function MusicPlayer({ embedded = false }: MusicPlayerProps) {
               <span className="mp-title mp-crossfade">{title}</span>
               <span className="mp-artist mp-crossfade">{artist}</span>
             </div>
-            <button
-              type="button"
-              className="mp-icon-btn mp-collapse"
-              aria-label="Collapse music player"
-              onClick={() => playerActions.setExpanded(false)}
-            >
-              {embedded ? (
-                <ChevronLeft size={16} strokeWidth={2} />
-              ) : state.expandDirection === "down" ? (
-                <ChevronUp size={16} strokeWidth={2} />
-              ) : (
-                <ChevronDown size={16} strokeWidth={2} />
-              )}
-            </button>
+            {!embedded ? (
+              <button
+                type="button"
+                className="mp-icon-btn mp-collapse"
+                aria-label="Collapse music player"
+                onClick={() => playerActions.setExpanded(false)}
+              >
+                {state.expandDirection === "down" ? (
+                  <ChevronUp size={16} strokeWidth={2} />
+                ) : (
+                  <ChevronDown size={16} strokeWidth={2} />
+                )}
+              </button>
+            ) : null}
           </div>
 
           <div className="mp-transport">
@@ -232,6 +232,17 @@ export function MusicPlayer({ embedded = false }: MusicPlayerProps) {
               </>
             ) : null}
           </div>
+
+          {embedded ? (
+            <button
+              type="button"
+              className="mp-icon-btn mp-collapse"
+              aria-label="Collapse music player"
+              onClick={() => playerActions.setExpanded(false)}
+            >
+              <ChevronLeft size={16} strokeWidth={2} />
+            </button>
+          ) : null}
 
           {!embedded ? (
             <div className="mp-progress">

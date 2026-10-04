@@ -20,11 +20,11 @@ export const USE_FILLER_PLAYLIST = false;
 
 /** Public Spotify playlist used when USE_FILLER_PLAYLIST is false. */
 export const SPOTIFY_PLAYLIST_URL =
-  "https://open.spotify.com/playlist/5zXp8gIyEeJteiSZj1RTqJ";
+  "https://open.spotify.com/playlist/5zXp8gIyEeJteiSZj1RTqJ?si=xgbBBcvlRsmrIeklFdc-7A";
 
 /** Official Spotify embed for the expanded panel (full tracks). */
 export const SPOTIFY_EMBED_URL =
-  "https://open.spotify.com/embed/playlist/5zXp8gIyEeJteiSZj1RTqJ?utm_source=generator";
+  "https://open.spotify.com/embed/playlist/5zXp8gIyEeJteiSZj1RTqJ?utm_source=generator&si=xgbBBcvlRsmrIeklFdc-7A";
 
 /**
  * After this many playlist songs, insert the surprise track.
