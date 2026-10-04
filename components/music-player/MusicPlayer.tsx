@@ -127,7 +127,7 @@ export function MusicPlayer({ embedded = false }: MusicPlayerProps) {
               playerActions.toggleShuffle();
             }}
           >
-            <Shuffle size={12} strokeWidth={2.75} absoluteStrokeWidth />
+            <Shuffle size={12} strokeWidth={2} />
           </button>
         ) : null}
       </div>
