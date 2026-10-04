@@ -911,13 +911,13 @@ const css = `
 }
 .bn-music {
   pointer-events: auto; position: relative; display: block;
-  flex: 0 0 auto; width: max-content; min-width: 0; max-width: none;
+  flex: 0 0 6.6rem; width: 6.6rem; min-width: 6.6rem; max-width: 6.6rem;
   height: 56px; overflow: visible;
 }
 .bn-music[data-expanded="true"] { z-index: 3; }
 .bmp {
   position: absolute; top: 0; left: 0; z-index: 2;
-  width: max-content; box-sizing: border-box; height: 56px; min-height: 56px; max-height: 56px;
+  width: 6.6rem; box-sizing: border-box; height: 56px; min-height: 56px; max-height: 56px;
   display: flex; flex-direction: column; justify-content: center;
   color: #212324;
   background-color: rgba(250, 249, 246, calc(.52 * var(--pn-elevate)));

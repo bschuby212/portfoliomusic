@@ -83,10 +83,11 @@
   pointer-events: auto;
   position: relative;
   /* Always reserve collapsed footprint — expanded panel overlays, never reflows nav. */
-  flex: 0 0 auto;
-  width: max-content;
-  min-width: 0;
-  max-width: none;
+  /* Tight slot after chevron removal (~note · disc · play). */
+  flex: 0 0 6.6rem;
+  width: 6.6rem;
+  min-width: 6.6rem;
+  max-width: 6.6rem;
   display: flex;
   justify-content: flex-start;
   align-items: flex-start;

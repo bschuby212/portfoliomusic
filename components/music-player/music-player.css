@@ -26,7 +26,7 @@
   bottom: auto;
   z-index: 2;
   flex-shrink: 0;
-  width: max-content;
+  width: 6.6rem;
   box-sizing: border-box;
   height: 56px;
   min-height: 56px;
@@ -347,6 +347,10 @@
   50% {
     box-shadow: 0 0 0 3px rgba(17, 17, 17, 0.08);
   }
+}
+
+.mp[data-embedded="true"]:not([data-expanded="true"]) .mp-expanded {
+  display: none;
 }
 
 .mp-expanded {
