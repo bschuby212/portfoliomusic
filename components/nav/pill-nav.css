@@ -53,25 +53,25 @@
     calc(0.48rem - (var(--pn-elevate) * 0.16rem))
     calc(0.55rem - (var(--pn-elevate) * 0.23rem));
   color: var(--pn-ink);
-  /* Subtle cream underfill (~14%) + light frost gradient. */
-  background-color: rgba(250, 249, 246, calc(0.14 * var(--pn-elevate)));
+  /* Filled frost — readable on #fff, still glass over imagery. */
+  background-color: rgba(250, 249, 246, calc(0.52 * var(--pn-elevate)));
   background-image: linear-gradient(
     155deg,
-    rgba(255, 255, 255, calc(0.48 * var(--pn-elevate))) 0%,
-    rgba(255, 255, 255, calc(0.2 * var(--pn-elevate))) 55%,
-    rgba(255, 255, 255, calc(0.28 * var(--pn-elevate))) 100%
+    rgba(255, 255, 255, calc(0.82 * var(--pn-elevate))) 0%,
+    rgba(255, 255, 255, calc(0.48 * var(--pn-elevate))) 55%,
+    rgba(255, 255, 255, calc(0.64 * var(--pn-elevate))) 100%
   );
-  border: 1px solid rgba(255, 255, 255, calc(0.4 * var(--pn-elevate)));
+  border: 1px solid rgba(0, 0, 0, calc(0.08 * var(--pn-elevate)));
   border-radius: 999px;
   box-shadow:
-    0 1px 0 rgba(255, 255, 255, calc(0.55 * var(--pn-elevate))) inset,
-    0 -1px 0 rgba(255, 255, 255, calc(0.12 * var(--pn-elevate))) inset,
-    0 0 0 0.5px rgba(0, 0, 0, calc(0.03 * var(--pn-elevate))),
-    0 4px 14px rgba(0, 0, 0, calc(0.03 * var(--pn-elevate)));
-  backdrop-filter: blur(calc(var(--pn-elevate) * 48px))
-    saturate(calc(100% + (var(--pn-elevate) * 30%)));
-  -webkit-backdrop-filter: blur(calc(var(--pn-elevate) * 48px))
-    saturate(calc(100% + (var(--pn-elevate) * 30%)));
+    0 1px 0 rgba(255, 255, 255, calc(0.75 * var(--pn-elevate))) inset,
+    0 -1px 0 rgba(255, 255, 255, calc(0.2 * var(--pn-elevate))) inset,
+    0 0 0 0.5px rgba(0, 0, 0, calc(0.04 * var(--pn-elevate))),
+    0 8px 24px rgba(0, 0, 0, calc(0.08 * var(--pn-elevate)));
+  backdrop-filter: blur(calc(var(--pn-elevate) * 64px))
+    saturate(calc(100% + (var(--pn-elevate) * 50%)));
+  -webkit-backdrop-filter: blur(calc(var(--pn-elevate) * 64px))
+    saturate(calc(100% + (var(--pn-elevate) * 50%)));
   isolation: isolate;
 }
 
@@ -97,41 +97,41 @@
 
 /* Embedded music pill inherits glass elevate from .pn-root */
 .pn-root .mp[data-embedded="true"] {
-  background-color: rgba(250, 249, 246, calc(0.14 * var(--pn-elevate)));
+  background-color: rgba(250, 249, 246, calc(0.52 * var(--pn-elevate)));
   background-image: linear-gradient(
     155deg,
-    rgba(255, 255, 255, calc(0.48 * var(--pn-elevate))) 0%,
-    rgba(255, 255, 255, calc(0.2 * var(--pn-elevate))) 55%,
-    rgba(255, 255, 255, calc(0.28 * var(--pn-elevate))) 100%
+    rgba(255, 255, 255, calc(0.82 * var(--pn-elevate))) 0%,
+    rgba(255, 255, 255, calc(0.48 * var(--pn-elevate))) 55%,
+    rgba(255, 255, 255, calc(0.64 * var(--pn-elevate))) 100%
   );
-  border-color: rgba(255, 255, 255, calc(0.4 * var(--pn-elevate)));
+  border-color: rgba(0, 0, 0, calc(0.08 * var(--pn-elevate)));
   box-shadow:
-    0 1px 0 rgba(255, 255, 255, calc(0.55 * var(--pn-elevate))) inset,
-    0 -1px 0 rgba(255, 255, 255, calc(0.12 * var(--pn-elevate))) inset,
-    0 0 0 0.5px rgba(0, 0, 0, calc(0.03 * var(--pn-elevate))),
-    0 4px 14px rgba(0, 0, 0, calc(0.03 * var(--pn-elevate)));
-  backdrop-filter: blur(calc(var(--pn-elevate) * 48px))
-    saturate(calc(100% + (var(--pn-elevate) * 30%)));
-  -webkit-backdrop-filter: blur(calc(var(--pn-elevate) * 48px))
-    saturate(calc(100% + (var(--pn-elevate) * 30%)));
+    0 1px 0 rgba(255, 255, 255, calc(0.75 * var(--pn-elevate))) inset,
+    0 -1px 0 rgba(255, 255, 255, calc(0.2 * var(--pn-elevate))) inset,
+    0 0 0 0.5px rgba(0, 0, 0, calc(0.04 * var(--pn-elevate))),
+    0 8px 24px rgba(0, 0, 0, calc(0.08 * var(--pn-elevate)));
+  backdrop-filter: blur(calc(var(--pn-elevate) * 64px))
+    saturate(calc(100% + (var(--pn-elevate) * 50%)));
+  -webkit-backdrop-filter: blur(calc(var(--pn-elevate) * 64px))
+    saturate(calc(100% + (var(--pn-elevate) * 50%)));
 }
 
 /* Expanded music gets its own panel surface — never tied to nav elevate morph. */
 .pn-root .mp[data-embedded="true"][data-expanded="true"] {
-  background-color: rgba(250, 249, 246, 0.55);
+  background-color: rgba(250, 249, 246, 0.82);
   background-image: linear-gradient(
     160deg,
-    rgba(255, 255, 255, 0.48) 0%,
-    rgba(255, 255, 255, 0.28) 100%
+    rgba(255, 255, 255, 0.9) 0%,
+    rgba(255, 255, 255, 0.72) 100%
   );
-  border-color: rgba(255, 255, 255, 0.4);
+  border-color: rgba(0, 0, 0, 0.08);
   box-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.5) inset,
-    0 -1px 0 rgba(255, 255, 255, 0.12) inset,
-    0 0 0 0.5px rgba(0, 0, 0, 0.03),
-    0 4px 14px rgba(0, 0, 0, 0.03);
-  backdrop-filter: blur(48px) saturate(130%);
-  -webkit-backdrop-filter: blur(48px) saturate(130%);
+    0 1px 0 rgba(255, 255, 255, 0.78) inset,
+    0 -1px 0 rgba(255, 255, 255, 0.18) inset,
+    0 0 0 0.5px rgba(0, 0, 0, 0.04),
+    0 10px 28px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(64px) saturate(150%);
+  -webkit-backdrop-filter: blur(64px) saturate(150%);
 }
 
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {

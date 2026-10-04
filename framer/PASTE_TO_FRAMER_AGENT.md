@@ -19,7 +19,7 @@ Delete any old BlakeNavBar / music nav code component first. Then install this o
    - Email = `blakeschubertux@gmail.com`
 8. Remove any Netlify `/embed` iframe for this nav (don’t run both).
 9. Confirm:
-   - Subtle glass pills (light underfill / ~48px blur — not chalky)
+   - Filled glass pills readable on white (cream fill + soft dark edge + lift shadow)
    - LinkedIn/mail/resume are SVG icons (not emoji)
    - Collapsed chevron points → ; expanded collapse points ←
    - Expanded card: art + title/artist · shuffle + play only (no progress / skip / volume)
@@ -28,5 +28,5 @@ Delete any old BlakeNavBar / music nav code component first. Then install this o
 ## Done when
 - BlakeNavBar code file exists with the genuine-cheesecake defaults
 - One 720×56 Fixed instance, Overflow Visible
-- Short expand card works; glass looks light
+- Short expand card works; glass reads as a filled pill on #fff
 - Screenshot if you can

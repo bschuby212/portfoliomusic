@@ -38,12 +38,12 @@ STEPS:
 VISUAL TOKENS (already baked into the file — do not change):
 - Ink / text: #212324
 - Muted: #6a6a6a
-- Elevated underfill: #FAF9F6 @ 14%
-- Elevated gradient 155°: white 48% → 20% → 28%
-- Border: white 40%, 1px
+- Elevated underfill: #FAF9F6 @ 52%
+- Elevated gradient 155°: white 82% → 48% → 64%
+- Border: black 8%, 1px (reads on #fff)
 - Radius: 999 (pill)
-- Backdrop blur: 48px, saturate 130%
-- Shadow: black 3%, Y 4, Blur 14
+- Backdrop blur: 64px, saturate 150%
+- Shadow: black 8%, Y 8, Blur 24
 - Always-on glass pill (no scroll morph — archived on cursor/scroll-elevate-archive-653c)
 
 DONE WHEN:
@@ -68,21 +68,21 @@ Icons:           #212324 @ 55% → 88% elevated
 
 ### Elevated glass pill
 ```
-Underfill:       #FAF9F6 @ 14%
+Underfill:       #FAF9F6 @ 52%
 Gradient:        155°
-  0%:            #FFFFFF @ 48%
-  55%:           #FFFFFF @ 20%
-  100%:          #FFFFFF @ 28%
-Border:          #FFFFFF @ 40%, 1px
+  0%:            #FFFFFF @ 82%
+  55%:           #FFFFFF @ 48%
+  100%:          #FFFFFF @ 64%
+Border:          black @ 8%, 1px
 Radius:          999
-Background Blur: 48
-Saturate:        130%
-Shadow:          black 3%, X 0, Y 4, Blur 14, Spread 0
+Background Blur: 64
+Saturate:        150%
+Shadow:          black 8%, X 0, Y 8, Blur 24, Spread 0
 ```
 
 ### Expanded music panel
 ```
-Underfill:       #FAF9F6 @ ~55% when open
+Underfill:       #FAF9F6 @ ~82% when open
 Radius:          21px (1.3rem)
 Content:         art + title/artist · shuffle + play · collapse ←
                  (no progress, skip, or volume)
@@ -121,38 +121,38 @@ Resume:          https://genuine-cheesecake-75fecc.netlify.app/Blake_Schubert_Pr
 
 ```css
 color: #212324;
-background-color: rgba(250, 249, 246, 0.14);
+background-color: rgba(250, 249, 246, 0.52);
 background-image: linear-gradient(
   155deg,
-  rgba(255, 255, 255, 0.48) 0%,
-  rgba(255, 255, 255, 0.2) 55%,
-  rgba(255, 255, 255, 0.28) 100%
+  rgba(255, 255, 255, 0.82) 0%,
+  rgba(255, 255, 255, 0.48) 55%,
+  rgba(255, 255, 255, 0.64) 100%
 );
-border: 1px solid rgba(255, 255, 255, 0.4);
+border: 1px solid rgba(0, 0, 0, 0.08);
 border-radius: 999px;
 box-shadow:
-  0 1px 0 rgba(255, 255, 255, 0.55) inset,
-  0 -1px 0 rgba(255, 255, 255, 0.12) inset,
-  0 0 0 0.5px rgba(0, 0, 0, 0.03),
-  0 4px 14px rgba(0, 0, 0, 0.03);
-backdrop-filter: blur(48px) saturate(130%);
--webkit-backdrop-filter: blur(48px) saturate(130%);
+  0 1px 0 rgba(255, 255, 255, 0.75) inset,
+  0 -1px 0 rgba(255, 255, 255, 0.2) inset,
+  0 0 0 0.5px rgba(0, 0, 0, 0.04),
+  0 8px 24px rgba(0, 0, 0, 0.08);
+backdrop-filter: blur(64px) saturate(150%);
+-webkit-backdrop-filter: blur(64px) saturate(150%);
 ```
 
 ### Elevate-scaled (0 → 1)
 
 ```css
 color: #212324;
-background-color: rgba(250, 249, 246, calc(0.14 * var(--pn-elevate)));
+background-color: rgba(250, 249, 246, calc(0.52 * var(--pn-elevate)));
 background-image: linear-gradient(
   155deg,
-  rgba(255, 255, 255, calc(0.48 * var(--pn-elevate))) 0%,
-  rgba(255, 255, 255, calc(0.2 * var(--pn-elevate))) 55%,
-  rgba(255, 255, 255, calc(0.28 * var(--pn-elevate))) 100%
+  rgba(255, 255, 255, calc(0.82 * var(--pn-elevate))) 0%,
+  rgba(255, 255, 255, calc(0.48 * var(--pn-elevate))) 55%,
+  rgba(255, 255, 255, calc(0.64 * var(--pn-elevate))) 100%
 );
-border: 1px solid rgba(255, 255, 255, calc(0.4 * var(--pn-elevate)));
-backdrop-filter: blur(calc(var(--pn-elevate) * 48px)) saturate(calc(100% + (var(--pn-elevate) * 30%)));
--webkit-backdrop-filter: blur(calc(var(--pn-elevate) * 48px)) saturate(calc(100% + (var(--pn-elevate) * 30%)));
+border: 1px solid rgba(0, 0, 0, calc(0.08 * var(--pn-elevate)));
+backdrop-filter: blur(calc(var(--pn-elevate) * 64px)) saturate(calc(100% + (var(--pn-elevate) * 50%)));
+-webkit-backdrop-filter: blur(calc(var(--pn-elevate) * 64px)) saturate(calc(100% + (var(--pn-elevate) * 50%)));
 ```
 
 

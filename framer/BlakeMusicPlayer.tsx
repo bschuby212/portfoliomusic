@@ -895,13 +895,13 @@ const css = `
     calc(.48rem - (var(--pn-elevate) * .16rem))
     calc(.55rem - (var(--pn-elevate) * .23rem));
   color: var(--ink);
-  background-color: rgba(250, 249, 246, calc(.14 * var(--pn-elevate)));
-  background-image: linear-gradient(155deg, rgba(255,255,255,calc(.48 * var(--pn-elevate))) 0%, rgba(255,255,255,calc(.2 * var(--pn-elevate))) 55%, rgba(255,255,255,calc(.28 * var(--pn-elevate))) 100%);
-  border: 1px solid rgba(255,255,255,calc(.4 * var(--pn-elevate)));
+  background-color: rgba(250, 249, 246, calc(.52 * var(--pn-elevate)));
+  background-image: linear-gradient(155deg, rgba(255,255,255,calc(.82 * var(--pn-elevate))) 0%, rgba(255,255,255,calc(.48 * var(--pn-elevate))) 55%, rgba(255,255,255,calc(.64 * var(--pn-elevate))) 100%);
+  border: 1px solid rgba(0,0,0,calc(.08 * var(--pn-elevate)));
   border-radius: 999px;
-  box-shadow: 0 1px 0 rgba(255,255,255,calc(.55 * var(--pn-elevate))) inset, 0 -1px 0 rgba(255,255,255,calc(.12 * var(--pn-elevate))) inset, 0 0 0 .5px rgba(0,0,0,calc(.03 * var(--pn-elevate))), 0 4px 14px rgba(0,0,0,calc(.03 * var(--pn-elevate)));
-  backdrop-filter: blur(calc(var(--pn-elevate) * 48px)) saturate(calc(100% + (var(--pn-elevate) * 30%)));
-  -webkit-backdrop-filter: blur(calc(var(--pn-elevate) * 48px)) saturate(calc(100% + (var(--pn-elevate) * 30%)));
+  box-shadow: 0 1px 0 rgba(255,255,255,calc(.75 * var(--pn-elevate))) inset, 0 -1px 0 rgba(255,255,255,calc(.2 * var(--pn-elevate))) inset, 0 0 0 .5px rgba(0,0,0,calc(.04 * var(--pn-elevate))), 0 8px 24px rgba(0,0,0,calc(.08 * var(--pn-elevate)));
+  backdrop-filter: blur(calc(var(--pn-elevate) * 64px)) saturate(calc(100% + (var(--pn-elevate) * 50%)));
+  -webkit-backdrop-filter: blur(calc(var(--pn-elevate) * 64px)) saturate(calc(100% + (var(--pn-elevate) * 50%)));
   isolation: isolate; overflow: visible;
 }
 .bn-links {
@@ -919,28 +919,28 @@ const css = `
   width: 9.2rem; min-height: 3.4rem;
   display: flex; flex-direction: column; justify-content: center;
   color: #212324;
-  background-color: rgba(250, 249, 246, calc(.14 * var(--pn-elevate)));
-  background-image: linear-gradient(155deg, rgba(255,255,255,calc(.48 * var(--pn-elevate))) 0%, rgba(255,255,255,calc(.2 * var(--pn-elevate))) 55%, rgba(255,255,255,calc(.28 * var(--pn-elevate))) 100%);
-  border: 1px solid rgba(255,255,255,calc(.4 * var(--pn-elevate)));
+  background-color: rgba(250, 249, 246, calc(.52 * var(--pn-elevate)));
+  background-image: linear-gradient(155deg, rgba(255,255,255,calc(.82 * var(--pn-elevate))) 0%, rgba(255,255,255,calc(.48 * var(--pn-elevate))) 55%, rgba(255,255,255,calc(.64 * var(--pn-elevate))) 100%);
+  border: 1px solid rgba(0,0,0,calc(.08 * var(--pn-elevate)));
   border-radius: 999px; overflow: hidden;
-  box-shadow: 0 1px 0 rgba(255,255,255,calc(.55 * var(--pn-elevate))) inset, 0 -1px 0 rgba(255,255,255,calc(.12 * var(--pn-elevate))) inset, 0 0 0 .5px rgba(0,0,0,calc(.03 * var(--pn-elevate))), 0 4px 14px rgba(0,0,0,calc(.03 * var(--pn-elevate)));
-  backdrop-filter: blur(calc(var(--pn-elevate) * 48px)) saturate(calc(100% + (var(--pn-elevate) * 30%)));
-  -webkit-backdrop-filter: blur(calc(var(--pn-elevate) * 48px)) saturate(calc(100% + (var(--pn-elevate) * 30%)));
+  box-shadow: 0 1px 0 rgba(255,255,255,calc(.75 * var(--pn-elevate))) inset, 0 -1px 0 rgba(255,255,255,calc(.2 * var(--pn-elevate))) inset, 0 0 0 .5px rgba(0,0,0,calc(.04 * var(--pn-elevate))), 0 8px 24px rgba(0,0,0,calc(.08 * var(--pn-elevate)));
+  backdrop-filter: blur(calc(var(--pn-elevate) * 64px)) saturate(calc(100% + (var(--pn-elevate) * 50%)));
+  -webkit-backdrop-filter: blur(calc(var(--pn-elevate) * 64px)) saturate(calc(100% + (var(--pn-elevate) * 50%)));
   transform-origin: top left; isolation: isolate;
   transition: width .42s var(--ease), min-height .42s var(--ease), border-radius .42s var(--ease), box-shadow .42s ease, background .3s ease;
 }
 .bmp[data-embedded="true"][data-expanded="true"] {
-  /* Short vertical card from the music slot — art + meta + shuffle/play + volume. */
+  /* Short vertical card from the music slot — art + meta + shuffle/play. */
   position: absolute; top: 0; left: 0; z-index: 5;
   width: min(16.5rem, calc(100vw - 2rem)); max-width: 16.5rem;
   height: auto; min-height: 0; max-height: none;
   border-radius: 1.3rem; overflow: hidden;
-  background-color: rgba(250, 249, 246, .55);
-  background-image: linear-gradient(160deg, rgba(255,255,255,.48) 0%, rgba(255,255,255,.28) 100%);
-  border-color: rgba(255,255,255,.4);
-  box-shadow: 0 1px 0 rgba(255,255,255,.5) inset, 0 -1px 0 rgba(255,255,255,.12) inset, 0 0 0 .5px rgba(0,0,0,.03), 0 4px 14px rgba(0,0,0,.03);
-  backdrop-filter: blur(48px) saturate(130%);
-  -webkit-backdrop-filter: blur(48px) saturate(130%);
+  background-color: rgba(250, 249, 246, .82);
+  background-image: linear-gradient(160deg, rgba(255,255,255,.9) 0%, rgba(255,255,255,.72) 100%);
+  border-color: rgba(0,0,0,.08);
+  box-shadow: 0 1px 0 rgba(255,255,255,.78) inset, 0 -1px 0 rgba(255,255,255,.18) inset, 0 0 0 .5px rgba(0,0,0,.04), 0 10px 28px rgba(0,0,0,.1);
+  backdrop-filter: blur(64px) saturate(150%);
+  -webkit-backdrop-filter: blur(64px) saturate(150%);
 }
 .bmp[data-embedded="true"][data-expanded="true"] .bmp-expanded {
   display: block; height: auto;
