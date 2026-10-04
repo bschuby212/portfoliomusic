@@ -87,15 +87,18 @@ export function MusicPlayer({ embedded = false }: MusicPlayerProps) {
         <span className="mp-icon-btn" aria-hidden="true">
           <Music2 size={15} strokeWidth={2} />
         </span>
-        <span className="mp-disc" aria-hidden="true">
-          {track?.metadata?.artworkUrl ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={track.metadata.artworkUrl} alt="" />
-          ) : (
-            <span className="mp-disc-fallback">
-              <Music2 size={11} strokeWidth={2} />
-            </span>
-          )}
+        {/* Shell keeps the ring circular while the inner disc spins. */}
+        <span className="mp-disc-shell" aria-hidden="true">
+          <span className="mp-disc">
+            {track?.metadata?.artworkUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={track.metadata.artworkUrl} alt="" />
+            ) : (
+              <span className="mp-disc-fallback">
+                <Music2 size={11} strokeWidth={2} />
+              </span>
+            )}
+          </span>
         </span>
         <button
           type="button"
@@ -113,6 +116,20 @@ export function MusicPlayer({ embedded = false }: MusicPlayerProps) {
             <Play size={13} strokeWidth={0} fill="currentColor" absoluteStrokeWidth />
           )}
         </button>
+        {state.isPlaying ? (
+          <button
+            type="button"
+            className="mp-icon-btn mp-collapsed-shuffle"
+            aria-label="Reshuffle playlist"
+            title="Reshuffle"
+            onClick={(event) => {
+              event.stopPropagation();
+              playerActions.toggleShuffle();
+            }}
+          >
+            <Shuffle size={14} strokeWidth={2} />
+          </button>
+        ) : null}
       </div>
 
       <div className="mp-expanded">
@@ -182,8 +199,6 @@ export function MusicPlayer({ embedded = false }: MusicPlayerProps) {
               className="mp-ctrl mp-ctrl-shuffle"
               aria-label="Reshuffle playlist"
               title="Reshuffle"
-              aria-pressed={state.shuffle}
-              data-active={state.shuffle}
               onClick={(event) => {
                 event.stopPropagation();
                 playerActions.toggleShuffle();

@@ -100,6 +100,14 @@
   z-index: 3;
 }
 
+/* Collapsed playing: reserve width for the right-side shuffle control. */
+.pn-music[data-playing="true"]:not([data-expanded="true"]) {
+  flex: 0 0 8.1rem;
+  width: 8.1rem;
+  min-width: 8.1rem;
+  max-width: 8.1rem;
+}
+
 /* Embedded music pill inherits glass elevate from .pn-root */
 .pn-root .mp[data-embedded="true"] {
   background-color: rgba(250, 249, 246, calc(0.52 * var(--pn-elevate)));

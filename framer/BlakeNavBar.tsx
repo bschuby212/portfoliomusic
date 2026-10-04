@@ -1105,9 +1105,10 @@ const css = `
 
 .bmp-collapsed {
   display: flex; align-items: center; gap: .35rem;
-  height: 2.5rem; padding: 0 .3rem 0 .55rem; cursor: pointer;
+  height: 100%; min-height: 56px; padding: 0 .55rem; cursor: pointer; box-sizing: border-box;
 }
 .bmp[data-expanded="true"] .bmp-collapsed { display: none; }
+.bmp[data-playing="true"]:not([data-expanded="true"]) { width: 8.1rem; }
 .bmp-icon { width: 1.75rem; text-align: center; font-size: 14px; }
 .bmp-icon-btn, .bmp-ctrl {
   border: 0; background: transparent; cursor: pointer; border-radius: 999px;
@@ -1117,11 +1118,16 @@ const css = `
 .bmp-ctrl { width: 2.5rem; height: 2.5rem; font-size: 13px; }
 .bmp-play { background: #111 !important; color: #fff !important; }
 .bmp-ctrl[data-active="true"] { background: rgba(0,0,0,.06); }
-.bmp-disc {
+.bmp-disc-shell {
   position: relative; width: 1.45rem; height: 1.45rem; flex-shrink: 0;
-  border-radius: 50%; overflow: hidden; background: #f0efec;
-  box-shadow: 0 0 0 1px rgba(0,0,0,.1);
+  border-radius: 50%; box-shadow: 0 0 0 1px rgba(0,0,0,.1);
 }
+.bmp-disc {
+  position: relative; width: 100%; height: 100%;
+  border-radius: 50%; overflow: hidden; background: #f0efec;
+}
+.bmp-collapsed-shuffle { color: #212324; }
+.bmp-collapsed-shuffle:hover { background: rgba(0,0,0,.06); }
 .bmp-disc::after {
   content: ""; position: absolute; inset: 50%; width: .28rem; height: .28rem;
   margin: -.14rem 0 0 -.14rem; border-radius: 50%; background: #fff;
@@ -1350,12 +1356,14 @@ function BlakeNavBar(props: Props) {
                     <span className="bmp-icon" aria-hidden="true">
                         <NoteIcon />
                     </span>
-                    <span className="bmp-disc" aria-hidden="true">
-                        {track?.metadata?.artworkUrl ? (
-                            <img src={track.metadata.artworkUrl} alt="" />
-                        ) : (
-                            <span className="bmp-disc-fallback"><NoteIcon /></span>
-                        )}
+                    <span className="bmp-disc-shell" aria-hidden="true">
+                        <span className="bmp-disc">
+                            {track?.metadata?.artworkUrl ? (
+                                <img src={track.metadata.artworkUrl} alt="" />
+                            ) : (
+                                <span className="bmp-disc-fallback"><NoteIcon /></span>
+                            )}
+                        </span>
                     </span>
                     <button
                         type="button"
@@ -1369,6 +1377,20 @@ function BlakeNavBar(props: Props) {
                     >
                         {player.isPlaying ? <PauseBars /> : <PlayTriangle />}
                     </button>
+                    {player.isPlaying ? (
+                        <button
+                            type="button"
+                            className="bmp-icon-btn bmp-collapsed-shuffle"
+                            aria-label="Reshuffle playlist"
+                            title="Reshuffle"
+                            onClick={(event) => {
+                                event.stopPropagation()
+                                actions.toggleShuffle(props.apiBaseUrl)
+                            }}
+                        >
+                            <ShuffleIcon />
+                        </button>
+                    ) : null}
                 </div>
 
                 <div className="bmp-expanded">
@@ -1400,7 +1422,7 @@ function BlakeNavBar(props: Props) {
                         </div>
 
                         <div className="bmp-transport">
-                            <button type="button" className="bmp-ctrl" aria-label="Reshuffle playlist" data-active={player.shuffle} onClick={() => actions.toggleShuffle(props.apiBaseUrl)}>
+                            <button type="button" className="bmp-ctrl" aria-label="Reshuffle playlist" onClick={() => actions.toggleShuffle(props.apiBaseUrl)}>
                                 <ShuffleIcon />
                             </button>
                             <button
