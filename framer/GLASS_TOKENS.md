@@ -1,40 +1,42 @@
 # Glass Optic — Framer remake stats
 
-Frosted glass with a subtle cream underfill for readability.
+Subtle frosted glass with a light cream underfill.
 Top-of-page state: **no fill / no blur / no border** (`elevate = 0`).
 
 ## Elevated pill (nav + music)
 
 | Token | Value | Framer |
 | --- | --- | --- |
-| Underfill | cream `#FAF9F6` @ **35%** | Fill opacity **35** (scales with elevate) |
+| Underfill | cream `#FAF9F6` @ **14%** | Fill opacity **14** (scales with elevate) |
 | Gradient | 155° over underfill | Linear gradient |
-| Stop 0% | white @ **100%** | opacity **100** |
-| Stop 55% | white @ **54%** | opacity **54** |
-| Stop 100% | white @ **76%** | opacity **76** |
-| Border | white @ **100%**, **1px** | |
+| Stop 0% | white @ **48%** | opacity **48** |
+| Stop 55% | white @ **20%** | opacity **20** |
+| Stop 100% | white @ **28%** | opacity **28** |
+| Border | white @ **40%**, **1px** | |
 | Radius | **999** (full pill) | |
-| Backdrop blur | **132px** | Background Blur **132** |
-| Saturate | **190%** | if available |
-| Drop shadow | black **7%**, `0 10px 28px` | Y **10**, Blur **28**, Op **7** |
+| Backdrop blur | **48px** | Background Blur **48** |
+| Saturate | **130%** | if available |
+| Drop shadow | black **3%**, `0 4px 14px` | Y **4**, Blur **14**, Op **3** |
 
 ### Expanded music panel
 
 | Token | Value |
 | --- | --- |
-| Underfill | cream `#FAF9F6` @ **35%** |
-| Gradient | 160° · white **100% → 76%** |
-| Border | white **100%** |
+| Underfill | cream `#FAF9F6` @ **55%** |
+| Gradient | 160° · white **48% → 28%** |
+| Border | white **40%** |
 | Radius | **1.3rem** (~21px) |
+| Content | art + title/artist · shuffle + play · collapse ← (no progress / skip / volume) |
 
-## Compared to original glass
+## Compared to previous heavy glass
 
-| | Original | Now |
+| | Previous | Now |
 | --- | --- | --- |
-| Underfill | none | **cream 35%** |
-| Gradient | 42 / 14 / 22 | **100 / 54 / 76** |
-| Border | 55% | **100%** |
-| Blur | 40px | **132px** |
+| Underfill | cream 35% | **cream 14%** |
+| Gradient | 100 / 54 / 76 | **48 / 20 / 28** |
+| Border | 100% | **40%** |
+| Blur | 118–132px | **48px** |
+| Saturate | 180–190% | **130%** |
 
 ## Layout
 
@@ -42,4 +44,4 @@ Top-of-page state: **no fill / no blur / no border** (`elevate = 0`).
 | --- | --- |
 | Frame | **720 × 56**, Overflow **Visible** |
 | Gap nav ↔ music | **16px** |
-| Scroll morph | **36 → 168px** |
+| Scroll morph | archived — always-on glass |

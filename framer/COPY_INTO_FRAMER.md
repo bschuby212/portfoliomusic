@@ -23,25 +23,27 @@ STEPS:
 6. Frame size: FIXED 720 × 56 (not fill, not hug).
 7. Layer Overflow = Visible. Scroll = off. No clipping parent.
 8. Music player expands outside the 720×56 shell on purpose — must stay visible (no scrollbars).
-9. Collapsed music pill (~9.2rem): note · spinning disc · play/pause · chevron. Expanded: custom transport UI (scrub + volume), not a Spotify iframe. No playlist name chrome.
-10. Keep apiBaseUrl = https://blake-music-player.netlify.app (playlist + preview API).
-11. Keep these default link props:
+9. Collapsed music pill (~9.2rem): note · spinning disc · play/pause · chevron →. Expanded: short card (art + title/artist · shuffle + play · collapse ←). No progress, skip, or volume.
+10. Keep apiBaseUrl = https://genuine-cheesecake-75fecc.netlify.app (playlist + preview API).
+11. Keep these default link / asset props (absolute URLs only — relative paths break in Framer):
    - Home: https://blakeschubert.com/
    - About: https://blakeschubert.com/about
    - Work: https://blakeschubert.com/#all-campus
    - Why I'm looking: https://blakeschubert.com/#why-im-looking
    - Email: blakeschubertux@gmail.com (mailto)
-   - Resume: Netlify PDF download
+   - LinkedIn: https://www.linkedin.com/in/blake-schubert/
+   - Logo: https://genuine-cheesecake-75fecc.netlify.app/avatar.png
+   - Resume: https://genuine-cheesecake-75fecc.netlify.app/Blake_Schubert_Product_Designer_Resume_2026.pdf
 
 VISUAL TOKENS (already baked into the file — do not change):
 - Ink / text: #212324
 - Muted: #6a6a6a
-- Elevated underfill: #FAF9F6 @ 35%
-- Elevated gradient 155°: white 100% → 54% → 76%
-- Border: white 100%, 1px
+- Elevated underfill: #FAF9F6 @ 14%
+- Elevated gradient 155°: white 48% → 20% → 28%
+- Border: white 40%, 1px
 - Radius: 999 (pill)
-- Backdrop blur: 132px, saturate 190%
-- Shadow: black 7%, Y 10, Blur 28
+- Backdrop blur: 48px, saturate 130%
+- Shadow: black 3%, Y 4, Blur 14
 - Always-on glass pill (no scroll morph — archived on cursor/scroll-elevate-archive-653c)
 
 DONE WHEN:
@@ -66,30 +68,31 @@ Icons:           #212324 @ 55% → 88% elevated
 
 ### Elevated glass pill
 ```
-Underfill:       #FAF9F6 @ 35%
+Underfill:       #FAF9F6 @ 14%
 Gradient:        155°
-  0%:            #FFFFFF @ 100%
-  55%:           #FFFFFF @ 54%
-  100%:          #FFFFFF @ 76%
-Border:          #FFFFFF @ 100%, 1px
+  0%:            #FFFFFF @ 48%
+  55%:           #FFFFFF @ 20%
+  100%:          #FFFFFF @ 28%
+Border:          #FFFFFF @ 40%, 1px
 Radius:          999
-Background Blur: 132
-Saturate:        190%
-Shadow:          black 7%, X 0, Y 10, Blur 28, Spread 0
+Background Blur: 48
+Saturate:        130%
+Shadow:          black 3%, X 0, Y 4, Blur 14, Spread 0
 ```
 
 ### Expanded music panel
 ```
-Underfill:       #FAF9F6 @ ~92% when open
-Radius:          21px
-Content:         Custom player (shuffle / prev / play / next / repeat + scrub + volume)
+Underfill:       #FAF9F6 @ ~55% when open
+Radius:          21px (1.3rem)
+Content:         art + title/artist · shuffle + play · collapse ←
+                 (no progress, skip, or volume)
 Audio:           ~30s previews via Netlify API (Spotify playlist + Deezer/iTunes preview)
 ```
 
 ### Collapsed music pill
 ```
 Width:           ~9.2rem
-Controls:        note · disc · play/pause · expand chevron
+Controls:        note · disc · play/pause · expand chevron →
 ```
 
 ### Layout
@@ -108,7 +111,9 @@ Work:            https://blakeschubert.com/#all-campus
 Why I'm looking: https://blakeschubert.com/#why-im-looking
 Email:           mailto:blakeschubertux@gmail.com
 Resume:          Blake Schubert Product Designer Resume 2026.pdf (via Netlify)
-API base:        https://blake-music-player.netlify.app
+API base:        https://genuine-cheesecake-75fecc.netlify.app
+Logo:            https://genuine-cheesecake-75fecc.netlify.app/avatar.png
+Resume:          https://genuine-cheesecake-75fecc.netlify.app/Blake_Schubert_Product_Designer_Resume_2026.pdf
 ```
 
 
@@ -116,46 +121,46 @@ API base:        https://blake-music-player.netlify.app
 
 ```css
 color: #212324;
-background-color: rgba(250, 249, 246, 0.35);
+background-color: rgba(250, 249, 246, 0.14);
 background-image: linear-gradient(
   155deg,
-  rgba(255, 255, 255, 1) 0%,
-  rgba(255, 255, 255, 0.54) 55%,
-  rgba(255, 255, 255, 0.76) 100%
+  rgba(255, 255, 255, 0.48) 0%,
+  rgba(255, 255, 255, 0.2) 55%,
+  rgba(255, 255, 255, 0.28) 100%
 );
-border: 1px solid rgba(255, 255, 255, 1);
+border: 1px solid rgba(255, 255, 255, 0.4);
 border-radius: 999px;
 box-shadow:
-  0 1px 0 rgba(255, 255, 255, 0.8) inset,
-  0 -1px 0 rgba(255, 255, 255, 0.22) inset,
-  0 0 0 0.5px rgba(0, 0, 0, 0.045),
-  0 10px 28px rgba(0, 0, 0, 0.07);
-backdrop-filter: blur(132px) saturate(190%);
--webkit-backdrop-filter: blur(132px) saturate(190%);
+  0 1px 0 rgba(255, 255, 255, 0.55) inset,
+  0 -1px 0 rgba(255, 255, 255, 0.12) inset,
+  0 0 0 0.5px rgba(0, 0, 0, 0.03),
+  0 4px 14px rgba(0, 0, 0, 0.03);
+backdrop-filter: blur(48px) saturate(130%);
+-webkit-backdrop-filter: blur(48px) saturate(130%);
 ```
 
-### Scroll-driven (0 → 1)
+### Elevate-scaled (0 → 1)
 
 ```css
 color: #212324;
-background-color: rgba(250, 249, 246, calc(0.35 * var(--pn-elevate)));
+background-color: rgba(250, 249, 246, calc(0.14 * var(--pn-elevate)));
 background-image: linear-gradient(
   155deg,
-  rgba(255, 255, 255, calc(1 * var(--pn-elevate))) 0%,
-  rgba(255, 255, 255, calc(0.54 * var(--pn-elevate))) 55%,
-  rgba(255, 255, 255, calc(0.76 * var(--pn-elevate))) 100%
+  rgba(255, 255, 255, calc(0.48 * var(--pn-elevate))) 0%,
+  rgba(255, 255, 255, calc(0.2 * var(--pn-elevate))) 55%,
+  rgba(255, 255, 255, calc(0.28 * var(--pn-elevate))) 100%
 );
-border: 1px solid rgba(255, 255, 255, calc(1 * var(--pn-elevate)));
-backdrop-filter: blur(calc(var(--pn-elevate) * 132px)) saturate(calc(100% + (var(--pn-elevate) * 90%)));
--webkit-backdrop-filter: blur(calc(var(--pn-elevate) * 132px)) saturate(calc(100% + (var(--pn-elevate) * 90%)));
+border: 1px solid rgba(255, 255, 255, calc(0.4 * var(--pn-elevate)));
+backdrop-filter: blur(calc(var(--pn-elevate) * 48px)) saturate(calc(100% + (var(--pn-elevate) * 30%)));
+-webkit-backdrop-filter: blur(calc(var(--pn-elevate) * 48px)) saturate(calc(100% + (var(--pn-elevate) * 30%)));
 ```
 
 
 ## 4) Full component source
 
 Repo path: `framer/BlakeMusicPlayer.tsx`  
-Branch: `main`  
-Raw: https://raw.githubusercontent.com/bschuby212/portfoliomusic/main/framer/BlakeMusicPlayer.tsx
+Branch: `cursor/embed-expand-right-653c`  
+Raw: https://raw.githubusercontent.com/bschuby212/portfoliomusic/cursor/embed-expand-right-653c/framer/BlakeMusicPlayer.tsx
 
 ## H) Expanded player
 
@@ -201,4 +206,4 @@ Paste this **Embed → HTML** in Framer (do NOT set the Framer layer to 240px):
 Keep Netlify for:
 - `GET /api/spotify` + `/api/spotify/playlist`
 - Resume PDF + avatar assets
-- `apiBaseUrl` default: `https://blake-music-player.netlify.app`
+- `apiBaseUrl` / avatar / resume defaults: `https://genuine-cheesecake-75fecc.netlify.app`
