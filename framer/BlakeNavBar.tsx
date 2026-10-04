@@ -1121,16 +1121,12 @@ const css = `
 .bmp-ctrl[data-active="true"] { background: rgba(0,0,0,.06); }
 .bmp-disc-shell {
   position: relative; display: block; width: 1.45rem; height: 1.45rem; flex-shrink: 0;
-  border-radius: 999px; overflow: hidden;
-  clip-path: circle(50% at 50% 50%); -webkit-clip-path: circle(50% at 50% 50%);
-  -webkit-mask-image: radial-gradient(circle at center, #000 99%, transparent 100%);
-  mask-image: radial-gradient(circle at center, #000 99%, transparent 100%);
-  box-shadow: inset 0 0 0 1px rgba(0,0,0,.14); background: #f0efec; isolation: isolate;
+  border-radius: 50%; overflow: hidden;
+  box-shadow: 0 0 0 1px rgba(0,0,0,.14); background: #f0efec; transform: translateZ(0);
 }
 .bmp-disc {
-  position: absolute; inset: 0; display: block; width: 100%; height: 100%;
-  border-radius: 999px; overflow: hidden;
-  clip-path: circle(50% at 50% 50%); -webkit-clip-path: circle(50% at 50% 50%);
+  position: relative; display: block; width: 100%; height: 100%;
+  border-radius: 50%; overflow: hidden;
   background: #f0efec; transform-origin: center center;
 }
 .bmp-collapsed-shuffle { color: #212324; width: 1.65rem; height: 1.65rem; }
@@ -1138,13 +1134,13 @@ const css = `
 .bmp-collapsed-shuffle:hover { background: rgba(0,0,0,.06); }
 .bmp-disc::after {
   content: ""; position: absolute; inset: 50%; width: .28rem; height: .28rem;
-  margin: -.14rem 0 0 -.14rem; border-radius: 999px; background: #fff;
+  margin: -.14rem 0 0 -.14rem; border-radius: 50%; background: #fff;
   box-shadow: 0 0 0 1px rgba(0,0,0,.08); z-index: 1;
 }
-.bmp-disc img { width: 100%; height: 100%; object-fit: cover; display: block; border-radius: 999px; }
+.bmp-disc img { width: 100%; height: 100%; object-fit: cover; display: block; border-radius: 50%; }
 .bmp-disc-fallback {
   width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;
-  color: #a1a1a1; font-size: 10px; border-radius: 999px;
+  color: #a1a1a1; font-size: 10px; border-radius: 50%;
 }
 .bmp-collapsed-play { transition: box-shadow .3s ease; }
 .bmp[data-playing="true"] .bmp-collapsed-play { animation: bmp-play-pulse 1.8s ease-in-out infinite; }

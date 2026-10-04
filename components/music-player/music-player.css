@@ -276,9 +276,9 @@
 }
 
 /*
- * Glass pills use backdrop-filter, which can break overflow+border-radius
- * clipping (square art inside a round stroke). Force a circular mask.
- * Shell stays still for the ring; .mp-disc is what spins while playing.
+ * Simple circular album preview. Avoid clip-path + mask-image stacks —
+ * they glitch intermittently under glass backdrop-filter. One shell clips;
+ * the inner disc spins (ring may spin with it — prefer reliable circles).
  */
 .mp-disc-shell {
   position: relative;
@@ -286,28 +286,20 @@
   width: 1.45rem;
   height: 1.45rem;
   flex-shrink: 0;
-  border-radius: 999px;
+  border-radius: 50%;
   overflow: hidden;
-  clip-path: circle(50% at 50% 50%);
-  -webkit-clip-path: circle(50% at 50% 50%);
-  -webkit-mask-image: radial-gradient(circle at center, #000 99%, transparent 100%);
-  mask-image: radial-gradient(circle at center, #000 99%, transparent 100%);
-  /* Inset stroke so the ring isn't clipped away by mask/clip-path. */
-  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.14);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.14);
   background: #f0efec;
-  isolation: isolate;
+  transform: translateZ(0);
 }
 
 .mp-disc {
-  position: absolute;
-  inset: 0;
+  position: relative;
   display: block;
   width: 100%;
   height: 100%;
-  border-radius: 999px;
+  border-radius: 50%;
   overflow: hidden;
-  clip-path: circle(50% at 50% 50%);
-  -webkit-clip-path: circle(50% at 50% 50%);
   background: #f0efec;
   transform-origin: center center;
 }
@@ -319,7 +311,7 @@
   width: 0.28rem;
   height: 0.28rem;
   margin: -0.14rem 0 0 -0.14rem;
-  border-radius: 999px;
+  border-radius: 50%;
   background: #fff;
   box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.08);
   z-index: 1;
@@ -330,7 +322,7 @@
   height: 100%;
   object-fit: cover;
   display: block;
-  border-radius: 999px;
+  border-radius: 50%;
 }
 
 .mp-disc-fallback {
@@ -340,10 +332,10 @@
   align-items: center;
   justify-content: center;
   color: #a1a1a1;
-  border-radius: 999px;
+  border-radius: 50%;
 }
 
-/* Spin the whole disc (not just the img) so playing state is obvious. */
+/* Spin the disc; shell keeps the circular clip. */
 .mp[data-playing="true"] .mp-disc {
   animation: mp-spin 3.2s linear infinite;
 }
