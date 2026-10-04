@@ -164,24 +164,38 @@ Expanded panel is the **custom** player UI (transport/scrub/volume). Spotify is 
 
 ## 5) Netlify `/embed` iframe (optional)
 
-Browsers clip iframe contents — expand cannot leave the iframe box without
-resizing it (which jumps the page). So `/embed` uses a **fixed 240px**
-transparent canvas: expand overlays inside, page never moves, no heavy
-drop shadows (they clip ugly at the iframe edge).
+Short bar only (~72px). Browsers clip iframes, so expand needs the iframe
+to grow — but use **`position: fixed`** so growth overlays the page and
+**does not push / move layout**. No drop shadows on the embed pills.
 
-Paste this **Embed → HTML** (sticky/fixed at top in Framer; Overflow Visible):
+Paste this **Embed → HTML** in Framer (do NOT set the Framer layer to 240px):
 
 ```html
-<iframe
-  src="https://genuine-cheesecake-75fecc.netlify.app/embed"
-  title="Blake nav"
-  style="display:block;width:100%;height:240px;border:0;background:transparent;pointer-events:auto;"
-  allow="autoplay; encrypted-media; clipboard-write"
-></iframe>
+<!-- 72px spacer only — page layout never changes on expand -->
+<div style="height:72px;width:100%;pointer-events:none;"></div>
+<div id="blake-embed-wrap" style="position:fixed;top:0;left:0;right:0;height:72px;z-index:9999;">
+  <iframe
+    id="blake-embed"
+    src="https://genuine-cheesecake-75fecc.netlify.app/embed"
+    title="Blake nav"
+    style="display:block;width:100%;height:72px;border:0;background:transparent;"
+    allow="autoplay; encrypted-media; clipboard-write"
+  ></iframe>
+</div>
+<script>
+  window.addEventListener("message", (event) => {
+    const data = event.data;
+    if (!data || data.type !== "blake-embed-height") return;
+    const h = Math.max(72, Number(data.height) || 72);
+    const iframe = document.getElementById("blake-embed");
+    const wrap = document.getElementById("blake-embed-wrap");
+    if (iframe) iframe.style.height = h + "px";
+    if (wrap) wrap.style.height = h + "px";
+  });
+</script>
 ```
 
-- Height stays **240px** always — do not animate/resize on expand.
-- Transparent below the pills so page content shows through; Framer layer sticky/fixed at top.
+- Collapsed = 72px. Expand grows the **fixed** overlay only — spacer stays 72px, page does not jump.
 - Prefer the code component when you want the nav native to the Framer page.
 
 Keep Netlify for:
