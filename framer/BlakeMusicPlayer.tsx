@@ -931,10 +931,10 @@ const css = `
   transition: width .42s var(--ease), min-height .42s var(--ease), border-radius .42s var(--ease), box-shadow .42s ease, background .3s ease;
 }
 .bmp[data-embedded="true"][data-expanded="true"] {
-  /* Match nav bar height; +24px wider than prior compact row. */
+  /* 8px shorter than nav bar; +24px wider than prior compact row. */
   position: absolute; top: 0; left: 0; z-index: 5;
   width: min(calc(15.5rem + 24px), calc(100vw - 2rem)); max-width: calc(15.5rem + 24px);
-  height: 60px; min-height: 60px; max-height: 60px;
+  height: 52px; min-height: 52px; max-height: 52px;
   border-radius: 1.15rem; overflow: hidden;
   background-color: rgba(250, 249, 246, .82);
   background-image: linear-gradient(160deg, rgba(255,255,255,.9) 0%, rgba(255,255,255,.72) 100%);
@@ -948,7 +948,7 @@ const css = `
 }
 .bmp[data-embedded="true"][data-expanded="true"] .bmp-inner {
   display: flex; flex-direction: row; align-items: center; gap: .22rem;
-  height: 100%; min-height: 60px; max-height: 60px;
+  height: 100%; min-height: 52px; max-height: 52px;
   padding: 0 6px 0 8px; overflow: hidden; box-sizing: border-box;
 }
 .bmp[data-embedded="true"][data-expanded="true"] .bmp-top {
