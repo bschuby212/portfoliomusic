@@ -1056,16 +1056,16 @@ const css = `
 }
 .bn-avatar {
   position: relative; display: inline-flex; align-items: center; justify-content: center;
-  width: 48px; height: 48px; flex-shrink: 0; border-radius: 50%; overflow: hidden;
+  width: 32px; height: 32px; flex-shrink: 0; border-radius: 50%; overflow: hidden;
   background: #e8e6e1; color: #fff; text-decoration: none;
-  box-shadow: 0 0 0 1px rgba(255,255,255,calc(.18 * max(var(--pn-elevate), .35))) inset, 0 0 0 1.5px rgba(255,255,255,calc(.55 * max(var(--pn-elevate), .45))), 0 0 0 2.5px rgba(0,0,0,calc(.04 * max(var(--pn-elevate), .3)));
-  transition: transform .28s var(--ease), box-shadow .28s ease;
+  border: none; box-shadow: none; outline: none;
+  transition: transform .28s var(--ease);
 }
 .bn-avatar-img { width:100%; height:100%; object-fit:cover; object-position:center center; display:block; image-rendering:auto; }
 .bn-avatar-mark { font-size: .72rem; font-weight: 680; letter-spacing: .03em; }
 .bn-avatar:hover {
   transform: scale(1.06);
-  box-shadow: 0 0 0 1px rgba(255,255,255,.28) inset, 0 0 0 1.5px rgba(255,255,255,.75), 0 0 0 3px rgba(0,0,0,.05), 0 8px 20px rgba(0,0,0,.16);
+  box-shadow: none;
 }
 .bn-divider {
   width: 1px; height: 1.05rem;

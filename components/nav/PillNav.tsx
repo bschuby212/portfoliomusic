@@ -116,8 +116,8 @@ export function PillNav({ current }: PillNavProps) {
             className="pn-avatar-img"
             src={NAV_AVATAR_SRC}
             alt=""
-            width={64}
-            height={64}
+            width={32}
+            height={32}
             decoding="async"
           />
         </a>

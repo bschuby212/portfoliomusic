@@ -402,21 +402,18 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 48px;
-  height: 48px;
+  width: 32px;
+  height: 32px;
   flex-shrink: 0;
   border-radius: 50%;
   overflow: hidden;
   background: #e8e6e1;
   color: #fff;
   text-decoration: none;
-  box-shadow:
-    0 0 0 1px rgba(255, 255, 255, calc(0.18 * max(var(--pn-elevate), 0.35))) inset,
-    0 0 0 1.5px rgba(255, 255, 255, calc(0.55 * max(var(--pn-elevate), 0.45))),
-    0 0 0 2.5px rgba(0, 0, 0, calc(0.04 * max(var(--pn-elevate), 0.3)));
-  transition:
-    transform 0.28s var(--pn-ease),
-    box-shadow 0.28s ease;
+  border: none;
+  box-shadow: none;
+  outline: none;
+  transition: transform 0.28s var(--pn-ease);
 }
 
 .pn-avatar-img {
@@ -439,18 +436,11 @@
 
 .pn-avatar:hover {
   transform: scale(1.06);
-  box-shadow:
-    0 0 0 1px rgba(255, 255, 255, 0.28) inset,
-    0 0 0 1.5px rgba(255, 255, 255, 0.75),
-    0 0 0 3px rgba(0, 0, 0, 0.05),
-    0 8px 20px rgba(0, 0, 0, 0.16);
+  box-shadow: none;
 }
 
 .pn-avatar[data-home="true"] {
-  box-shadow:
-    0 0 0 1px rgba(255, 255, 255, 0.24) inset,
-    0 0 0 1.5px rgba(255, 255, 255, 0.7),
-    0 0 0 3px rgba(0, 0, 0, 0.05);
+  box-shadow: none;
 }
 
 .pn-avatar:active {
