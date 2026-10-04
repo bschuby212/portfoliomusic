@@ -1281,8 +1281,11 @@ function BlakeNavBar(props: Props) {
     )
 }
 
+/** Live Netlify host — playlist/preview API + public avatar/resume assets. */
+const NETLIFY_ORIGIN = "https://genuine-cheesecake-75fecc.netlify.app"
+
 BlakeNavBar.defaultProps = {
-    apiBaseUrl: "https://blake-music-player.netlify.app",
+    apiBaseUrl: NETLIFY_ORIGIN,
     playlistUrl: "https://open.spotify.com/playlist/5zXp8gIyEeJteiSZj1RTqJ",
     playlistName: "Blake's Playlist",
     surpriseAfter: 4,
@@ -1294,9 +1297,9 @@ BlakeNavBar.defaultProps = {
     lookingUrl: "https://blakeschubert.com/#why-im-looking",
     linkedinUrl: "https://www.linkedin.com/in/blake-schubert/",
     email: "blakeschubertux@gmail.com",
-    resumeUrl: "https://raw.githubusercontent.com/bschuby212/portfoliomusic/main/public/Blake_Schubert_Product_Designer_Resume_2026.pdf",
+    resumeUrl: `${NETLIFY_ORIGIN}/Blake_Schubert_Product_Designer_Resume_2026.pdf`,
     brandInitials: "BS",
-    logoUrl: "https://raw.githubusercontent.com/bschuby212/portfoliomusic/main/public/avatar.png",
+    logoUrl: `${NETLIFY_ORIGIN}/avatar.png`,
 }
 
 addPropertyControls(BlakeNavBar, {
@@ -1311,7 +1314,7 @@ addPropertyControls(BlakeNavBar, {
     apiBaseUrl: {
         type: ControlType.String,
         title: "API Base URL",
-        defaultValue: "https://blake-music-player.netlify.app",
+        defaultValue: "https://genuine-cheesecake-75fecc.netlify.app",
     },
     homeUrl: {
         type: ControlType.String,
@@ -1346,7 +1349,8 @@ addPropertyControls(BlakeNavBar, {
     resumeUrl: {
         type: ControlType.String,
         title: "Resume URL",
-        defaultValue: "https://raw.githubusercontent.com/bschuby212/portfoliomusic/main/public/Blake_Schubert_Product_Designer_Resume_2026.pdf",
+        defaultValue:
+            "https://genuine-cheesecake-75fecc.netlify.app/Blake_Schubert_Product_Designer_Resume_2026.pdf",
     },
     brandInitials: {
         type: ControlType.String,
@@ -1356,7 +1360,7 @@ addPropertyControls(BlakeNavBar, {
     logoUrl: {
         type: ControlType.String,
         title: "Logo URL",
-        defaultValue: "https://raw.githubusercontent.com/bschuby212/portfoliomusic/main/public/avatar.png",
+        defaultValue: "https://genuine-cheesecake-75fecc.netlify.app/avatar.png",
     },
     playlistUrl: {
         type: ControlType.String,

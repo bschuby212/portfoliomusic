@@ -24,14 +24,16 @@ STEPS:
 7. Layer Overflow = Visible. Scroll = off. No clipping parent.
 8. Music player expands outside the 720×56 shell on purpose — must stay visible (no scrollbars).
 9. Collapsed music pill (~9.2rem): note · spinning disc · play/pause · chevron. Expanded: custom transport UI (scrub + volume), not a Spotify iframe. No playlist name chrome.
-10. Keep apiBaseUrl = https://blake-music-player.netlify.app (playlist + preview API).
-11. Keep these default link props:
+10. Keep apiBaseUrl = https://genuine-cheesecake-75fecc.netlify.app (playlist + preview API).
+11. Keep these default link / asset props (absolute URLs only — relative paths break in Framer):
    - Home: https://blakeschubert.com/
    - About: https://blakeschubert.com/about
    - Work: https://blakeschubert.com/#all-campus
    - Why I'm looking: https://blakeschubert.com/#why-im-looking
    - Email: blakeschubertux@gmail.com (mailto)
-   - Resume: Netlify PDF download
+   - LinkedIn: https://www.linkedin.com/in/blake-schubert/
+   - Logo: https://genuine-cheesecake-75fecc.netlify.app/avatar.png
+   - Resume: https://genuine-cheesecake-75fecc.netlify.app/Blake_Schubert_Product_Designer_Resume_2026.pdf
 
 VISUAL TOKENS (already baked into the file — do not change):
 - Ink / text: #212324
@@ -108,7 +110,9 @@ Work:            https://blakeschubert.com/#all-campus
 Why I'm looking: https://blakeschubert.com/#why-im-looking
 Email:           mailto:blakeschubertux@gmail.com
 Resume:          Blake Schubert Product Designer Resume 2026.pdf (via Netlify)
-API base:        https://blake-music-player.netlify.app
+API base:        https://genuine-cheesecake-75fecc.netlify.app
+Logo:            https://genuine-cheesecake-75fecc.netlify.app/avatar.png
+Resume:          https://genuine-cheesecake-75fecc.netlify.app/Blake_Schubert_Product_Designer_Resume_2026.pdf
 ```
 
 
@@ -201,4 +205,4 @@ Paste this **Embed → HTML** in Framer (do NOT set the Framer layer to 240px):
 Keep Netlify for:
 - `GET /api/spotify` + `/api/spotify/playlist`
 - Resume PDF + avatar assets
-- `apiBaseUrl` default: `https://blake-music-player.netlify.app`
+- `apiBaseUrl` / avatar / resume defaults: `https://genuine-cheesecake-75fecc.netlify.app`

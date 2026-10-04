@@ -29,13 +29,16 @@ Create a Framer **code component** from this repo and put it on the site. Do not
 2. Pin near the top, horizontally centered, high z-index so it sits above page content.
 3. Frame size: **fixed 720 × 56** (not fill, not hug).
 4. Layer **Overflow = Visible**. Scroll = off. No clipping parent.
-5. Leave props at file defaults:
-   - `apiBaseUrl` → `https://blake-music-player.netlify.app`
+5. Leave props at file defaults (these must stay absolute Netlify URLs — relative paths break in Framer):
+   - `apiBaseUrl` → `https://genuine-cheesecake-75fecc.netlify.app`
+   - `logoUrl` → `https://genuine-cheesecake-75fecc.netlify.app/avatar.png`
+   - `resumeUrl` → `https://genuine-cheesecake-75fecc.netlify.app/Blake_Schubert_Product_Designer_Resume_2026.pdf`
    - Home → `https://blakeschubert.com/`
    - About → `https://blakeschubert.com/about`
    - Work → `https://blakeschubert.com/#all-campus`
    - Why I'm looking → `https://blakeschubert.com/#why-im-looking`
    - Email → `blakeschubertux@gmail.com`
+   - LinkedIn → `https://www.linkedin.com/in/blake-schubert/`
 6. Music player expands outside the 720×56 shell on purpose — that must stay visible (no scrollbars).
 7. Confirm the nav renders as a glass pill immediately (no scroll needed).
 
