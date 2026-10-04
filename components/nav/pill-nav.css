@@ -38,7 +38,7 @@
   display: flex;
   align-items: center;
   gap: calc(0.55rem - (var(--pn-elevate) * 0.2rem));
-  min-height: calc(3.15rem + (var(--pn-elevate) * 0.25rem));
+  min-height: calc(56px + (var(--pn-elevate) * 0.25rem));
   /* Top: responsive full-width text bar. Elevated: compact fixed glass pill. */
   flex: 0 1 auto;
   width: max-content;
@@ -393,8 +393,8 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 2.55rem;
-  height: 2.55rem;
+  width: 48px;
+  height: 48px;
   flex-shrink: 0;
   border-radius: 50%;
   overflow: hidden;
@@ -414,14 +414,11 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center 28%;
+  object-position: center center;
   display: block;
-  /* Smooth upsample — pixelated made the small avatar look broken */
   image-rendering: auto;
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
-  transform: translateZ(0) scale(1.04);
-  transform-origin: center 30%;
 }
 
 .pn-avatar-mark {
