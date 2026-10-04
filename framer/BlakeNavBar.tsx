@@ -946,8 +946,8 @@ const css = `
   display: block; height: 100%;
 }
 .bmp[data-embedded="true"][data-expanded="true"] .bmp-inner {
-  display: flex; flex-direction: row; align-items: center; gap: .28rem;
-  height: 100%; min-height: 64px; max-height: 64px;
+  display: flex; flex-direction: row; align-items: center; gap: .22rem;
+  height: 100%; min-height: 3.15rem; max-height: 3.15rem;
   padding: 0 6px 0 8px; overflow: hidden; box-sizing: border-box;
 }
 .bmp[data-embedded="true"][data-expanded="true"] .bmp-top {
@@ -955,7 +955,7 @@ const css = `
   flex: 1 1 auto; min-width: 0; margin: 0;
 }
 .bmp[data-embedded="true"][data-expanded="true"] .bmp-art {
-  width: 48px; height: 48px; border-radius: 8px; flex-shrink: 0;
+  width: 1.9rem; height: 1.9rem; border-radius: .4rem; flex-shrink: 0;
 }
 .bmp[data-embedded="true"][data-expanded="true"] .bmp-meta {
   flex: 1 1 auto; min-width: 0; padding: 0;
