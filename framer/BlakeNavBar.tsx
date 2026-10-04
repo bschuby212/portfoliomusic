@@ -930,11 +930,11 @@ const css = `
   transition: width .42s var(--ease), min-height .42s var(--ease), border-radius .42s var(--ease), box-shadow .42s ease, background .3s ease;
 }
 .bmp[data-embedded="true"][data-expanded="true"] {
-  /* Single-row expand — art · meta · equal shuffle/play · collapse. */
+  /* Compact single-row expand — tighter width, softer (not pill) corners. */
   position: absolute; top: 0; left: 0; z-index: 5;
-  width: min(22rem, calc(100vw - 2rem)); max-width: 22rem;
-  height: 3.4rem; min-height: 3.4rem; max-height: 3.4rem;
-  border-radius: 999px; overflow: hidden;
+  width: min(15.5rem, calc(100vw - 2rem)); max-width: 15.5rem;
+  height: 3.15rem; min-height: 3.15rem; max-height: 3.15rem;
+  border-radius: 1.15rem; overflow: hidden;
   background-color: rgba(250, 249, 246, .82);
   background-image: linear-gradient(160deg, rgba(255,255,255,.9) 0%, rgba(255,255,255,.72) 100%);
   border-color: rgba(0,0,0,.08);
@@ -946,38 +946,38 @@ const css = `
   display: block; height: 100%;
 }
 .bmp[data-embedded="true"][data-expanded="true"] .bmp-inner {
-  display: flex; flex-direction: row; align-items: center; gap: .3rem;
-  height: 100%; min-height: 3.4rem; max-height: 3.4rem;
-  padding: 0 .3rem 0 .4rem; overflow: hidden;
+  display: flex; flex-direction: row; align-items: center; gap: .22rem;
+  height: 100%; min-height: 3.15rem; max-height: 3.15rem;
+  padding: 0 .28rem 0 .35rem; overflow: hidden;
 }
 .bmp[data-embedded="true"][data-expanded="true"] .bmp-top {
-  display: flex; align-items: center; gap: .45rem;
+  display: flex; align-items: center; gap: .38rem;
   flex: 1 1 auto; min-width: 0; margin: 0;
 }
 .bmp[data-embedded="true"][data-expanded="true"] .bmp-art {
-  width: 2.15rem; height: 2.15rem; border-radius: .45rem; flex-shrink: 0;
+  width: 1.9rem; height: 1.9rem; border-radius: .4rem; flex-shrink: 0;
 }
 .bmp[data-embedded="true"][data-expanded="true"] .bmp-meta {
   flex: 1 1 auto; min-width: 0; padding: 0;
 }
 .bmp[data-embedded="true"][data-expanded="true"] .bmp-title {
-  font-size: .78rem; line-height: 1.15;
+  font-size: .72rem; line-height: 1.15;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 .bmp[data-embedded="true"][data-expanded="true"] .bmp-artist {
-  margin-top: .08rem; font-size: .68rem; line-height: 1.15; color: #737373;
+  margin-top: .06rem; font-size: .62rem; line-height: 1.15; color: #737373;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 .bmp[data-embedded="true"][data-expanded="true"] .bmp-transport {
-  display: flex; align-items: center; justify-content: flex-end; gap: .15rem;
+  display: flex; align-items: center; justify-content: flex-end; gap: .12rem;
   margin: 0; padding: 0; flex: 0 0 auto;
 }
 .bmp[data-embedded="true"][data-expanded="true"] .bmp-ctrl,
 .bmp[data-embedded="true"][data-expanded="true"] .bmp-play {
-  width: 2.15rem; height: 2.15rem;
+  width: 1.9rem; height: 1.9rem;
 }
 .bmp[data-embedded="true"][data-expanded="true"] .bmp-collapse {
-  width: 1.85rem; height: 1.85rem; margin: 0; flex: 0 0 auto;
+  width: 1.65rem; height: 1.65rem; margin: 0; flex: 0 0 auto;
 }
 .bmp[data-embedded="true"][data-expanded="true"] .bmp-footer {
   display: none !important;
