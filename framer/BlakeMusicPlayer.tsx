@@ -1,7 +1,7 @@
 /**
  * Blake Nav Bar — Framer Code Component (paste / agent source of truth)
  *
- * Two glassmorphic pills (fixed 720×56 frame, overflow visible, no scrollbars):
+ * Two glassmorphic pills (fixed 760×56 frame, overflow visible, no scrollbars):
  * [avatar · About · Work · Playground · Why I'm looking · LinkedIn · Email · Resume] · music
  *
  * Links (defaults):
@@ -878,7 +878,7 @@ function useNavElevate() {
  * Always-on glass optic pill (scroll morph archived).
  * @framerSupportedLayoutWidth fixed
  * @framerSupportedLayoutHeight fixed
- * @framerIntrinsicWidth 720
+ * @framerIntrinsicWidth 760
  * @framerIntrinsicHeight 56
  */
 const css = `
@@ -886,11 +886,11 @@ const css = `
   --pn-elevate: 1;
   position: relative;
   box-sizing: border-box;
-  width: 720px;
+  width: 760px;
   height: 56px;
-  max-width: 720px;
+  max-width: 760px;
   max-height: 56px;
-  min-width: 720px;
+  min-width: 760px;
   min-height: 56px;
   margin: 0;
   padding: 0;
@@ -908,7 +908,7 @@ const css = `
   top: 0; left: 0; z-index: 1;
   display: flex; align-items: flex-start; justify-content: center;
   gap: calc(1.25rem - (var(--pn-elevate) * 0.25rem));
-  width: 720px; height: 56px; max-width: 720px; max-height: 56px;
+  width: 760px; height: 56px; max-width: 760px; max-height: 56px;
   overflow: visible; overscroll-behavior: none;
   scrollbar-width: none; -ms-overflow-style: none; pointer-events: none;
   transform: none;
@@ -921,8 +921,8 @@ const css = `
   gap: calc(.55rem - (var(--pn-elevate) * .2rem));
   box-sizing: border-box; height: 56px; min-height: 56px; max-height: 56px;
   flex: 0 1 auto; width: max-content;
-  min-width: calc((1 - var(--pn-elevate)) * 560px);
-  max-width: 560px;
+  min-width: calc((1 - var(--pn-elevate)) * 640px);
+  max-width: 640px;
   padding:
     0
     calc(.72rem - (var(--pn-elevate) * .34rem))
@@ -1309,11 +1309,11 @@ function BlakeNavBar(props: Props) {
             style={
                 {
                     "--pn-elevate": String(elevate),
-                    width: 720,
+                    width: 760,
                     height: 56,
-                    minWidth: 720,
+                    minWidth: 760,
                     minHeight: 56,
-                    maxWidth: 720,
+                    maxWidth: 760,
                     maxHeight: 56,
                     overflow: "visible",
                     overflowX: "visible",
