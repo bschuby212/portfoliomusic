@@ -729,6 +729,14 @@ function MailIcon() {
     )
 }
 
+function CheckIcon({ size = ICON_SIZE }: { size?: number }) {
+    return (
+        <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={ICON_STROKE} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M20 6 9 17l-5-5" />
+        </svg>
+    )
+}
+
 function PauseBars() {
     return (
         <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -906,7 +914,7 @@ const css = `
 .bn-root::-webkit-scrollbar { display: none; width: 0; height: 0; }
 .bn, .bn-music { --ink: #212324; --muted: #6a6a6a; --ease: cubic-bezier(.32,.72,0,1); }
 .bn {
-  pointer-events: auto; position: relative;
+  pointer-events: auto; position: relative; overflow: visible;
   display: flex; align-items: center;
   gap: calc(.55rem - (var(--pn-elevate) * .2rem));
   box-sizing: border-box; height: 56px; min-height: 56px; max-height: 56px;
@@ -1095,12 +1103,19 @@ const css = `
   flex-shrink: 0; opacity: calc(.55 + (var(--pn-elevate) * .45));
 }
 .bn-actions { display: flex; align-items: center; gap: .05rem; margin-right: .05rem; margin-left: calc((1 - var(--pn-elevate)) * .35rem); flex-shrink: 0; }
+.bn-icon-btn[data-copied="true"] { color: #16a34a; background: rgba(22, 163, 74, .1); }
+.bn-icon-btn[data-copied="true"]:hover { color: #15803d; background: rgba(22, 163, 74, .14); }
 .bn-toast {
-  position: absolute; top: calc(100% + .55rem); left: 50%; transform: translateX(-50%);
-  padding: .45rem .75rem; border-radius: 999px; background: #212324; color: #fff;
-  font-size: .75rem; font-weight: 550; opacity: 0; pointer-events: none;
+  position: absolute; top: calc(100% + .55rem); left: 50%; z-index: 5;
+  display: inline-flex; align-items: center; gap: .35rem;
+  transform: translateX(-50%) translateY(-4px);
+  padding: .45rem .8rem; border-radius: 999px; background: #212324; color: #fff;
+  font-size: .75rem; font-weight: 550; letter-spacing: -.01em; white-space: nowrap;
+  opacity: 0; pointer-events: none;
+  transition: opacity .2s ease, transform .28s var(--pn-ease);
 }
-.bn-toast[data-open="true"] { opacity: 1; }
+.bn-toast svg { width: 14px; height: 14px; flex-shrink: 0; color: #4ade80; }
+.bn-toast[data-open="true"] { opacity: 1; transform: translateX(-50%) translateY(0); }
 .bmp[data-playing="true"] .bmp-disc-shell { animation: bmp-spin 3.2s linear infinite; }
 
 .bmp-collapsed {
@@ -1226,6 +1241,7 @@ function BlakeNavBar(props: Props) {
     const trackIndex = player.queue[player.queueIndex] ?? 0
     const track = player.tracks[trackIndex]
     const { elevate, ready } = useNavElevate()
+    const [emailCopied, setEmailCopied] = useState(false)
 
     useEffect(() => {
         if (!props.apiBaseUrl) return
@@ -1241,6 +1257,34 @@ function BlakeNavBar(props: Props) {
     useEffect(() => {
         actions.setExpandDirection("down")
     }, [])
+
+    useEffect(() => {
+        if (!emailCopied) return
+        const timer = window.setTimeout(() => setEmailCopied(false), 2000)
+        return () => window.clearTimeout(timer)
+    }, [emailCopied])
+
+    async function copyEmail() {
+        const email = props.email
+        try {
+            if (navigator.clipboard?.writeText) {
+                await navigator.clipboard.writeText(email)
+            } else {
+                const field = document.createElement("textarea")
+                field.value = email
+                field.setAttribute("readonly", "")
+                field.style.position = "fixed"
+                field.style.opacity = "0"
+                document.body.appendChild(field)
+                field.select()
+                document.execCommand("copy")
+                field.remove()
+            }
+            setEmailCopied(true)
+        } catch {
+            setEmailCopied(true)
+        }
+    }
 
     const title = track?.metadata?.title
         ? track.metadata.title
@@ -1317,13 +1361,21 @@ function BlakeNavBar(props: Props) {
                         >
                             <StrokeIcon><LinkedInIcon /></StrokeIcon>
                         </a>
-                        <a
+                        <button
+                            type="button"
                             className="bn-icon-btn bn-fx-lift"
-                            href={`mailto:${props.email}`}
-                            aria-label={`Email ${props.email}`}
+                            data-copied={emailCopied}
+                            aria-label={
+                                emailCopied ? "Email copied" : `Copy email ${props.email}`
+                            }
+                            onClick={() => {
+                                void copyEmail()
+                            }}
                         >
-                            <StrokeIcon><MailIcon /></StrokeIcon>
-                        </a>
+                            <StrokeIcon>
+                                {emailCopied ? <CheckIcon /> : <MailIcon />}
+                            </StrokeIcon>
+                        </button>
                         <a
                             className="bn-icon-btn bn-fx-nudge"
                             href={props.resumeUrl}
@@ -1332,6 +1384,16 @@ function BlakeNavBar(props: Props) {
                         >
                             <StrokeIcon><FileDownIcon /></StrokeIcon>
                         </a>
+                    </div>
+
+                    <div
+                        className="bn-toast"
+                        data-open={emailCopied}
+                        role="status"
+                        aria-live="polite"
+                    >
+                        <CheckIcon size={14} />
+                        <span>Email copied</span>
                     </div>
                 </nav>
 

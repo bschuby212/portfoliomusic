@@ -1,15 +1,19 @@
 "use client";
 
-import { FileDown, Mail } from "lucide-react";
+import { Check, FileDown, Mail } from "lucide-react";
 import { usePathname } from "next/navigation";
-import { type CSSProperties, type ReactNode } from "react";
+import {
+  useEffect,
+  useState,
+  type CSSProperties,
+  type ReactNode,
+} from "react";
 import { MusicPlayer } from "@/components/music-player/MusicPlayer";
 import { usePlayerStore } from "@/components/music-player/store";
 import {
   NAV_AVATAR_SRC,
   NAV_BRAND,
   NAV_EMAIL,
-  NAV_EMAIL_HREF,
   NAV_HOME_URL,
   NAV_LINKEDIN_URL,
   NAV_LINKS,
@@ -95,6 +99,34 @@ export function PillNav({ current }: PillNavProps) {
   const pathname = usePathname();
   const active = current ?? pathname;
   const player = usePlayerStore();
+  const [emailCopied, setEmailCopied] = useState(false);
+
+  useEffect(() => {
+    if (!emailCopied) return;
+    const timer = window.setTimeout(() => setEmailCopied(false), 2000);
+    return () => window.clearTimeout(timer);
+  }, [emailCopied]);
+
+  async function copyEmail() {
+    try {
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(NAV_EMAIL);
+      } else {
+        const field = document.createElement("textarea");
+        field.value = NAV_EMAIL;
+        field.setAttribute("readonly", "");
+        field.style.position = "fixed";
+        field.style.opacity = "0";
+        document.body.appendChild(field);
+        field.select();
+        document.execCommand("copy");
+        field.remove();
+      }
+      setEmailCopied(true);
+    } catch {
+      setEmailCopied(true);
+    }
+  }
 
   return (
     <div
@@ -145,15 +177,33 @@ export function PillNav({ current }: PillNavProps) {
               <LinkedInIcon />
             </NavIcon>
           </a>
-          <a
+          <button
+            type="button"
             className="pn-icon-btn pn-fx-lift"
-            href={NAV_EMAIL_HREF}
-            aria-label={`Email ${NAV_EMAIL}`}
+            data-copied={emailCopied}
+            aria-label={
+              emailCopied ? "Email copied" : `Copy email ${NAV_EMAIL}`
+            }
+            onClick={() => {
+              void copyEmail();
+            }}
           >
             <NavIcon>
-              <Mail size={ICON_SIZE} strokeWidth={ICON_STROKE} absoluteStrokeWidth={false} />
+              {emailCopied ? (
+                <Check
+                  size={ICON_SIZE}
+                  strokeWidth={ICON_STROKE}
+                  absoluteStrokeWidth={false}
+                />
+              ) : (
+                <Mail
+                  size={ICON_SIZE}
+                  strokeWidth={ICON_STROKE}
+                  absoluteStrokeWidth={false}
+                />
+              )}
             </NavIcon>
-          </a>
+          </button>
           <a
             className="pn-icon-btn pn-fx-nudge"
             href={NAV_RESUME_HREF}
@@ -164,6 +214,16 @@ export function PillNav({ current }: PillNavProps) {
               <FileDown size={ICON_SIZE} strokeWidth={ICON_STROKE} absoluteStrokeWidth={false} />
             </NavIcon>
           </a>
+        </div>
+
+        <div
+          className="pn-toast"
+          data-open={emailCopied}
+          role="status"
+          aria-live="polite"
+        >
+          <Check size={14} strokeWidth={2.25} absoluteStrokeWidth={false} />
+          <span>Email copied</span>
         </div>
       </nav>
 
