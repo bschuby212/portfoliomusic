@@ -1103,19 +1103,20 @@ const css = `
   flex-shrink: 0; opacity: calc(.55 + (var(--pn-elevate) * .45));
 }
 .bn-actions { display: flex; align-items: center; gap: .05rem; margin-right: .05rem; margin-left: calc((1 - var(--pn-elevate)) * .35rem); flex-shrink: 0; }
-.bn-icon-btn[data-copied="true"] { color: #16a34a; background: rgba(22, 163, 74, .1); }
-.bn-icon-btn[data-copied="true"]:hover { color: #15803d; background: rgba(22, 163, 74, .14); }
-.bn-toast {
-  position: absolute; top: calc(100% + .55rem); left: 50%; z-index: 5;
-  display: inline-flex; align-items: center; gap: .35rem;
-  transform: translateX(-50%) translateY(-4px);
-  padding: .45rem .8rem; border-radius: 999px; background: #212324; color: #fff;
-  font-size: .75rem; font-weight: 550; letter-spacing: -.01em; white-space: nowrap;
-  opacity: 0; pointer-events: none;
-  transition: opacity .2s ease, transform .28s var(--pn-ease);
+.bn-email-btn {
+  overflow: visible;
+  transition: background .22s ease, color .22s ease, transform .18s var(--ease), box-shadow .22s ease, width .28s var(--ease), padding .28s var(--ease);
 }
-.bn-toast svg { width: 14px; height: 14px; flex-shrink: 0; color: #4ade80; }
-.bn-toast[data-open="true"] { opacity: 1; transform: translateX(-50%) translateY(0); }
+.bn-email-btn[data-copied="true"] {
+  width: auto; min-width: 2.45rem; padding: 0 .7rem;
+  color: #16a34a; background: rgba(22, 163, 74, .1);
+}
+.bn-email-btn[data-copied="true"]:hover { color: #15803d; background: rgba(22, 163, 74, .14); }
+.bn-email-copied {
+  display: inline-flex; align-items: center; gap: .35rem; white-space: nowrap;
+  font-size: .75rem; font-weight: 560; letter-spacing: -.01em; line-height: 1; color: inherit;
+}
+.bn-email-copied svg { width: 16px; height: 16px; flex-shrink: 0; color: #16a34a; }
 .bmp[data-playing="true"] .bmp-disc-shell { animation: bmp-spin 3.2s linear infinite; }
 
 .bmp-collapsed {
@@ -1363,8 +1364,8 @@ function BlakeNavBar(props: Props) {
                         </a>
                         <button
                             type="button"
-                            className="bn-icon-btn bn-fx-lift"
-                            data-copied={emailCopied}
+                            className="bn-icon-btn bn-fx-lift bn-email-btn"
+                            data-copied={emailCopied ? "true" : "false"}
                             aria-label={
                                 emailCopied ? "Email copied" : `Copy email ${props.email}`
                             }
@@ -1372,9 +1373,14 @@ function BlakeNavBar(props: Props) {
                                 void copyEmail()
                             }}
                         >
-                            <StrokeIcon>
-                                {emailCopied ? <CheckIcon /> : <MailIcon />}
-                            </StrokeIcon>
+                            {emailCopied ? (
+                                <span className="bn-email-copied" role="status" aria-live="polite">
+                                    <CheckIcon />
+                                    <span>Email copied</span>
+                                </span>
+                            ) : (
+                                <StrokeIcon><MailIcon /></StrokeIcon>
+                            )}
                         </button>
                         <a
                             className="bn-icon-btn bn-fx-nudge"
@@ -1384,16 +1390,6 @@ function BlakeNavBar(props: Props) {
                         >
                             <StrokeIcon><FileDownIcon /></StrokeIcon>
                         </a>
-                    </div>
-
-                    <div
-                        className="bn-toast"
-                        data-open={emailCopied}
-                        role="status"
-                        aria-live="polite"
-                    >
-                        <CheckIcon size={14} />
-                        <span>Email copied</span>
                     </div>
                 </nav>
 

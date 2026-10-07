@@ -179,8 +179,8 @@ export function PillNav({ current }: PillNavProps) {
           </a>
           <button
             type="button"
-            className="pn-icon-btn pn-fx-lift"
-            data-copied={emailCopied}
+            className="pn-icon-btn pn-fx-lift pn-email-btn"
+            data-copied={emailCopied ? "true" : "false"}
             aria-label={
               emailCopied ? "Email copied" : `Copy email ${NAV_EMAIL}`
             }
@@ -188,21 +188,25 @@ export function PillNav({ current }: PillNavProps) {
               void copyEmail();
             }}
           >
-            <NavIcon>
-              {emailCopied ? (
+            {emailCopied ? (
+              <span className="pn-email-copied" role="status" aria-live="polite">
                 <Check
                   size={ICON_SIZE}
                   strokeWidth={ICON_STROKE}
                   absoluteStrokeWidth={false}
+                  aria-hidden="true"
                 />
-              ) : (
+                <span>Email copied</span>
+              </span>
+            ) : (
+              <NavIcon>
                 <Mail
                   size={ICON_SIZE}
                   strokeWidth={ICON_STROKE}
                   absoluteStrokeWidth={false}
                 />
-              )}
-            </NavIcon>
+              </NavIcon>
+            )}
           </button>
           <a
             className="pn-icon-btn pn-fx-nudge"
@@ -214,16 +218,6 @@ export function PillNav({ current }: PillNavProps) {
               <FileDown size={ICON_SIZE} strokeWidth={ICON_STROKE} absoluteStrokeWidth={false} />
             </NavIcon>
           </a>
-        </div>
-
-        <div
-          className="pn-toast"
-          data-open={emailCopied}
-          role="status"
-          aria-live="polite"
-        >
-          <Check size={14} strokeWidth={2.25} absoluteStrokeWidth={false} />
-          <span>Email copied</span>
         </div>
       </nav>
 

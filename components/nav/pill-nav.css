@@ -475,50 +475,47 @@
   flex-shrink: 0;
 }
 
-.pn-icon-btn[data-copied="true"] {
+.pn-email-btn {
+  overflow: visible;
+  transition:
+    background 0.22s ease,
+    color 0.22s ease,
+    transform 0.18s var(--pn-ease),
+    box-shadow 0.22s ease,
+    width 0.28s var(--pn-ease),
+    padding 0.28s var(--pn-ease);
+}
+
+.pn-email-btn[data-copied="true"] {
+  width: auto;
+  min-width: 2.45rem;
+  padding: 0 0.7rem;
   color: #16a34a;
   background: rgba(22, 163, 74, 0.1);
 }
 
-.pn-icon-btn[data-copied="true"]:hover {
+.pn-email-btn[data-copied="true"]:hover {
   color: #15803d;
   background: rgba(22, 163, 74, 0.14);
 }
 
-.pn-toast {
-  position: absolute;
-  top: calc(100% + 0.55rem);
-  left: 50%;
-  z-index: 5;
+.pn-email-copied {
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
-  transform: translateX(-50%) translateY(-4px);
-  padding: 0.45rem 0.8rem;
-  border-radius: 999px;
-  background: #212324;
-  color: #fff;
-  font-size: 0.75rem;
-  font-weight: 550;
-  letter-spacing: -0.01em;
   white-space: nowrap;
-  opacity: 0;
-  pointer-events: none;
-  transition:
-    opacity 0.2s ease,
-    transform 0.28s var(--pn-ease);
+  font-size: 0.75rem;
+  font-weight: 560;
+  letter-spacing: -0.01em;
+  line-height: 1;
+  color: inherit;
 }
 
-.pn-toast svg {
-  width: 14px;
-  height: 14px;
+.pn-email-copied svg {
+  width: 16px;
+  height: 16px;
   flex-shrink: 0;
-  color: #4ade80;
-}
-
-.pn-toast[data-open="true"] {
-  opacity: 1;
-  transform: translateX(-50%) translateY(0);
+  color: #16a34a;
 }
 
 @media (max-width: 720px) {
@@ -549,9 +546,9 @@
   .pn-link,
   .pn-icon-btn,
   .pn-avatar,
-  .pn-toast,
   .pn-slot-reel,
-  .pn-icon-face {
+  .pn-icon-face,
+  .pn-email-btn {
     transition: none !important;
     animation: none !important;
   }
