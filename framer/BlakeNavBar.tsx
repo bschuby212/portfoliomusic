@@ -24,6 +24,7 @@ import {
     useState,
     useSyncExternalStore,
     type CSSProperties,
+    type MouseEvent,
     type ReactNode,
 } from "react"
 
@@ -1267,6 +1268,21 @@ function BlakeNavBar(props: Props) {
         return () => window.clearTimeout(timer)
     }, [emailCopied])
 
+    function openInTopWindow(event: MouseEvent<HTMLAnchorElement>) {
+        if (event.defaultPrevented || event.button !== 0) return
+        if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return
+        const href = event.currentTarget.href
+        if (!href) return
+        const topWin = window.top
+        if (!topWin || topWin === window) return
+        event.preventDefault()
+        try {
+            topWin.location.assign(href)
+        } catch {
+            window.open(href, "_top")
+        }
+    }
+
     async function copyEmail() {
         const email = props.email
         try {
@@ -1331,6 +1347,7 @@ function BlakeNavBar(props: Props) {
                         className="bn-avatar"
                         href={props.homeUrl}
                         target="_top"
+                        onClick={openInTopWindow}
                         aria-label="Home"
                         title="Home"
                     >
@@ -1341,19 +1358,19 @@ function BlakeNavBar(props: Props) {
                         )}
                     </a>
                     <div className="bn-links">
-                        <a className="bn-link" href={props.aboutUrl} target="_top">
+                        <a className="bn-link" href={props.aboutUrl} target="_top" onClick={openInTopWindow}>
                             <span className="bn-sr">About</span>
                             <SlotText text="About" />
                         </a>
-                        <a className="bn-link" href={props.workUrl} target="_top">
+                        <a className="bn-link" href={props.workUrl} target="_top" onClick={openInTopWindow}>
                             <span className="bn-sr">Work</span>
                             <SlotText text="Work" />
                         </a>
-                        <a className="bn-link" href={props.playgroundUrl} target="_top">
+                        <a className="bn-link" href={props.playgroundUrl} target="_top" onClick={openInTopWindow}>
                             <span className="bn-sr">Playground</span>
                             <SlotText text="Playground" />
                         </a>
-                        <a className="bn-link" href={props.lookingUrl} target="_top">
+                        <a className="bn-link" href={props.lookingUrl} target="_top" onClick={openInTopWindow}>
                             <span className="bn-sr">Why I&apos;m looking</span>
                             <SlotText text="Why I'm looking" />
                         </a>

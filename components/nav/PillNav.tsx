@@ -6,6 +6,7 @@ import {
   useEffect,
   useState,
   type CSSProperties,
+  type MouseEvent,
   type ReactNode,
 } from "react";
 import { MusicPlayer } from "@/components/music-player/MusicPlayer";
@@ -94,6 +95,22 @@ type PillNavProps = {
   current?: string;
 };
 
+/** Break out of Framer's nested srcdoc iframe so dest pages replace the tab. */
+function openInTopWindow(event: MouseEvent<HTMLAnchorElement>) {
+  if (event.defaultPrevented || event.button !== 0) return;
+  if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+  const href = event.currentTarget.href;
+  if (!href) return;
+  const topWin = window.top;
+  if (!topWin || topWin === window) return;
+  event.preventDefault();
+  try {
+    topWin.location.assign(href);
+  } catch {
+    window.open(href, "_top");
+  }
+}
+
 /** Always-on glass pill nav — no scroll morph. */
 export function PillNav({ current }: PillNavProps) {
   const pathname = usePathname();
@@ -140,6 +157,7 @@ export function PillNav({ current }: PillNavProps) {
           href={NAV_HOME_URL}
           className="pn-avatar"
           target="_top"
+          onClick={openInTopWindow}
           aria-label={`${NAV_BRAND} home`}
           title="Home"
           data-home={active === "/"}
@@ -162,6 +180,7 @@ export function PillNav({ current }: PillNavProps) {
               href={link.href}
               className="pn-link"
               target="_top"
+              onClick={openInTopWindow}
             >
               <span className="pn-sr">{link.label}</span>
               <SlotText text={link.label} />
