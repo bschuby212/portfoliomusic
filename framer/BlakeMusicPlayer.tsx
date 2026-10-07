@@ -12,7 +12,7 @@
  *  - Why I'm looking → https://blakeschubert.com/why-im-looking
  *
  * Fastest install: give Framer External Agent this file + framer/GIVE_TO_FRAMER_AGENT.md
- * Manual: Assets → Code → New Component → paste entire file → frame 720×56, Overflow Visible
+ * Manual: Assets → Code → New Component → paste entire file → frame 760×56, Overflow Visible
  *
  * Defaults point at https://genuine-cheesecake-75fecc.netlify.app for API + avatar + resume
  * (absolute URLs — relative /avatar.png paths break when the component runs on Framer).
