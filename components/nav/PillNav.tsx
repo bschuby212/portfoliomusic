@@ -139,6 +139,7 @@ export function PillNav({ current }: PillNavProps) {
         <a
           href={NAV_HOME_URL}
           className="pn-avatar"
+          target="_top"
           aria-label={`${NAV_BRAND} home`}
           title="Home"
           data-home={active === "/"}
@@ -156,7 +157,12 @@ export function PillNav({ current }: PillNavProps) {
 
         <div className="pn-links">
           {NAV_LINKS.map((link) => (
-            <a key={link.href} href={link.href} className="pn-link">
+            <a
+              key={link.href}
+              href={link.href}
+              className="pn-link"
+              target="_top"
+            >
               <span className="pn-sr">{link.label}</span>
               <SlotText text={link.label} />
             </a>
@@ -211,6 +217,8 @@ export function PillNav({ current }: PillNavProps) {
           <a
             className="pn-icon-btn pn-fx-nudge"
             href={NAV_RESUME_HREF}
+            target="_blank"
+            rel="noreferrer"
             download={NAV_RESUME_DOWNLOAD}
             aria-label={`Download ${NAV_RESUME_DOWNLOAD}`}
           >

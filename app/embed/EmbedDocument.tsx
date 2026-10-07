@@ -42,11 +42,12 @@ export function EmbedDocument() {
 
     const publish = () => {
       applyChrome();
-      const height = measureHeight();
+      // Overlay chrome only — never grow to a full Framer/page document.
+      const height = Math.max(COLLAPSED, measureHeight());
       html.style.height = `${height}px`;
       body.style.height = `${height}px`;
-      html.style.minHeight = `${height}px`;
-      body.style.minHeight = `${height}px`;
+      html.style.minHeight = `${COLLAPSED}px`;
+      body.style.minHeight = `${COLLAPSED}px`;
       html.style.maxHeight = `${height}px`;
       body.style.maxHeight = `${height}px`;
       if (height === last || window.parent === window) return;

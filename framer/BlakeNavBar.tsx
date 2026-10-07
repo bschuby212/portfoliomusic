@@ -1330,6 +1330,7 @@ function BlakeNavBar(props: Props) {
                     <a
                         className="bn-avatar"
                         href={props.homeUrl}
+                        target="_top"
                         aria-label="Home"
                         title="Home"
                     >
@@ -1340,19 +1341,19 @@ function BlakeNavBar(props: Props) {
                         )}
                     </a>
                     <div className="bn-links">
-                        <a className="bn-link" href={props.aboutUrl}>
+                        <a className="bn-link" href={props.aboutUrl} target="_top">
                             <span className="bn-sr">About</span>
                             <SlotText text="About" />
                         </a>
-                        <a className="bn-link" href={props.workUrl}>
+                        <a className="bn-link" href={props.workUrl} target="_top">
                             <span className="bn-sr">Work</span>
                             <SlotText text="Work" />
                         </a>
-                        <a className="bn-link" href={props.playgroundUrl}>
+                        <a className="bn-link" href={props.playgroundUrl} target="_top">
                             <span className="bn-sr">Playground</span>
                             <SlotText text="Playground" />
                         </a>
-                        <a className="bn-link" href={props.lookingUrl}>
+                        <a className="bn-link" href={props.lookingUrl} target="_top">
                             <span className="bn-sr">Why I&apos;m looking</span>
                             <SlotText text="Why I'm looking" />
                         </a>
@@ -1391,6 +1392,8 @@ function BlakeNavBar(props: Props) {
                         <a
                             className="bn-icon-btn bn-fx-nudge"
                             href={props.resumeUrl}
+                            target="_blank"
+                            rel="noreferrer"
                             download="Blake Schubert Product Designer Resume 2026.pdf"
                             aria-label="Download Blake Schubert Product Designer Resume 2026.pdf"
                         >

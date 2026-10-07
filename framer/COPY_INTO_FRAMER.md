@@ -178,7 +178,7 @@ Paste this **Embed → HTML** in Framer (do NOT set the Framer layer to 240px):
 ```html
 <!-- 72px spacer only — page layout never changes on expand -->
 <div style="height:72px;width:100%;pointer-events:none;"></div>
-<div id="blake-embed-wrap" style="position:fixed;top:0;left:0;right:0;height:72px;z-index:9999;">
+<div id="blake-embed-wrap" style="position:fixed;top:0;left:0;right:0;height:72px;z-index:9999;overflow:hidden;">
   <iframe
     id="blake-embed"
     src="https://genuine-cheesecake-75fecc.netlify.app/embed"
@@ -189,6 +189,11 @@ Paste this **Embed → HTML** in Framer (do NOT set the Framer layer to 240px):
 </div>
 <script>
   window.addEventListener("message", (event) => {
+    const allowed = [
+      "https://genuine-cheesecake-75fecc.netlify.app",
+      location.origin,
+    ];
+    if (!allowed.includes(event.origin)) return;
     const data = event.data;
     if (!data || data.type !== "blake-embed-height") return;
     const h = Math.max(72, Number(data.height) || 72);

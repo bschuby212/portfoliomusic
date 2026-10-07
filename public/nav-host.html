@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Nav overlay host (QA)</title>
+    <style>
+      html,
+      body {
+        margin: 0;
+        background: #f6f4ef;
+        font-family: ui-sans-serif, system-ui, sans-serif;
+      }
+      main {
+        max-width: 52rem;
+        margin: 0 auto;
+        padding: 6rem 1.25rem 80vh;
+      }
+    </style>
+  </head>
+  <body>
+    <div style="height: 72px; width: 100%; pointer-events: none"></div>
+    <div
+      id="blake-embed-wrap"
+      style="
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 72px;
+        z-index: 9999;
+        overflow: hidden;
+      "
+    >
+      <iframe
+        id="blake-embed"
+        src="/embed"
+        title="Blake nav"
+        style="display: block; width: 100%; height: 72px; border: 0; background: transparent"
+        allow="autoplay; encrypted-media; clipboard-write"
+      ></iframe>
+    </div>
+    <script>
+      window.addEventListener("message", (event) => {
+        const allowed = [location.origin];
+        if (!allowed.includes(event.origin)) return;
+        const data = event.data;
+        if (!data || data.type !== "blake-embed-height") return;
+        const h = Math.max(72, Number(data.height) || 72);
+        const iframe = document.getElementById("blake-embed");
+        const wrap = document.getElementById("blake-embed-wrap");
+        if (iframe) iframe.style.height = h + "px";
+        if (wrap) wrap.style.height = h + "px";
+      });
+    </script>
+    <main>
+      <h1>Overlay host</h1>
+      <p>
+        Scroll this page. The glass nav stays in a 72px overlay. Page links must
+        replace this tab via <code>target="_top"</code>.
+      </p>
+      <p>Work section marker.</p>
+      <p>Playground section marker.</p>
+    </main>
+  </body>
+</html>
