@@ -12,7 +12,6 @@
         color: #212324;
         font-family: ui-sans-serif, system-ui, sans-serif;
       }
-      /* Distinctive chrome: would remain visible if dest pages loaded in the iframe. */
       #framer-chrome {
         position: sticky;
         top: 0;
@@ -56,46 +55,16 @@
         overflow: hidden;
       "
     >
-      <!-- Matches live Framer: HTML embed is itself an iframe wrapping the Netlify embed. -->
       <iframe
         id="framer-srcdoc"
         title="Framer HTML embed"
         style="display: block; width: 100%; height: 72px; border: 0; background: transparent"
+        srcdoc="<!doctype html><html><head><style>html,body{margin:0;padding:0;overflow:hidden;background:transparent}</style></head><body><iframe id='blake-embed' src='/embed' title='Blake nav' style='display:block;width:100%;height:72px;border:0;background:transparent' allow='autoplay; encrypted-media; clipboard-write'></iframe><script>window.addEventListener('message',function(event){var data=event.data;if(!data||data.type!=='blake-embed-height')return;var iframe=document.getElementById('blake-embed');var h=Math.max(72,Number(data.height)||72);if(iframe)iframe.style.height=h+'px';document.body.style.height=h+'px';window.parent.postMessage({type:'blake-embed-height',height:h},'*');});</script></body></html>"
       ></iframe>
     </div>
     <script>
       const wrap = document.getElementById("blake-embed-wrap");
       const srcdocFrame = document.getElementById("framer-srcdoc");
-      const embedOrigin = location.origin;
-      srcdocFrame.srcdoc = `<!doctype html>
-<html>
-  <head>
-    <style>
-      html, body { margin: 0; padding: 0; overflow: hidden; background: transparent; }
-    </style>
-  </head>
-  <body>
-    <iframe
-      id="blake-embed"
-      src="${embedOrigin}/embed"
-      title="Blake nav"
-      style="display:block;width:100%;height:72px;border:0;background:transparent;"
-      allow="autoplay; encrypted-media; clipboard-write"
-    ></iframe>
-    <script>
-      window.addEventListener("message", (event) => {
-        const data = event.data;
-        if (!data || data.type !== "blake-embed-height") return;
-        const iframe = document.getElementById("blake-embed");
-        const h = Math.max(72, Number(data.height) || 72);
-        if (iframe) iframe.style.height = h + "px";
-        document.body.style.height = h + "px";
-        window.parent.postMessage({ type: "blake-embed-height", height: h }, "*");
-      });
-    <\/script>
-  </body>
-</html>`;
-
       window.addEventListener("message", (event) => {
         if (!event.data || event.data.type !== "blake-embed-height") return;
         const h = Math.max(72, Number(event.data.height) || 72);
