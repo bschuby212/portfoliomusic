@@ -5,9 +5,9 @@ export const NAV_HOME_URL = "https://blakeschubert.com/";
 
 export const NAV_LINKS = [
   { href: "https://blakeschubert.com/about", label: "About" },
-  /** Selected Work section — first project anchor on the home page. */
-  { href: "https://blakeschubert.com/#all-campus", label: "Work" },
-  { href: "https://blakeschubert.com/#why-im-looking", label: "Why I'm looking" },
+  { href: "https://blakeschubert.com/#new-home-hmm-real", label: "Work" },
+  { href: "https://blakeschubert.com/#new-home-playground", label: "Playground" },
+  { href: "https://blakeschubert.com/why-im-looking", label: "Why I'm looking" },
 ] as const;
 
 /** Nav logo — pixel avatar in the far-left mark. */

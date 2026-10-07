@@ -2,13 +2,14 @@
  * Blake Nav Bar — Framer Code Component (paste / agent source of truth)
  *
  * Two glassmorphic pills (fixed 720×56 frame, overflow visible, no scrollbars):
- * [avatar · About · Work · Why I'm looking · LinkedIn · Email · Resume] · music
+ * [avatar · About · Work · Playground · Why I'm looking · LinkedIn · Email · Resume] · music
  *
  * Links (defaults):
  *  - Avatar → https://blakeschubert.com/
  *  - About → https://blakeschubert.com/about
- *  - Work → https://blakeschubert.com/#all-campus  (Selected Work)
- *  - Why I'm looking → https://blakeschubert.com/#why-im-looking
+ *  - Work → https://blakeschubert.com/#new-home-hmm-real
+ *  - Playground → https://blakeschubert.com/#new-home-playground
+ *  - Why I'm looking → https://blakeschubert.com/why-im-looking
  *
  * Fastest install: give Framer External Agent this file + framer/GIVE_TO_FRAMER_AGENT.md
  * Manual: Assets → Code → New Component → paste entire file → frame 720×56, Overflow Visible
@@ -75,6 +76,7 @@ type Props = {
     homeUrl: string
     aboutUrl: string
     workUrl: string
+    playgroundUrl: string
     lookingUrl: string
     linkedinUrl: string
     email: string
@@ -1346,6 +1348,10 @@ function BlakeNavBar(props: Props) {
                             <span className="bn-sr">Work</span>
                             <SlotText text="Work" />
                         </a>
+                        <a className="bn-link" href={props.playgroundUrl}>
+                            <span className="bn-sr">Playground</span>
+                            <SlotText text="Playground" />
+                        </a>
                         <a className="bn-link" href={props.lookingUrl}>
                             <span className="bn-sr">Why I&apos;m looking</span>
                             <SlotText text="Why I'm looking" />
@@ -1528,8 +1534,9 @@ BlakeNavBar.defaultProps = {
     variant: "Closed",
     homeUrl: "https://blakeschubert.com/",
     aboutUrl: "https://blakeschubert.com/about",
-    workUrl: "https://blakeschubert.com/#all-campus",
-    lookingUrl: "https://blakeschubert.com/#why-im-looking",
+    workUrl: "https://blakeschubert.com/#new-home-hmm-real",
+    playgroundUrl: "https://blakeschubert.com/#new-home-playground",
+    lookingUrl: "https://blakeschubert.com/why-im-looking",
     linkedinUrl: "https://www.linkedin.com/in/blake-schubert/",
     email: "blakeschubertux@gmail.com",
     resumeUrl: `${NETLIFY_ORIGIN}/Blake_Schubert_Product_Designer_Resume_2026.pdf`,
@@ -1564,12 +1571,17 @@ addPropertyControls(BlakeNavBar, {
     workUrl: {
         type: ControlType.String,
         title: "Work URL",
-        defaultValue: "https://blakeschubert.com/#all-campus",
+        defaultValue: "https://blakeschubert.com/#new-home-hmm-real",
+    },
+    playgroundUrl: {
+        type: ControlType.String,
+        title: "Playground URL",
+        defaultValue: "https://blakeschubert.com/#new-home-playground",
     },
     lookingUrl: {
         type: ControlType.String,
         title: "Looking URL",
-        defaultValue: "https://blakeschubert.com/#why-im-looking",
+        defaultValue: "https://blakeschubert.com/why-im-looking",
     },
     linkedinUrl: {
         type: ControlType.String,
